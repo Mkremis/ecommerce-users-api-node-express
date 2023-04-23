@@ -1,5 +1,5 @@
 import express from "express";
-const cors = require("cors");
+import cors from "cors";
 
 import usersRoutes from "./routes/users.routes.js";
 import indexRoutes from "./routes/index.routes.js";
