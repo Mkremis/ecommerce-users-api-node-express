@@ -4,7 +4,7 @@ import { pool } from "../db.js";
 export const getUsers = async (req, res) => {
   try {
     const results = await pool.query(`SELECT * FROM users`);
-    res.json(results);
+    res.json(results[0]);
   } catch (error) {
     return res.status(500).json({ message: "something goes wrong" });
   }
