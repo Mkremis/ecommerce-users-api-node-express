@@ -1,0 +1,28 @@
+{
+  "name": "ecommerce-users-api",
+  "version": "1.0.0",
+  "description": "Nodejs MySQL REST API for ecommerce app users data managment",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "Nodejs",
+    "MySQL",
+    "REST",
+    "API",
+    "Railway"
+  ],
+  "author": "Martin Kremis",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mysql2": "^3.2.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
