@@ -7,8 +7,8 @@ export const getCart = async (req, res) => {
     const [rows] = await pool.query(`SELECT cart FROM users WHERE username = ?`, [
       username,
     ]);
-    if (rows.length <= 0)
-      return res.status(404).json({ message: "user not found" });
+    // if (rows.length = 0)
+    //   return res.status(404).json({ message: "user not found" });
     res.json(rows[0]);
     console.log(rows[0]);
   } catch (error) {
