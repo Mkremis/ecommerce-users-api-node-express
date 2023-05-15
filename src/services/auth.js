@@ -10,7 +10,7 @@ try {
      // crea un objeto con el nombre y los datos del usuario
   const user = { username, userData: JSON.stringify(userData) };
   let [rows] = await pool.query("INSERT INTO users SET ?", user);
-   res.send({ message: "user added successfully" });
+   res.status(200).send({ message: "user added successfully" });
 }
     // const passHash = encrypt(password);
     // const registerNewUser = await UserModel.create({
