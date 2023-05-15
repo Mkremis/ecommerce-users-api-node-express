@@ -12,13 +12,5 @@ const isUser = async (req, res, next) => {
 }else{
      next()
 }
-    // const passHash = encrypt(password);
-    // const registerNewUser = await UserModel.create({
-    //   username,
-    //   password: passHash,
-    //   email,
-    // });
-    // return registerNewUser;
-
   };
 export {isUser}
