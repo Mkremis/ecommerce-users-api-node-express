@@ -33,16 +33,16 @@ export const createUser = async (req, res) => {
 
   // obtiene los datos del usuario desde el cuerpo de la solicitud
   const userData = req.body;
-registerNewUser(username)
-  // crea un objeto con el nombre y los datos del usuario
-  // const user = { username, userData: JSON.stringify(userData) };
-  // try {
-  //   // inserta el usuario en la tabla users
-  //   const [rows] = await pool.query("INSERT INTO users SET ?", user);
-  //   res.send({ message: "user added successfully" });
-  // } catch (error) {
-  //   return res.status(500).json({ message: error });
-  // }
+ // crea un objeto con el nombre y los datos del usuario
+  const user = { username, userData: JSON.stringify(userData) };
+  try {
+    throw new Error('ALREADY_USER')
+    // inserta el usuario en la tabla users
+    const [rows] = await pool.query("INSERT INTO users SET ?", user);
+    res.send({ message: "user added successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
 };
 //PUT ONE USER
 export const updateUser = async (req, res) => {
