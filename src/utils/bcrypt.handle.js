@@ -1,6 +1,6 @@
 import { hash, compare } from 'bcryptjs';
 
-const encrypt = async (pass) => {
+const encrypt = (pass) => {
   const passwordHash = hash(pass, 8);
   return passwordHash;
 };
