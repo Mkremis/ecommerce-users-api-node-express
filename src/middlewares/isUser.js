@@ -12,7 +12,6 @@ const isUser = async (req, res, next) => {
     return res.status(404).json({ message: "ALREADY_USER" });
 }else{
  const hash = hashSync('bacon', 8);
-    res.local.hash = hash;
     next()
 }
   };
