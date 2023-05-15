@@ -1,4 +1,5 @@
 import { pool } from "../db.js";
+import bcrypt from "bcryptjs";
 
 const isUser = async (req, res, next) => {
 
@@ -11,6 +12,7 @@ const isUser = async (req, res, next) => {
    if (rows.length > 0) {
     return res.status(404).json({ message: "ALREADY_USER" });
 }else{
+  var hash = bcrypt.hashSync('bacon', 8);
     next();
 }
   };
