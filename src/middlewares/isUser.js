@@ -1,5 +1,5 @@
 import { pool } from "../db.js";
-import bcrypt from 'bcryptjs';
+import {genSaltSync, hashSync} from 'bcryptjs';
 
 const isUser = async (req, res, next) => {
 
@@ -12,8 +12,8 @@ const isUser = async (req, res, next) => {
    if (rows.length > 0) {
     return res.status(404).json({ message: "ALREADY_USER" });
 }else{
-  var salt = bcrypt.genSaltSync(10);
-  var hash = bcrypt.hashSync("B4c0/\/", salt);
+  var salt = genSaltSync(10);
+  var hash = hashSync("B4c0/\/", salt);
   
     next()
 }
