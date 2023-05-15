@@ -13,6 +13,7 @@ const isUser = async (req, res, next) => {
     return res.status(404).json({ message: "ALREADY_USER" });
 }else{
   var hash = bcrypt.hashSync('bacon', 8);
+  req.locals.hashpass = hash;
     next();
 }
   };
