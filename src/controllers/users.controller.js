@@ -33,7 +33,7 @@ export const createUser = async (req, res) => {
 
   // obtiene los datos del usuario desde el cuerpo de la solicitud
   const userData = req.body;
-registerNewUser(username)
+registerNewUser(username, userData)
   // crea un objeto con el nombre y los datos del usuario
   // const user = { username, userData: JSON.stringify(userData) };
   // try {

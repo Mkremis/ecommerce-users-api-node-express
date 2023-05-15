@@ -1,5 +1,5 @@
 import { pool } from "../db.js";
-const registerNewUser = async ( username) => {
+const registerNewUser = async (username, userData) => {
 try {
     const [rows] = await pool.query(`SELECT * FROM users WHERE username = ?`, [
         username,
@@ -7,7 +7,10 @@ try {
    if (rows.length > 0) {
     throw new Error('ALREADY_USER')
 }else{
-    return
+     // crea un objeto con el nombre y los datos del usuario
+  const user = { username, userData: JSON.stringify(userData) };
+  const [rows] = await pool.query("INSERT INTO users SET ?", user);
+   res.send({ message: "user added successfully" });
 }
     // const passHash = encrypt(password);
     // const registerNewUser = await UserModel.create({
