@@ -1,8 +1,9 @@
-import { hash, compare } from 'bcryptjs';
+import { encrypt } from '../utils/bcrypt.handle';
 
-const encryptPass =async(req, res, next)=>{
+const encryptPass =(req, res, next)=>{
     const pass = userData.login["password"];
-    res.locals.passhash= await hash(pass, 8);
+    const passHash = encrypt(pass)
+    res.locals.passhash = passHash;
     next();
 }
 
