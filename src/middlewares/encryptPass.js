@@ -1,4 +1,4 @@
-import { encrypt } from "../utils/bcrypt.handle";
+
 
 
 const encryptPass = (req, res, next)=>{
