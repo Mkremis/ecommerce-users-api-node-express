@@ -33,7 +33,7 @@ export const createUser = async (req, res) => {
   let userData = req.body;
   
 
-//  userData.login["password"] = res.locals.passHash;
+ userData.login["password"] = res.locals.passHash;
 
   // crea un objeto con el nombre y los datos del usuario
   const user = { username, userData: JSON.stringify(userData) };
