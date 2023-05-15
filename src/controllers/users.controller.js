@@ -1,5 +1,5 @@
 import { pool } from "../db.js";
-import bcrypt from "bcryptjs";
+
 //GET ALL USERS
 export const getUsers = async (req, res) => {
   try {
@@ -32,8 +32,6 @@ export const createUser = async (req, res) => {
 
   // obtiene los datos del usuario desde el cuerpo de la solicitud
   let userData = req.body;
-  let hash = bcrypt.hashSync('bacon', 8);
-  userData.login["password"] = hash;
 
   // crea un objeto con el nombre y los datos del usuario
   const user = { username, userData: JSON.stringify(userData) };
