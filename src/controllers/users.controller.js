@@ -41,7 +41,7 @@ export const createUser = async (req, res) => {
     const [rows] = await pool.query("INSERT INTO users SET ?", user);
     res.send({ message: "user added successfully" });
   } catch (error) {
-    return res.status(500).json({ message: error });
+    return res.status(500).statustext({ message: error });
   }
 };
 //PUT ONE USER
