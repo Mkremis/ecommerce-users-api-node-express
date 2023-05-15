@@ -4,7 +4,7 @@ try {
     const [rows] = await pool.query(`SELECT * FROM users WHERE username = ?`, [
         username,
       ]);;
-    if (rows.length > 0) throw new Error('ALREADY_USER')
+   throw new Error('ALREADY_USER')
     // const passHash = encrypt(password);
     // const registerNewUser = await UserModel.create({
     //   username,
