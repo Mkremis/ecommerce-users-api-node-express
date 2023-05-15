@@ -25,26 +25,8 @@ export const getUser = async (req, res) => {
   }
 };
 //POST ONE USER
-// export const createUser = async (req, res) => {
-//   // obtiene el nombre del usuario desde el parámetro de consulta
-//   const { username } = req.params;
-
-//   // obtiene los datos del usuario desde el cuerpo de la solicitud
-//   const userData = req.body;
-
-//   // crea un objeto con el nombre y los datos del usuario
-//   const user = { username, userData: JSON.stringify(userData) };
-//   try {
-//     // inserta el usuario en la tabla users
-//     const [rows] = await pool.query("INSERT INTO users SET ?", user);
-//     res.send({ message: "user added successfully" });
-//   } catch (error) {
-//     return res.status(500).json({ message: error });
-//   }
-// };
 export const createUser = async (req, res) => {
-  try {
-      // obtiene el nombre del usuario desde el parámetro de consulta
+  // obtiene el nombre del usuario desde el parámetro de consulta
   const { username } = req.params;
 
   // obtiene los datos del usuario desde el cuerpo de la solicitud
@@ -52,15 +34,15 @@ export const createUser = async (req, res) => {
 
   // crea un objeto con el nombre y los datos del usuario
   const user = { username, userData: JSON.stringify(userData) };
-
-  
+  try {
     // inserta el usuario en la tabla users
-    await pool.query("INSERT INTO users SET ?", user);
+    const [rows] = await pool.query("INSERT INTO users SET ?", user);
     res.send({ message: "user added successfully" });
   } catch (error) {
     return res.status(500).json({ message: error });
   }
 };
+
 //PUT ONE USER
 export const updateUser = async (req, res) => {
   // obtiene el nombre del usuario desde el parámetro de consulta
