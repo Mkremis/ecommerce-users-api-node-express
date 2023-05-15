@@ -1,7 +1,7 @@
-import { hash, compare } from 'bcryptjs';
+import {hashSync} from 'bcryptjs';
 
-const encrypt = async (pass) => {
-  const passwordHash = await hash(pass, 8);
+const encrypt = (pass) => {
+  const passwordHash = hashSync(pass, 8);
   return passwordHash;
 };
 
