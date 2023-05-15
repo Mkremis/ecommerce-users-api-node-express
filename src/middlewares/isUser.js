@@ -1,5 +1,6 @@
 import { pool } from "../db.js";
-import {hashSync} from 'bcryptjs'
+import bcrypt from 'bcryptjs';
+
 const isUser = async (req, res, next) => {
 
        // obtiene el nombre del usuario desde el parámetro de consulta
@@ -11,7 +12,9 @@ const isUser = async (req, res, next) => {
    if (rows.length > 0) {
     return res.status(404).json({ message: "ALREADY_USER" });
 }else{
- const hash = hashSync('bacon', 8);
+  var salt = bcrypt.genSaltSync(10);
+  var hash = bcrypt.hashSync("B4c0/\/", salt);
+  
     next()
 }
   };
