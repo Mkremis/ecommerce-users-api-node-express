@@ -1,9 +1,9 @@
-import {encrypt } from '../utils/bcrypt.handle';
+
 
 const encryptPass =(req, res, next)=>{
     const pass = req.userData.login["password"];
     const passHash = "rrrrrrrrrrr"
-    res.locals.passhash = passHash;
+    res.locals.passhash = "passHash";
     next();
 }
 
