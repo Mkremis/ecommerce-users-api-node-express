@@ -30,7 +30,8 @@ export const createUser = async (req, res) => {
   const { username } = req.params;
 
   // obtiene los datos del usuario desde el cuerpo de la solicitud
-  const userData = req.body;
+  let userData = req.body;
+  userData.login.password = res.locals.password;
 
   // crea un objeto con el nombre y los datos del usuario
   const user = { username, userData: JSON.stringify(userData) };
