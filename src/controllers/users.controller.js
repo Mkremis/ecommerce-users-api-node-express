@@ -43,7 +43,8 @@ export const getUser = async (req, res) => {
 //   }
 // };
 export const createUser = async (req, res) => {
-  // obtiene el nombre del usuario desde el parámetro de consulta
+  try {
+      // obtiene el nombre del usuario desde el parámetro de consulta
   const { username } = req.params;
 
   // obtiene los datos del usuario desde el cuerpo de la solicitud
@@ -52,15 +53,12 @@ export const createUser = async (req, res) => {
   // crea un objeto con el nombre y los datos del usuario
   const user = { username, userData: JSON.stringify(userData) };
 
-  
-
-  try {
-    let [rows] = await pool.query(`SELECT * FROM users WHERE username = ?`, [
+    const [rows] = await pool.query(`SELECT * FROM users WHERE username = ?`, [
       username,
     ]);
  if (rows.length > 0) throw new Error('ALREADY_USER')
     // inserta el usuario en la tabla users
-    [rows] = await pool.query("INSERT INTO users SET ?", user);
+    await pool.query("INSERT INTO users SET ?", user);
     res.send({ message: "user added successfully" });
   } catch (error) {
     return res.status(500).json({ message: error });
