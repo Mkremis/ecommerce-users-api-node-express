@@ -28,7 +28,6 @@ export const getUser = async (req, res) => {
 export const createUser = async (req, res) => {
   // obtiene los datos del usuario desde el cuerpo de la solicitud
   let userData = req.body;
-  res.send(userData);
 
   try {
     // inserta el usuario en la tabla users
