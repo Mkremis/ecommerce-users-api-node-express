@@ -30,7 +30,7 @@ export const createUser = async (req, res) => {
   let userData = req.body;
   try {
     // inserta el usuario en la tabla users
-    const [rows] = await pool.query(`INSERT INTO users VALUES (${userData})`);
+    const [rows] = await pool.query("INSERT INTO users SET ?", userData);
     res.send({ message: "user added successfully" });
   } catch (error) {
     return res.status(500).json({ message: error });
