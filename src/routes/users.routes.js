@@ -12,7 +12,8 @@ const router = Router();
 router
   .get("/users", getUsers)
   .get("/users/:username", getUser)
-  .post("/users/:username", isUser, createUser)
+  .post("/users/register", createUser)
+  // .post("/users/:username", isUser, createUser)
   .put("/users/:username", updateUser)
   .delete("/users/:username", deleteUser);
 
