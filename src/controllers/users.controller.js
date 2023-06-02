@@ -37,7 +37,7 @@ export const createUser = async (req, res) => {
 //   } catch (error) {
 //     return res.status(500).json({ message: error });
 //   }
-// };
+ };
 
 //PUT ONE USER
 export const updateUser = async (req, res) => {
