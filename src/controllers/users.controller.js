@@ -28,17 +28,13 @@ export const getUser = async (req, res) => {
 export const createUser = async (req, res) => {
   // obtiene los datos del usuario desde el cuerpo de la solicitud
   let userData = req.body;
-  res.json({ message: userData });
-
-  // // crea un objeto con el nombre y los datos del usuario
-  // const user = { username, userData: JSON.stringify(userData) };
-  // try {
-  //   // inserta el usuario en la tabla users
-  //   const [rows] = await pool.query("INSERT INTO users SET ?", user);
-  //   res.send({ message: "user added successfully" });
-  // } catch (error) {
-  //   return res.status(500).json({ message: error });
-  // }
+  try {
+    // inserta el usuario en la tabla users
+    const [rows] = await pool.query("INSERT INTO users VALUES", userData);
+    res.send({ message: "user added successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
 };
 
 //PUT ONE USER
