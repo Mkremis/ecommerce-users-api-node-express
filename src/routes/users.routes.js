@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   getUsers,
-  getUser,
+  login,
   createUser,
   updateUser,
   deleteUser,
@@ -11,7 +11,7 @@ const router = Router();
 
 router
   .get("/users", getUsers)
-  .get("/users/:username", getUser)
+  .post("/users/login", login)
   .post("/users/register", createUser)
   // .post("/users/:username", isUser, createUser)
   .put("/users/:username", updateUser)

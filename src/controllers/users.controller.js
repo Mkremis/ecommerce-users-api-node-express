@@ -9,20 +9,12 @@ export const getUsers = async (req, res) => {
     return res.status(500).json({ message: error });
   }
 };
-//GET ONE USER
-export const getUser = async (req, res) => {
-  const { username } = req.params;
+//Login
+export const login = async (req, res) => {
+  const { body } = req;
+  const { username, password } = body;
 
-  try {
-    const [rows] = await pool.query(`SELECT * FROM users WHERE login_username = ?`, [
-      username,
-    ]);
-    if (rows.length <= 0)
-      return res.status(404).json({ message: "user not found" });
-    res.json(rows[0]);
-  } catch (error) {
-    return res.status(500).json({ message: error });
-  }
+  // return res.status(404).json({ message: "user not found" });
 };
 //POST ONE USER
 export const createUser = async (req, res) => {
@@ -31,14 +23,31 @@ export const createUser = async (req, res) => {
 
   try {
     // inserta el usuario en la tabla users
-    const [rows] = await pool.query("INSERT INTO users (login_password, login_username, fullname_title, fullname_first, fullname_last, contact_email, contact_phone, picture_thumbnail, location_city, location_state, location_number, location_street, location_country, location_postcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-     [userData.login_password, userData.login_username, userData.fullName_title, userData.fullName_first, userData.fullName_last, userData.contact_email, userData.contact_phone, userData.picture_thumbnail, userData.location_city, userData.location_state, userData.location_number, userData.location_street, userData.location_country, userData.location_postcode]);
+    const [rows] = await pool.query(
+      "INSERT INTO users (login_password, login_username, fullname_title, fullname_first, fullname_last, contact_email, contact_phone, picture_thumbnail, location_city, location_state, location_number, location_street, location_country, location_postcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        userData.login_password,
+        userData.login_username,
+        userData.fullName_title,
+        userData.fullName_first,
+        userData.fullName_last,
+        userData.contact_email,
+        userData.contact_phone,
+        userData.picture_thumbnail,
+        userData.location_city,
+        userData.location_state,
+        userData.location_number,
+        userData.location_street,
+        userData.location_country,
+        userData.location_postcode,
+      ]
+    );
 
     res.send({ message: "user added successfully" });
   } catch (error) {
     return res.status(500).json({ message: error, data: userData });
   }
- };
+};
 
 //PUT ONE USER
 export const updateUser = async (req, res) => {
