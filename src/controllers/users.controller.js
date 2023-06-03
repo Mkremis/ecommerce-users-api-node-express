@@ -1,4 +1,5 @@
 import { pool } from "../db.js";
+import { loginUser, registerNewUser } from "../services/auth.js";
 
 //GET ALL USERS
 export const getUsers = async (req, res) => {
@@ -11,42 +12,22 @@ export const getUsers = async (req, res) => {
 };
 //Login
 export const login = async (req, res) => {
-  const { body } = req;
-  const { username, password } = body;
+  if (!req.isUser) return res.status(404).json({ message: "NOT_FOUND_USER" });
+  return res.status(200).json({ message: "USER_FOUND" });
 
-  // return res.status(404).json({ message: "user not found" });
+  const { body } = req;
+  const { login_username, login_password } = body;
+  const responseUser = await loginUser({ login_username, login_password });
 };
-//POST ONE USER
-export const createUser = async (req, res) => {
+//register
+export const register = async (req, res) => {
+  if (req.isUser) return res.status(404).json({ message: "ALREADY_USER" });
   // obtiene los datos del usuario desde el cuerpo de la solicitud
   let userData = req.body;
-
-  try {
-    // inserta el usuario en la tabla users
-    const [rows] = await pool.query(
-      "INSERT INTO users (login_password, login_username, fullname_title, fullname_first, fullname_last, contact_email, contact_phone, picture_thumbnail, location_city, location_state, location_number, location_street, location_country, location_postcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [
-        userData.login_password,
-        userData.login_username,
-        userData.fullName_title,
-        userData.fullName_first,
-        userData.fullName_last,
-        userData.contact_email,
-        userData.contact_phone,
-        userData.picture_thumbnail,
-        userData.location_city,
-        userData.location_state,
-        userData.location_number,
-        userData.location_street,
-        userData.location_country,
-        userData.location_postcode,
-      ]
-    );
-
-    res.send({ message: "user added successfully" });
-  } catch (error) {
-    return res.status(500).json({ message: error, data: userData });
-  }
+  const responseRegister = await registerNewUser({ userData });
+  if (responseRegister.success)
+    return res.status(200).send(responseRegister.success);
+  return res.status(500).json(responseRegister.fail);
 };
 
 //PUT ONE USER

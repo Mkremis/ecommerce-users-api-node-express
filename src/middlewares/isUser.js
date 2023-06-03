@@ -2,15 +2,17 @@ import { pool } from "../db.js";
 
 const isUser = async (req, res, next) => {
   const { body } = req;
-  const { username, password } = body;
+  const { login_username } = body;
 
-  let [rows] = await pool.query(`SELECT * FROM users WHERE username = ?`, [
-    username,
-  ]);
+  let [rows] = await pool.query(
+    `SELECT * FROM users WHERE login_username = ?`,
+    [login_username]
+  );
   if (rows.length > 0) {
-    return res.status(404).json({ message: "ALREADY_USER" });
+    req.isUser = true;
   } else {
-    next();
+    req.isUser = false;
   }
+  next();
 };
 export { isUser };
