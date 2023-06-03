@@ -12,16 +12,28 @@ export const getUsers = async (req, res) => {
 };
 //Login
 export const login = async (req, res) => {
-  if (!req.isUser) return res.status(404).json({ message: "NOT_FOUND_USER" });
-  return res.status(200).json({ message: "USER_FOUND" });
-
+  if (!req.passwordHash)
+    return res.status(404).json({ message: "NOT_FOUND_USER" });
   const { body } = req;
   const { login_username, login_password } = body;
-  const responseUser = await loginUser({ login_username, login_password });
+  const { passwordHash } = req;
+  const responseUser = await loginUser({
+    login_username,
+    login_password,
+    passwordHash,
+  });
+  if (responseUser === "INCORRECT_PASSWORD") {
+    res.status(403);
+    res.json({ message: responseUser });
+  } else {
+    res.json(responseUser);
+  }
 };
+
 //register
 export const register = async (req, res) => {
-  if (req.isUser) return res.status(404).json({ message: "ALREADY_USER" });
+  if (req.passwordHash)
+    return res.status(404).json({ message: "ALREADY_USER" });
   // obtiene los datos del usuario desde el cuerpo de la solicitud
   let userData = req.body;
   const responseRegister = await registerNewUser({ userData });

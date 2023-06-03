@@ -2,16 +2,16 @@ import { pool } from "../db.js";
 
 const isUser = async (req, res, next) => {
   const { body } = req;
-  const { login_username } = body;
+  const { login_username, login_password } = body;
 
   let [rows] = await pool.query(
-    `SELECT * FROM users WHERE login_username = ?`,
+    `SELECT login_password FROM users WHERE login_username = ?`,
     [login_username]
   );
   if (rows.length > 0) {
-    req.isUser = true;
+    req.passwordHash = rows[0].login_password;
   } else {
-    req.isUser = false;
+    req.passwordHash = false;
   }
   next();
 };
