@@ -57,43 +57,25 @@ const getData = async ({ username }) => {
 
 const updateUserData = async ({ userData }) => {
   try {
-    const query = `
-      UPDATE users 
-      SET 
-        login_password = ?,
-        fullname_title = ?,
-        fullname_first = ?,
-        fullname_last = ?,
-        contact_email = ?,
-        contact_phone = ?,
-        picture_thumbnail = ?,
-        location_city = ?,
-        location_state = ?,
-        location_number = ?,
-        location_street = ?,
-        location_country = ?,
-        location_postcode = ?
-      WHERE login_username = ?
-    `;
-    return ({userData})
-    // const [rows] = await pool.query(query, [
-    //   userData.login_password,
-    //   userData.login_username,
-    //   userData.fullname_title,
-    //   userData.fullname_first,
-    //   userData.fullname_last,
-    //   userData.contact_email,
-    //   userData.contact_phone,
-    //   userData.picture_thumbnail,
-    //   userData.location_city,
-    //   userData.location_state,
-    //   userData.location_number,
-    //   userData.location_street,
-    //   userData.location_country,
-    //   userData.location_postcode,
-    //   userData.login_username, // Agregado el valor para el WHERE
-    // ]);
-
+    const sql = "UPDATE users SET login_password = ?, fullname_title = ?, fullname_first = ?, fullname_last = ?, contact_email = ?, contact_phone = ?, picture_thumbnail = ?, location_city = ?, location_state = ?, location_number = ?, location_street = ?, location_country = ?, location_postcode = ? WHERE login_username = ?";
+    const [rows] = await pool.query(sql, [
+      userData.login_password,
+      userData.login_username,
+      userData.fullname_title,
+      userData.fullname_first,
+      userData.fullname_last,
+      userData.contact_email,
+      userData.contact_phone,
+      userData.picture_thumbnail,
+      userData.location_city,
+      userData.location_state,
+      userData.location_number,
+      userData.location_street,
+      userData.location_country,
+      userData.location_postcode,
+      userData.login_username, 
+    ]);
+    return { success: rows };
     // if (rows.affectedRows) {
     //   return { success: rows };
     // }
