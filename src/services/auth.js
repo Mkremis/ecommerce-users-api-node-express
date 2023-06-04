@@ -81,7 +81,7 @@ const getData = async ({ username }) => {
 
 const updateDataUser = async ({ userData }) => {
   try {
-    const query = `
+    const updateQuery = `
       UPDATE users 
       SET 
         login_password = ?,
@@ -100,7 +100,7 @@ const updateDataUser = async ({ userData }) => {
       WHERE login_username = ?
     `;
     
-    const [rows] = await pool.query(query, [
+    const [rows] = await pool.query(updateQuery, [
       userData.login_password,
       userData.login_username,
       userData.fullName_title,
