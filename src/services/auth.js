@@ -12,9 +12,9 @@ const registerNewUser = async ({ userData }) => {
       [
         userData.login_password,
         userData.login_username,
-        userData.fullName_title,
-        userData.fullName_first,
-        userData.fullName_last,
+        userData.fullname_title,
+        userData.fullname_first,
+        userData.fullname_last,
         userData.contact_email,
         userData.contact_phone,
         userData.picture_thumbnail,
