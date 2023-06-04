@@ -60,6 +60,7 @@ const updateUserData = async ({ userData }) => {
     const query = `
       UPDATE users 
       SET 
+        login_username = ?,
         login_password = ?,
         fullname_title = ?,
         fullname_first = ?,
@@ -77,8 +78,8 @@ const updateUserData = async ({ userData }) => {
     `;
     
     const [rows] = await pool.query(query, [
-      userData.login_password,
       userData.login_username,
+      userData.login_password,
       userData.fullname_title,
       userData.fullname_first,
       userData.fullname_last,
