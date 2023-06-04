@@ -77,6 +77,8 @@ const updateUserData = async ({ userData }) => {
     ]);
     if (rows.affectedRows) {
       return { success: rows };
+    }else{
+      return {message: "NO_CHANGES_TO_UPDATE"}
     }
   } catch (error) {
     return { fail: error };
