@@ -1,4 +1,4 @@
-import { verifyToken } from "../utils/jwtHandle";
+
 
 const checkSession = (req, res, next) => {
   res.status(401);
