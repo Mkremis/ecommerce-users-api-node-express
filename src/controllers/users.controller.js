@@ -1,5 +1,5 @@
 import { pool } from "../db.js";
-import { getData, loginUser, registerNewUser } from "../services/auth.js";
+import { getData, loginUser, registerNewUser, updateUserData } from "../services/auth.js";
 
 //Dashboard
 export const getUserData = async (req, res) => {
@@ -43,23 +43,11 @@ export const register = async (req, res) => {
 
 //PUT ONE USER
 export const updateUser = async (req, res) => {
-  // obtiene el nombre del usuario desde el parámetro de consulta
-  const { username } = req.params;
-  // obtiene los datos del usuario desde el cuerpo de la solicitud
-  const userData = JSON.stringify(req.body);
-  // crea un objeto con el nombre y los datos del usuario
-
-  try {
-    const [result] = await pool.query(
-      "UPDATE users SET userData = ? WHERE username = ?",
-      [userData, username]
-    );
-    if (result.affectedRows === 0)
-      return res.status(404).json({ message: "user not found" });
-    res.json({ message: result.info });
-  } catch (error) {
-    return res.status(500).json({ message: error });
-  }
+  let userData = req.body;
+  const responseUpdate = await updateUserData({ userData });
+  if (responseUpdate.success)
+    return res.status(200).send(responseUpdate.success);
+  return res.status(500).json(responseUpdate.fail);
 };
 // DELETE ONE USER
 export const deleteUser = async (req, res) => {
