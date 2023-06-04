@@ -75,28 +75,28 @@ const updateUserData = async ({ userData }) => {
         location_postcode = ?
       WHERE login_username = ?
     `;
-    
-    const [rows] = await pool.query(query, [
-      userData.login_password,
-      userData.login_username,
-      userData.fullname_title,
-      userData.fullname_first,
-      userData.fullname_last,
-      userData.contact_email,
-      userData.contact_phone,
-      userData.picture_thumbnail,
-      userData.location_city,
-      userData.location_state,
-      userData.location_number,
-      userData.location_street,
-      userData.location_country,
-      userData.location_postcode,
-      userData.login_username, // Agregado el valor para el WHERE
-    ]);
+    return (userData, query)
+    // const [rows] = await pool.query(query, [
+    //   userData.login_password,
+    //   userData.login_username,
+    //   userData.fullname_title,
+    //   userData.fullname_first,
+    //   userData.fullname_last,
+    //   userData.contact_email,
+    //   userData.contact_phone,
+    //   userData.picture_thumbnail,
+    //   userData.location_city,
+    //   userData.location_state,
+    //   userData.location_number,
+    //   userData.location_street,
+    //   userData.location_country,
+    //   userData.location_postcode,
+    //   userData.login_username, // Agregado el valor para el WHERE
+    // ]);
 
-    if (rows.affectedRows) {
-      return { success: rows };
-    }
+    // if (rows.affectedRows) {
+    //   return { success: rows };
+    // }
   } catch (error) {
     return { fail: error };
   }
