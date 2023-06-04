@@ -43,7 +43,6 @@ export const register = async (req, res) => {
 
 //PUT ONE USER
 export const updateUser = async (req, res) => {
-
   let userData = req.body;
   const responseUpdate = await updateUserData({ userData });
   if (responseUpdate.success)

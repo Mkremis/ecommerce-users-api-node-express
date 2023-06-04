@@ -75,10 +75,9 @@ const updateUserData = async ({ userData }) => {
       userData.location_postcode,
       userData.login_username, 
     ]);
-    return { success: rows };
-    // if (rows.affectedRows) {
-    //   return { success: rows };
-    // }
+    if (rows.affectedRows) {
+      return { success: rows };
+    }
   } catch (error) {
     return { fail: error };
   }
