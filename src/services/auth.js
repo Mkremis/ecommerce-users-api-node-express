@@ -76,9 +76,9 @@ const updateUserData = async ({ userData }) => {
       userData.login_username, 
     ]);
     if (rows.affectedRows) {
-      return { success: rows };
+      return { message: rows };
     }else{
-      return {message: "NO_CHANGES_TO_UPDATE"}
+      return {message: "NO_CHANGES_TO_UPDATE"};
     }
   } catch (error) {
     return { fail: error };

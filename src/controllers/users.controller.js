@@ -45,8 +45,8 @@ export const register = async (req, res) => {
 export const updateUser = async (req, res) => {
   let userData = req.body;
   const responseUpdate = await updateUserData({ userData });
-  if (responseUpdate.success)
-    return res.status(200).json(responseUpdate.success);
+  if (responseUpdate.message)
+    return res.status(200).json(responseUpdate.message);
   return res.status(500).json(responseUpdate.fail);
 };
 // DELETE ONE USER
