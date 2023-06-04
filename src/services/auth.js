@@ -75,7 +75,7 @@ const updateUserData = async ({ userData }) => {
         location_postcode = ?
       WHERE login_username = ?
     `;
-    return (userData, query)
+    return ({userData})
     // const [rows] = await pool.query(query, [
     //   userData.login_password,
     //   userData.login_username,
