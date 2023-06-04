@@ -45,4 +45,15 @@ const loginUser = async ({ login_username, login_password, passwordHash }) => {
   return data;
 };
 
-export { registerNewUser, loginUser };
+const getData = async ({ username }) => {
+ 
+  const [rows] = await pool.query(
+    `SELECT * FROM users WHERE login_username = ?`,
+    username
+  );
+  const data = { user: rows[0] };
+
+  return data;
+};
+
+export { registerNewUser, loginUser, getData };

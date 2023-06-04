@@ -1,15 +1,14 @@
 import { pool } from "../db.js";
-import { loginUser, registerNewUser } from "../services/auth.js";
+import { getData, loginUser, registerNewUser } from "../services/auth.js";
 
-//GET ALL USERS
-export const getUsers = async (req, res) => {
-  try {
-    const results = await pool.query(`SELECT * FROM users`);
-    res.json(results[0]);
-  } catch (error) {
-    return res.status(500).json({ message: error });
-  }
+//Dashboard
+export const getUserData = async (req, res) => {
+  const {username} = req.params;
+  const responseData = await getData({username});
+  if (responseData) res.json(responseData)
 };
+
+
 //Login
 export const login = async (req, res) => {
   if (!req.passwordHash)
