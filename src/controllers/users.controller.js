@@ -26,7 +26,7 @@ export const login = async (req, res) => {
     res.status(403);
     res.json({ message: responseUser });
   } else {
-    res.json(responseUser, req.headers);
+    res.json(responseUser);
   }
 };
 
