@@ -43,11 +43,12 @@ export const register = async (req, res) => {
 
 //PUT ONE USER
 export const updateUser = async (req, res) => {
-  const userData = req.body;
-  const responseRegister = await updateDataUser({ userData });
-  if (responseRegister.success)
-    return res.status(200).send(responseRegister.success);
-  return res.status(500).json(responseRegister.fail);
+  res.json({data: hola})
+  // const userData = req.body;
+  // const responseUpdate = await updateDataUser({ userData });
+  // if (responseUpdate.success)
+  //   return res.status(200).send(responseUpdate.success);
+  // return res.status(500).json(responseUpdate.fail);
 
   // try {
   //   const [result] = await pool.query(
