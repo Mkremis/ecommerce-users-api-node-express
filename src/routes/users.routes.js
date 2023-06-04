@@ -14,7 +14,8 @@ router
   .get("/users/:username", getUserData)
   .post("/users/login", isUser, login)
   .post("/users/register", isUser, register)
-  .put("/users/:username", updateUser)
+  .put("/users/update", updateUser)
   .delete("/users/:username", deleteUser);
 
 export default router;
+ 
