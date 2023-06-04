@@ -37,9 +37,27 @@ const loginUser = async ({ login_username, login_password, passwordHash }) => {
   if (!isCorrect) return "INCORRECT_PASSWORD";
   const token = generateToken(login_username);
   const [rows] = await pool.query(
-    `SELECT * FROM users WHERE login_username = ?`,
+    `SELECT login_username, fullname_title, fullname_first, fullname_last, contact_email, picture_thumbnail FROM users WHERE login_username = ?`,
     login_username
   );
+
+//   {
+//     "login_username": "elvyspresley",
+//     "login_password": "$2a$08$L.XNG0SV79vYWwVS0ePQBea1S5WVvgWC5Jk0KP9IfWQDxTugQ2VAS",
+//     "fullname_title": "Mr.",
+//     "fullname_first": "Elvys",
+//     "fullname_last": "Presley",
+//     "contact_email": "elvys123@mail.com",
+//     "contact_phone": "09-914-637",
+//     "picture_thumbnail": "https://styles.redditmedia.com/t5_2rj5m/styles/communityIcon_1qhoddvlpn971.png?width=256&v=enabled&s=71dec9272b09bf944937112e1db0e8378059f960",
+//     "location_city": "Tupelo",
+//     "location_state": "Misisipi",
+//     "location_number": "1",
+//     "location_street": "Graceland",
+//     "location_country": "United States",
+//     "location_postcode": "1921"
+// }
+
   const data = { token, user: rows[0] };
 
   return data;
