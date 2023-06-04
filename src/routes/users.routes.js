@@ -7,9 +7,6 @@ import {
   getUserData,
 } from "../controllers/users.controller.js";
 import { isUser } from "../middlewares/isUser.js";
-import { checkSession } from "../middlewares/checkSession.js";
-
-
 
 const router = Router();
 
