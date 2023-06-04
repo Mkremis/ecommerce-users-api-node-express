@@ -1,6 +1,5 @@
 import { verifyToken } from "../utils/jwtHandle";
 
-verifyToken
 
 const checkSession = (req, res, next) => {
   try {
