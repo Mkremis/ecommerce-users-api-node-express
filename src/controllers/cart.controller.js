@@ -25,7 +25,7 @@ export const updateCart = async (req, res) => {
 
   try {
     const [result] = await pool.query(
-      "UPDATE users SET cart = ? WHERE username = ?",
+      "UPDATE users SET user_cart = ? WHERE username = ?",
       [cart, username]
     );
     if (result.affectedRows === 0)
