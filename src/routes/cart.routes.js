@@ -7,6 +7,6 @@ const router = Router();
 
 router
   .get("/users/:username/cart", getCart)
-  .post("/users/:username/update-cart", updateCart)
+  .put("/users/:username/update-cart", updateCart)
 
 export default router;

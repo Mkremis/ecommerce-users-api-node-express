@@ -37,7 +37,7 @@ const loginUser = async ({ login_username, login_password, passwordHash }) => {
   if (!isCorrect) return "INCORRECT_PASSWORD";
   const token = generateToken(login_username);
   const [rows] = await pool.query(
-    `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail FROM users WHERE login_username = ?`,
+    `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, user_cart FROM users WHERE login_username = ?`,
     login_username
   );
   const data = { token, user: rows[0] };
