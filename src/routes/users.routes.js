@@ -8,9 +8,7 @@ import {
   register,
   getUserData,
 } from "../controllers/users.controller.js";
-
-
-checkSession
+ 
 const router = Router();
 
 router
