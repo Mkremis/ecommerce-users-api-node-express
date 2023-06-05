@@ -4,7 +4,7 @@ import { pool } from "../db.js";
 export const getCart = async (req, res) => {
   const { username } = req.params;
   try {
-    const [rows] = await pool.query(`SELECT user_cart FROM cart WHERE username = ?`, [
+    const [rows] = await pool.query(`SELECT user_cart FROM cart WHERE login_username = ?`, [
       username,
     ]);
     // if (rows.length = 0)
