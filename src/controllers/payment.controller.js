@@ -14,24 +14,25 @@ export const createOrder = async (req, res)=>{
     obj.unit_price = parseFloat(price);
     cartItems.push(obj);
   }
-  
-    mercadopago.configure({
-        access_token: MERCADOPAGO_API_KEY
-    });
-    try {
-      const result = await mercadopago.preferences.create({
-        items: cartItems,
-          back_urls:{
-            success: "https://ecommerce-users-api-production.up.railway.app/api/success",
-            pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
-            failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
-          },
-          notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
-    })
-    res.json(result.body)
-    } catch (error) {
-      res.status(500).json({message: error})
-    }
+  console.log(cartItems)
+  res.json({cartItems})
+    // mercadopago.configure({
+    //     access_token: MERCADOPAGO_API_KEY
+    // });
+    // try {
+    //   const result = await mercadopago.preferences.create({
+    //     items: cartItems,
+    //       back_urls:{
+    //         success: "https://ecommerce-users-api-production.up.railway.app/api/success",
+    //         pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
+    //         failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
+    //       },
+    //       notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
+    // })
+    // res.json(result.body)
+    // } catch (error) {
+    //   res.status(500).json({message: error})
+    // }
 
 };
 
