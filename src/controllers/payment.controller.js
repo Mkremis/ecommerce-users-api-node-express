@@ -3,21 +3,21 @@ import {MERCADOPAGO_API_KEY} from '../config.js'
 
 export const createOrder = async (req, res)=>{
   const order = req.body;
-  let items = [];
+  let cartItems = [];
   for (const key in order) {
    let obj = {};
    obj.title = order[key]["prodName"];
    obj.quantity = order[key]["productQ"];
    obj.currency_id = 'ARS';
    obj.unit_price = order[key]["prodPrice"];
-   items.push(obj)      
+   cartItems.push(obj)      
     };
   
     mercadopago.configure({
         access_token: MERCADOPAGO_API_KEY
     });
     const result = await mercadopago.preferences.create({
-        items,
+        items: cartItems,
           back_urls:{
             success: "https://ecommerce-users-api-production.up.railway.app/api/success",
             pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
