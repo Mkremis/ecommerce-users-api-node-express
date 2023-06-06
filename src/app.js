@@ -14,7 +14,7 @@ app
   .use(cors())
   .use(morgan('dev'))
   .use(express.json())
-  .use(express.static(path.resolve('scr/public')))
+  // .use(express.static(path.resolve('scr/public')))
   .get("/", (req, res) => res.send("<h1>Home</h1>"))
   .use(indexRoutes)
   .use("/api", usersRoutes)
