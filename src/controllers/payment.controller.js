@@ -6,13 +6,13 @@ export const createOrder = async (req, res)=>{
   let cartItems = [];
   for (const key in order) {
     let obj = {};
-    obj.title = order[key]["prodName"];
-    let q = order[key]["productQ"];
-    obj.quantity = parseInt(q); // Asegurar que sea un entero válido
-    obj.currency_id = 'USD';
-    let price = order[key]["prodPrice"];
-    obj.unit_price = parseFloat(price);
-    cartItems.push(obj);
+    if(parseInt(order[key]["productQ"])>0){
+      obj.title = order[key]["prodName"];
+      obj.quantity = parseInt(order[key]["productQ"]); 
+      obj.currency_id = 'USD';
+      obj.unit_price = parseFloat(order[key]["prodPrice"]);
+      cartItems.push(obj);
+    }
   }
   console.log(cartItems)
   res.json({cartItems})
