@@ -7,18 +7,19 @@ export const createOrder = async (req, res)=>{
   for (const key in order) {
    let obj = {};
    obj.title = order[key]["prodName"];
-  //  obj.quantity = parseInt(order[key]["productQ"]);
-  obj.quantity = 1;
+   let q = order[key]["productQ"];
+   obj.quantity = parseInt(q);
    obj.currency_id = 'USD';
-  //  obj.unit_price = parseFloat(order[key]["prodPrice"]);
-  obj.unit_price = 100;
+   let price = order[key]["prodPrice"]
+   obj.unit_price = parseFloat(price);
    cartItems.push(obj)      
     };
   
     mercadopago.configure({
         access_token: MERCADOPAGO_API_KEY
     });
-    const result = await mercadopago.preferences.create({
+    try {
+      const result = await mercadopago.preferences.create({
         items: cartItems,
           back_urls:{
             success: "https://ecommerce-users-api-production.up.railway.app/api/success",
@@ -28,6 +29,9 @@ export const createOrder = async (req, res)=>{
           notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
     })
     res.json(result.body)
+    } catch (error) {
+      res.status(500).json({message: error})
+    }
 };
 
 
