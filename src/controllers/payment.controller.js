@@ -6,7 +6,7 @@ export const createOrder = async (req, res)=>{
   let cartItems = [];
   for (const key in order) {
     let obj = {};
-    if(parseInt(order[key]["productQ"])>0){
+    if(parseInt(order[key]["productQ"]) > 0){
       obj.title = order[key]["prodName"];
       obj.quantity = parseInt(order[key]["productQ"]); 
       obj.currency_id = 'USD';
@@ -15,24 +15,24 @@ export const createOrder = async (req, res)=>{
     }
   }
   console.log(cartItems)
-  res.json({cartItems})
-    // mercadopago.configure({
-    //     access_token: MERCADOPAGO_API_KEY
-    // });
-    // try {
-    //   const result = await mercadopago.preferences.create({
-    //     items: cartItems,
-    //       back_urls:{
-    //         success: "https://ecommerce-users-api-production.up.railway.app/api/success",
-    //         pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
-    //         failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
-    //       },
-    //       notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
-    // })
-    // res.json(result.body)
-    // } catch (error) {
-    //   res.status(500).json({message: error})
-    // }
+
+    mercadopago.configure({
+        access_token: MERCADOPAGO_API_KEY
+    });
+    try {
+      const result = await mercadopago.preferences.create({
+        items: cartItems,
+          back_urls:{
+            success: "https://ecommerce-users-api-production.up.railway.app/api/success",
+            pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
+            failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
+          },
+          notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
+    })
+    res.json(result.body)
+    } catch (error) {
+      res.status(500).json({message: error})
+    }
 
 };
 
