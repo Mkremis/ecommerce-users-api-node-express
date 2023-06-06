@@ -23,9 +23,11 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
+    "mercadopago": "^1.5.16",
     "mysql2": "^3.2.3"
   },
   "devDependencies": {
+    "morgan": "^1.10.0",
     "nodemon": "^2.0.22"
   }
 }
