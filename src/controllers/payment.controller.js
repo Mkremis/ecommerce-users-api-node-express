@@ -7,9 +7,11 @@ export const createOrder = async (req, res)=>{
   for (const key in order) {
    let obj = {};
    obj.title = order[key]["prodName"];
-   obj.quantity = parseInt(order[key]["productQ"]);
+  //  obj.quantity = parseInt(order[key]["productQ"]);
+  obj.quantity = 1;
    obj.currency_id = 'USD';
-   obj.unit_price = parseFloat(order[key]["prodPrice"]);
+  //  obj.unit_price = parseFloat(order[key]["prodPrice"]);
+  obj.unit_price = 100;
    cartItems.push(obj)      
     };
   
