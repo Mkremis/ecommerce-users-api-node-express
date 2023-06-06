@@ -13,19 +13,19 @@ export const createOrder = async (req, res)=>{
    items.push(obj)      
     }
   
-    mercadopago.configure({
-        access_token: MERCADOPAGO_API_KEY
-    });
-    const result = await mercadopago.preferences.create({
-        items,
-          back_urls:{
-            success: "https://ecommerce-users-api-production.up.railway.app/api/success",
-            pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
-            failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
-          },
-          notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
-    })
-    res.json(result.body)
+    // mercadopago.configure({
+    //     access_token: MERCADOPAGO_API_KEY
+    // });
+    // const result = await mercadopago.preferences.create({
+    //     items,
+    //       back_urls:{
+    //         success: "https://ecommerce-users-api-production.up.railway.app/api/success",
+    //         pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
+    //         failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
+    //       },
+    //       notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
+    // })
+    res.json({items})
 };
 
 

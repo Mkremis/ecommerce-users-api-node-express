@@ -16,8 +16,7 @@ const checkSession = (req, res, next) => {
     }
   } catch (e) {
     res.status(400);
-    console.log(e);
-    res.json({message: 'SESSION_VALIDA'});
+    res.json({message: e});
   }
 };
 export { checkSession };
