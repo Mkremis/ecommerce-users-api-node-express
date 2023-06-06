@@ -8,32 +8,31 @@ export const createOrder = async (req, res)=>{
    let obj = {};
    obj.title = order[key]["prodName"];
    let q = order[key]["productQ"];
-   obj.quantity = parseInt(q);
-   obj.quantity_type = typeof obj.quantity;
+   obj.quantity=parseInt(q);
    obj.currency_id = 'USD';
    let price = order[key]["prodPrice"]
-   obj.unit_price = parseFloat(price);
-   obj.price_type = typeof obj.unit_price;
+   obj.unit_price=parseFloat(price);
    cartItems.push(obj)      
     };
-  res.json({items: cartItems,})
-    // mercadopago.configure({
-    //     access_token: MERCADOPAGO_API_KEY
-    // });
-    // try {
-    //   const result = await mercadopago.preferences.create({
-    //     items: cartItems,
-    //       back_urls:{
-    //         success: "https://ecommerce-users-api-production.up.railway.app/api/success",
-    //         pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
-    //         failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
-    //       },
-    //       notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
-    // })
-    // res.json(result.body)
-    // } catch (error) {
-    //   res.status(500).json({message: error})
-    // }
+  
+    mercadopago.configure({
+        access_token: MERCADOPAGO_API_KEY
+    });
+    try {
+      const result = await mercadopago.preferences.create({
+        items: cartItems,
+          back_urls:{
+            success: "https://ecommerce-users-api-production.up.railway.app/api/success",
+            pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
+            failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
+          },
+          notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
+    })
+    res.json(result.body)
+    } catch (error) {
+      res.status(500).json({message: error})
+    }
+
 };
 
 
