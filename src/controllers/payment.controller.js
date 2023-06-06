@@ -5,15 +5,15 @@ export const createOrder = async (req, res)=>{
   const order = req.body;
   let cartItems = [];
   for (const key in order) {
-   let obj = {};
-   obj.title = order[key]["prodName"];
-   let q = order[key]["productQ"];
-   obj.quantity=parseInt(q);
-   obj.currency_id = 'USD';
-   let price = order[key]["prodPrice"]
-   obj.unit_price=parseFloat(price);
-   cartItems.push(obj)      
-    };
+    let obj = {};
+    obj.title = order[key]["prodName"];
+    let q = order[key]["productQ"];
+    obj.quantity = parseInt(q); // Asegurar que sea un entero válido
+    obj.currency_id = 'USD';
+    let price = order[key]["prodPrice"];
+    obj.unit_price = parseFloat(price);
+    cartItems.push(obj);
+  }
   
     mercadopago.configure({
         access_token: MERCADOPAGO_API_KEY
