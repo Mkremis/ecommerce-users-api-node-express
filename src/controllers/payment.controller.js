@@ -13,19 +13,26 @@ export const createOrder = async (req, res)=>{
    cartItems.push(obj)      
     };
   
-    // mercadopago.configure({
-    //     access_token: MERCADOPAGO_API_KEY
-    // });
-    // const result = await mercadopago.preferences.create({
-    //     items: cartItems,
-    //       back_urls:{
-    //         success: "https://ecommerce-users-api-production.up.railway.app/api/success",
-    //         pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
-    //         failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
-    //       },
-    //       notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
-    // })
-    res.json({items: cartItems})
+    mercadopago.configure({
+        access_token: MERCADOPAGO_API_KEY
+    });
+    const result = await mercadopago.preferences.create({
+        items:[
+          {
+            title:"auto",
+            quantity:1,
+            currency_id:'USD',
+            unit_price: 100,
+          },
+        ],
+          back_urls:{
+            success: "https://ecommerce-users-api-production.up.railway.app/api/success",
+            pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
+            failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
+          },
+          notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
+    })
+    res.json(result.body)
 };
 
 
