@@ -16,11 +16,11 @@ export const createOrder = async (req, res)=>{
             }
           ],
           back_urls:{
-            success: "https://mkremis-reimagined-lamp-www477w94rfgjrg-3000.preview.app.github.dev/api/success",
-            pending: "https://mkremis-reimagined-lamp-www477w94rfgjrg-3000.preview.app.github.dev/api/pending",
-            failure: "https://mkremis-reimagined-lamp-www477w94rfgjrg-3000.preview.app.github.dev/api/failure"
+            success: "https://ecommerce-users-api-production.up.railway.app/api/success",
+            pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
+            failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
           },
-          notification_url: "https://mkremis-reimagined-lamp-www477w94rfgjrg-3000.preview.app.github.dev/api/webhook"
+          notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
     })
     res.send(result.body)
 };
