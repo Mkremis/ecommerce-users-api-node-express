@@ -1,10 +1,9 @@
 import mercadopago from "mercadopago"
-
-
+import {MERCADOPAGO_API_KEY} from '../config.js'
 
 export const createOrder = async (req, res)=>{
     mercadopago.configure({
-        access_token: 'TEST-5530375809049094-060611-aea998a2225643c110e407efb3cd8a46-1392033041'
+        access_token: MERCADOPAGO_API_KEY
     });
     const result = await mercadopago.preferences.create({
         items: [
@@ -28,7 +27,15 @@ export const failure = (req, res)=>{res.send('Failure!')}
 export const pending = (req, res)=>{res.send('Pending..')}
 export const success = (req, res)=>{res.send('Success')}
 
-export const receiveWebhook = (req, res)=>{
-    console.log(req.query)
-    res.send('webhook')
+export const receiveWebhook = async (req, res)=>{
+  const payment = req.query;
+ try {
+  if(payment.type === 'payment'){
+    const data = await mercadopago.payment.findById(payment['data.id']);
+    res.statu(204).json({data})
+  }
+ } catch (error) {
+  return res.status(500).json({error: error.message})
+  
+ }
 };
