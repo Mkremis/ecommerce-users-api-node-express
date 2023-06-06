@@ -7,9 +7,9 @@ export const createOrder = async (req, res)=>{
   for (const key in order) {
    let obj = {};
    obj.title = order[key]["prodName"];
-   obj.quantity = order[key]["productQ"];
-   obj.currency_id = 'ARS';
-   obj.unit_price = order[key]["prodPrice"];
+   obj.quantity = parseInt(order[key]["productQ"]);
+   obj.currency_id = 'USD';
+   obj.unit_price = parseFloat(order[key]["prodPrice"]);
    cartItems.push(obj)      
     };
   
@@ -17,14 +17,7 @@ export const createOrder = async (req, res)=>{
         access_token: MERCADOPAGO_API_KEY
     });
     const result = await mercadopago.preferences.create({
-        items:[
-          {
-            title:"auto",
-            quantity:1,
-            currency_id:'USD',
-            unit_price: 100,
-          },
-        ],
+        items: cartItems,
           back_urls:{
             success: "https://ecommerce-users-api-production.up.railway.app/api/success",
             pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
