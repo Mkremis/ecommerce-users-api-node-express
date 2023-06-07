@@ -1,9 +1,9 @@
 import mercadopago from "mercadopago"
 import {MERCADOPAGO_API_KEY} from '../config.js'
+import { cartUpdate } from "../services/cart.js";
 
 export const createOrder = async (req, res)=>{
-  const userName = req.user.login_username;
-  console.log('userName',userName)
+  const username = req.user.login_username;
   const order = req.body;
   let cartItems = [];
   for (const key in order) {
@@ -24,7 +24,7 @@ export const createOrder = async (req, res)=>{
       const result = await mercadopago.preferences.create({
         items: cartItems,
           back_urls:{
-            success: `https://ecommerce-users-api-production.up.railway.app/api/success/${userName}`,
+            success: `https://ecommerce-users-api-production.up.railway.app/api/success/${username}`,
             pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
             failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
           },
@@ -41,8 +41,9 @@ export const createOrder = async (req, res)=>{
 
 
 export const success = (req, res)=>{
-  console.log('success', req.params.user);
-  res.json({message: req.params})
+  const {username} = req.params;
+  const cart = JSON.stringify({});
+  cartUpdate(username,cart);
   }
 export const failure = (req, res)=>{res.send('Failure!')}
 export const pending = (req, res)=>{res.send('Pending..')}

@@ -1,4 +1,5 @@
 import { pool } from "../db.js";
+import { cartUpdate } from "../services/cart.js";
 
 //GET CART
 export const getCart = async (req, res) => {
@@ -22,16 +23,5 @@ export const updateCart = async (req, res) => {
   // obtiene el cart del usuario desde el cuerpo de la solicitud
   const cart = JSON.stringify(req.body);
   // crea un objeto con el nombre y el cart del usuario
-
-  try {
-    const [result] = await pool.query(
-      "UPDATE users SET user_cart = ? WHERE login_username = ?",
-      [cart, username]
-    );
-    if (result.affectedRows === 0)
-      return res.status(404).json({ message: "user not found" });
-    res.json({ message: result.info });
-  } catch (error) {
-    return res.status(500).json({ message: error });
-  }
+  cartUpdate({username, cart});
 };
