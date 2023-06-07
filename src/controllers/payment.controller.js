@@ -23,7 +23,7 @@ export const createOrder = async (req, res)=>{
       const result = await mercadopago.preferences.create({
         items: cartItems,
           back_urls:{
-            success: "https://mkremis.github.io/ecommerce-react/success-payment",
+            success: "https://mkremis.github.io/ecommerce-react/#/success-payment",
             pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
             failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
           },
