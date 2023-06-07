@@ -19,8 +19,6 @@ export const createOrder = async (req, res)=>{
     mercadopago.configure({
         access_token: MERCADOPAGO_API_KEY
     });
-
-    mercadopago.customers.create(customer_data);
     try {
       const result = await mercadopago.preferences.create({
         items: cartItems,
