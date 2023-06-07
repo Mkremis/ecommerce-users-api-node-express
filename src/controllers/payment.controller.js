@@ -28,9 +28,7 @@ export const createOrder = async (req, res)=>{
             failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
           },
           notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook",
-          payer:{
-            identification:'elvyspresley'
-          }
+          
     })
     res.json(result.body)
     } catch (error) {
