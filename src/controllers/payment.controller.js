@@ -2,6 +2,7 @@ import mercadopago from "mercadopago"
 import {MERCADOPAGO_API_KEY} from '../config.js'
 
 export const createOrder = async (req, res)=>{
+  console.log("USER",req.user)
   const order = req.body;
   let cartItems = [];
   for (const key in order) {
@@ -14,10 +15,6 @@ export const createOrder = async (req, res)=>{
       cartItems.push(obj);
     }
   }
-
-  const customer_data = { first_name:'elvys' };
-
-
 
     mercadopago.configure({
         access_token: MERCADOPAGO_API_KEY
