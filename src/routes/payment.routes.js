@@ -6,7 +6,7 @@ import { createOrder, failure, pending, receiveWebhook, success } from "../contr
   router.post('/create-order', checkSession, createOrder)
   router.get('/pending', pending)
   router.get('/failure', failure)
-  router.get('/success', success)
+  router.get('/success/:user', success)
   router.post('/webhook', receiveWebhook)
 
   export default router;

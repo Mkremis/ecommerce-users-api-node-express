@@ -22,7 +22,7 @@ export const createOrder = async (req, res)=>{
       const result = await mercadopago.preferences.create({
         items: cartItems,
           back_urls:{
-            success: "https://ecommerce-users-api-production.up.railway.app/api/success",
+            success: `https://ecommerce-users-api-production.up.railway.app/api/success/${req.user}`,
             pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
             failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
           },
@@ -39,7 +39,7 @@ export const createOrder = async (req, res)=>{
 
 
 export const success = (req, res)=>{
-  console.log('success', req.user);
+  console.log('success', req.params.user);
   }
 export const failure = (req, res)=>{res.send('Failure!')}
 export const pending = (req, res)=>{res.send('Pending..')}
