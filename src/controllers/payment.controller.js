@@ -42,7 +42,7 @@ export const createOrder = async (req, res)=>{
 
 export const success = async (req, res)=>{
   const {username} = req.params;
-  const cart = JSON.stringify({});
+  const cart = JSON.stringify('{}');
   const response = await cartUpdate(username,cart);
 //   if (response.success)
 //   return res.status(200).json(response.success);
