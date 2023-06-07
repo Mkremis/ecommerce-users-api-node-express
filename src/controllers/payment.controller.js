@@ -14,11 +14,16 @@ export const createOrder = async (req, res)=>{
       cartItems.push(obj);
     }
   }
-  console.log(cartItems)
+
+  const customer_data = { first_name:'elvys' };
+
+
 
     mercadopago.configure({
         access_token: MERCADOPAGO_API_KEY
     });
+
+    mercadopago.customers.create(customer_data);
     try {
       const result = await mercadopago.preferences.create({
         items: cartItems,
