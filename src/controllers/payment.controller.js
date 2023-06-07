@@ -27,7 +27,10 @@ export const createOrder = async (req, res)=>{
             pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
             failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
           },
-          notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook"
+          notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook",
+          payer:{
+            identification:'elvyspresley'
+          }
     })
     res.json(result.body)
     } catch (error) {
@@ -41,7 +44,6 @@ export const createOrder = async (req, res)=>{
 
 export const failure = (req, res)=>{res.send('Failure!')}
 export const pending = (req, res)=>{res.send('Pending..')}
-export const success = (req, res)=>{res.send('Success')}
 
 export const receiveWebhook = async (req, res)=>{
   const payment = req.query;
