@@ -2,7 +2,6 @@ import mercadopago from "mercadopago"
 import {MERCADOPAGO_API_KEY} from '../config.js'
 
 export const createOrder = async (req, res)=>{
-  console.log("USER",req.user)
   const order = req.body;
   let cartItems = [];
   for (const key in order) {
@@ -23,7 +22,7 @@ export const createOrder = async (req, res)=>{
       const result = await mercadopago.preferences.create({
         items: cartItems,
           back_urls:{
-            success: "https://mkremis.github.io/ecommerce-react/#/success-payment",
+            success: "https://ecommerce-users-api-production.up.railway.app/api/success",
             pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
             failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
           },
@@ -39,7 +38,9 @@ export const createOrder = async (req, res)=>{
 
 
 
-
+export const success = (req, res)=>{
+  console.log('success', req.user);
+  }
 export const failure = (req, res)=>{res.send('Failure!')}
 export const pending = (req, res)=>{res.send('Pending..')}
 
@@ -48,7 +49,7 @@ export const receiveWebhook = async (req, res)=>{
  try {
   if(payment.type === 'payment'){
     const data = await mercadopago.payment.findById(payment['data.id']);
-    console.log('webhook',data)
+    // console.log('webhook',data)
     res.status(204).json({data})
   }
  } catch (error) {
