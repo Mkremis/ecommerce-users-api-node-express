@@ -40,10 +40,13 @@ export const createOrder = async (req, res)=>{
 
 
 
-export const success = (req, res)=>{
+export const success = async (req, res)=>{
   const {username} = req.params;
   const cart = JSON.stringify({});
-  cartUpdate(username,cart);
+  const response = cartUpdate(username,cart);
+  if (response.success)
+  return res.status(200).json(response.success);
+return res.status(500).json(response.fail);
   }
 export const failure = (req, res)=>{res.send('Failure!')}
 export const pending = (req, res)=>{res.send('Pending..')}
