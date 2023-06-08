@@ -24,11 +24,11 @@ export const createOrder = async (req, res)=>{
       const result = await mercadopago.preferences.create({
         items: cartItems,
           back_urls:{
-            success: `https://ecommerce-users-api-production.up.railway.app/api/success/${username}`,
+            success: `https://ecommerce-users-api-production.up.railway.app/api/success`,
             pending: "https://ecommerce-users-api-production.up.railway.app/api/pending",
             failure: "https://ecommerce-users-api-production.up.railway.app/api/failure"
           },
-          notification_url: "https://ecommerce-users-api-production.up.railway.app/api/webhook",
+          notification_url: `https://ecommerce-users-api-production.up.railway.app/api/webhook/${username}`,
           
     })
     res.json(result.body)
@@ -40,23 +40,25 @@ export const createOrder = async (req, res)=>{
 
 
 
-export const success = async (req, res)=>{
-  const {username} = req.params;
-  const cart = JSON.stringify({});
-  const response = await cartUpdate({username, cart});
-  if (response.success)
-  return res.status(200).json(response.success);
-return res.status(500).json(response.fail);
-  }
-export const failure = (req, res)=>{res.send('Failure!')}
-export const pending = (req, res)=>{res.send('Pending..')}
+
 
 export const receiveWebhook = async (req, res)=>{
   const payment = req.query;
  try {
   if(payment.type === 'payment'){
     const data = await mercadopago.payment.findById(payment['data.id']);
-    // console.log('webhook',data)
+    console.log('webhook',data)
+    const {username} = req.params;
+    const cart = JSON.stringify({});
+    const response = await cartUpdate({username, cart});
+    if (response.success)
+    return res.status(200).json(response.success);
+  return res.status(500).json(response.fail);
+    }
+
+  export const success = async (req, res)=>{res.send('success!')}
+  export const failure = (req, res)=>{res.send('Failure!')}
+  export const pending = (req, res)=>{res.send('Pending..')}
     res.status(204).json({data})
   }
  } catch (error) {
