@@ -44,9 +44,9 @@ export const success = async (req, res)=>{
   const {username} = req.params;
   const cart = JSON.stringify({});
   const response = await cartUpdate({username, cart});
-//   if (response.success)
-//   return res.status(200).json(response.success);
-// return res.status(500).json(response.fail);
+  if (response.success)
+  return res.status(200).json(response.success);
+return res.status(500).json(response.fail);
   }
 export const failure = (req, res)=>{res.send('Failure!')}
 export const pending = (req, res)=>{res.send('Pending..')}

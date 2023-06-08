@@ -25,7 +25,7 @@ export const updateCart = async (req, res) => {
   // crea un objeto con el nombre y el cart del usuario
   const result = await cartUpdate({username, cart});
   res.json({result})
-//   if (response.success)
-//   return res.status(200).json(response.success);
-// return res.status(500).json(response.fail);
+  if (response.success)
+  return res.status(200).json(response.success);
+return res.status(500).json(response.fail);
 };
