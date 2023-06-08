@@ -23,7 +23,7 @@ export const updateCart = async (req, res) => {
   // obtiene el cart del usuario desde el cuerpo de la solicitud
   const cart = JSON.stringify(req.body);
   // crea un objeto con el nombre y el cart del usuario
-  const result = await cartUpdate({username, cart});
+  const response = await cartUpdate({username, cart});
   res.json({result})
   if (response.success)
   return res.status(200).json(response.success);
