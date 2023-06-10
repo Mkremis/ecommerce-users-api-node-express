@@ -9,8 +9,6 @@ export const getCart = async (req, res) => {
       `SELECT user_cart FROM users WHERE username = ?`,
       [username]
     );
-    // if (rows.length = 0)
-    //   return res.status(404).json({ message: "user not found" });
     res.json({ message: rows[0] });
   } catch (error) {
     return res.status(500).json({ message: error });
