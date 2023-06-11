@@ -5,7 +5,6 @@ export const registerSale = (items, username, date, feeType) => {
   items.forEach(async (item) => {
     const [rows] = await pool.query(
       `INSERT INTO sales (
-          id, 
           login_username, 
           transactionType, 
           transactionDate, 
@@ -16,7 +15,6 @@ export const registerSale = (items, username, date, feeType) => {
           prodPrice) 
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        userData.login_password,
         username,
         feeType,
         date,
