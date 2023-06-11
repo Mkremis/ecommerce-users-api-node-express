@@ -60,16 +60,15 @@ export const receiveWebhook = async (req, res) => {
       // );
       const cart = null;
       const response = await cartUpdate({ username, cart });
-
+      registerSale(
+        data.body.additional_info.items,
+        username,
+        data.body.date_approved,
+        data.body.fee_details.fee[0].type
+      );
       if (response.success) {
         // res.status(204).json({ data });
         // console.log("response cartUpdate", response);
-        registerSale(
-          data.body.additional_info.items,
-          username,
-          data.body.date_approved,
-          data.body.fee_details.fee[0].type
-        );
       }
     }
   } catch (error) {
