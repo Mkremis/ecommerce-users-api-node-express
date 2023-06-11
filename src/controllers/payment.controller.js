@@ -49,8 +49,8 @@ export const receiveWebhook = async (req, res) => {
   res.status(200);
 
   if (payment.type === "payment") {
-    console.log(data.body);
     const data = await mercadopago.payment.findById(payment["data.id"]);
+    console.log(data.body);
     await registerSale(
       data.body.additional_info.items,
       username,
