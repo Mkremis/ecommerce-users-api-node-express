@@ -50,28 +50,15 @@ export const receiveWebhook = async (req, res) => {
   if (payment.type === "payment") {
     const data = await mercadopago.payment.findById(payment["data.id"]);
     if (data) {
-      console.log(
-        "webhook!!!!!!!!!!!!!!!",
-        // data.body,
-        data.body.response,
-        "items",
+      await registerSale(
         data.body.additional_info.items,
-        "date",
+        username,
         data.body.date_approved,
-        "fee",
-        data.body.fee_details[0],
-        "webhook username",
-        username
+        "mercadopago"
       );
+      await cartUpdate({ username, cart: null });
     }
   }
-  //   await registerSale(
-  //   data.body.additional_info.items,
-  //   username,
-  //   data.body.date_approved,
-  //   "mercadopago"
-  // );
-  // await cartUpdate({ username, cart: null });
 };
 
 export const success = async (req, res) => {
