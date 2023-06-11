@@ -1,6 +1,7 @@
 import mercadopago from "mercadopago";
 import { MERCADOPAGO_API_KEY } from "../config.js";
 import { cartUpdate } from "../services/cart.js";
+import { registerSale } from "../services/sales.js";
 
 export const createOrder = async (req, res) => {
   const username = req.user.login_username;
@@ -47,21 +48,28 @@ export const receiveWebhook = async (req, res) => {
     if (payment.type === "payment") {
       const data = await mercadopago.payment.findById(payment["data.id"]);
       const { username } = req.params;
-      console.log(
-        "items",
-        data.body.additional_info.items,
-        "date",
-        data.body.date_approved,
-        "fee",
-        data.body.fee_details,
-        "webhook username",
-        username
-      );
+      // console.log(
+      //   "items",
+      //   data.body.additional_info.items,
+      //   "date",
+      //   data.body.date_approved,
+      //   "fee",
+      //   data.body.fee_details.fee[0].type,
+      //   "webhook username",
+      //   username
+      // );
       const cart = null;
       const response = await cartUpdate({ username, cart });
+
       if (response.success) {
         // res.status(204).json({ data });
-        console.log("response cartUpdate", response);
+        // console.log("response cartUpdate", response);
+        registerSale(
+          data.body.additional_info.items,
+          username,
+          data.body.date_approved,
+          data.body.fee_details.fee[0].type
+        );
       }
     }
   } catch (error) {
