@@ -65,16 +65,17 @@ export const receiveWebhook = async (req, res) => {
         data.body.date_approved,
         data.body.fee_details.fee[0].type
       );
-      const cart = null;
-      const response = await cartUpdate({ username, cart });
+      // const cart = null;
+      // const response = await cartUpdate({ username, cart });
 
-      if (response.success) {
-        // res.status(204).json({ data });
-        // console.log("response cartUpdate", response);
-      }
+      // if (response.success) {
+      //   // res.status(204).json({ data });
+      //   // console.log("response cartUpdate", response);
+      // }
     }
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    console.log(error);
+    // return res.status(500).json({ error: error.message });
   }
 };
 
