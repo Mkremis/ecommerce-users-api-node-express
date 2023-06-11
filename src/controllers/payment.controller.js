@@ -44,32 +44,31 @@ export const createOrder = async (req, res) => {
 
 export const receiveWebhook = async (req, res) => {
   const payment = req.query;
-  try {
-    if (payment.type === "payment") {
-      const data = await mercadopago.payment.findById(payment["data.id"]);
-      const { username } = req.params;
-      console.log(
-        "items",
-        data.body.additional_info.items,
-        "date",
-        data.body.date_approved,
-        "fee",
-        data.body.fee_details,
-        "webhook username",
-        username
-      );
+  const { username } = req.params;
 
-      await registerSale(
-        data.body.additional_info.items,
-        username,
-        data.body.date_approved,
-        "mercadopago"
-      );
-      await cartUpdate({ username, cart: null });
-    }
-  } catch (error) {
-    console.log(error);
+  if (payment.type === "payment") {
+    const data = await mercadopago.payment.findById(payment["data.id"]);
   }
+  if (data) {
+    console.log(
+      "webhook!!!!!!!!!!!!!!!",
+      "items",
+      data.body.additional_info.items,
+      "date",
+      data.body.date_approved,
+      "fee",
+      data.body.fee_details.type,
+      "webhook username",
+      username
+    );
+  }
+  //   await registerSale(
+  //   data.body.additional_info.items,
+  //   username,
+  //   data.body.date_approved,
+  //   "mercadopago"
+  // );
+  // await cartUpdate({ username, cart: null });
 };
 
 export const success = async (req, res) => {
