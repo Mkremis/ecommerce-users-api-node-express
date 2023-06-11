@@ -46,16 +46,15 @@ export const receiveWebhook = async (req, res) => {
   try {
     if (payment.type === "payment") {
       const data = await mercadopago.payment.findById(payment["data.id"]);
-
       const { username } = req.params;
-
+      console.log("payment", payment);
+      console.log("webhook", data.body.response.items);
+      console.log("webhook username", username);
       const cart = null;
       const response = await cartUpdate({ username, cart });
       if (response.success) {
         // res.status(204).json({ data });
-        console.log("payment", payment);
-        console.log("webhook", data.body.response.items);
-        console.log("webhook username", username);
+        console.log("response cartUpdate", response);
       }
     }
   } catch (error) {
