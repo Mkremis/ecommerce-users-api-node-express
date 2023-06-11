@@ -49,7 +49,7 @@ export const receiveWebhook = async (req, res) => {
       const { username } = req.params;
       console.log(
         "items",
-        data.body.items,
+        data.body.additional_info.items,
         "date",
         data.body.date_approved,
         "fee",
