@@ -49,8 +49,8 @@ export const receiveWebhook = async (req, res) => {
 
   if (payment.type === "payment") {
     const data = await mercadopago.payment.findById(payment["data.id"]);
-    console.log(data);
-    if (data.status_detail === "accredited") {
+    console.log(data.body.status);
+    if (data.body.status_detail === "accredited") {
       console.log("Acreditado!!!!!!!!!!!!!!!");
       await registerSale(
         data.body.additional_info.items,
