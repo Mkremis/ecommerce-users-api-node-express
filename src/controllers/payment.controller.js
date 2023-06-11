@@ -9,6 +9,9 @@ export const createOrder = async (req, res) => {
   for (const key in order) {
     let obj = {};
     if (parseInt(order[key]["productQ"]) > 0) {
+      obj.id = key;
+      obj.category_id = order[key]["gender"];
+      obj.picture_url = order[key]["prodImage"];
       obj.title = order[key]["prodName"];
       obj.quantity = parseInt(order[key]["productQ"]);
       obj.currency_id = "USD";
@@ -43,11 +46,17 @@ export const receiveWebhook = async (req, res) => {
   try {
     if (payment.type === "payment") {
       const data = await mercadopago.payment.findById(payment["data.id"]);
-      console.log("webhook", data);
+
       const { username } = req.params;
+
       const cart = null;
       const response = await cartUpdate({ username, cart });
-      if (response.success) res.status(204).json({ data });
+      if (response.success) {
+        res.status(204).json({ data });
+        console.log("payment", payment);
+        console.log("webhook", data.body.response.items);
+        console.log("webhook username", username);
+      }
       return res.status(500).json(response.fail);
     }
   } catch (error) {
