@@ -52,12 +52,11 @@ export const receiveWebhook = async (req, res) => {
       const cart = null;
       const response = await cartUpdate({ username, cart });
       if (response.success) {
-        res.status(204).json({ data });
+        // res.status(204).json({ data });
         console.log("payment", payment);
         console.log("webhook", data.body.response.items);
         console.log("webhook username", username);
       }
-      return res.status(500).json(response.fail);
     }
   } catch (error) {
     return res.status(500).json({ error: error.message });
