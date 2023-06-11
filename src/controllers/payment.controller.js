@@ -58,14 +58,16 @@ export const receiveWebhook = async (req, res) => {
       //   "webhook username",
       //   username
       // );
-      const cart = null;
-      const response = await cartUpdate({ username, cart });
+
       registerSale(
         data.body.additional_info.items,
         username,
         data.body.date_approved,
         data.body.fee_details.fee[0].type
       );
+      const cart = null;
+      const response = await cartUpdate({ username, cart });
+
       if (response.success) {
         // res.status(204).json({ data });
         // console.log("response cartUpdate", response);
