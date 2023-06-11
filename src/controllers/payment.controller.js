@@ -24,22 +24,19 @@ export const createOrder = async (req, res) => {
   mercadopago.configure({
     access_token: MERCADOPAGO_API_KEY,
   });
-  try {
-    const result = await mercadopago.preferences.create({
-      items: cartItems,
-      back_urls: {
-        success: `https://mkremis.github.io/ecommerce-react/#/success-payment`,
-        pending:
-          "https://ecommerce-users-api-production.up.railway.app/api/pending",
-        failure:
-          "https://ecommerce-users-api-production.up.railway.app/api/failure",
-      },
-      notification_url: `https://ecommerce-users-api-production.up.railway.app/api/webhook/${username}`,
-    });
-    res.json(result.body);
-  } catch (error) {
-    res.status(500).json({ message: error });
-  }
+
+  console.log("createOrder", cartItems);
+  await mercadopago.preferences.create({
+    items: cartItems,
+    back_urls: {
+      success: `https://mkremis.github.io/ecommerce-react/#/success-payment`,
+      pending:
+        "https://ecommerce-users-api-production.up.railway.app/api/pending",
+      failure:
+        "https://ecommerce-users-api-production.up.railway.app/api/failure",
+    },
+    notification_url: `https://ecommerce-users-api-production.up.railway.app/api/webhook/${username}`,
+  });
 };
 
 export const receiveWebhook = async (req, res) => {
@@ -56,7 +53,7 @@ export const receiveWebhook = async (req, res) => {
         "date",
         data.body.date_approved,
         "fee",
-        data.body.fee_details.type,
+        data.body.fee_details,
         "webhook username",
         username
       );
