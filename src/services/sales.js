@@ -5,24 +5,24 @@ export const registerSale = (items, username, date, feeType) => {
   items.forEach(async (item) => {
     const [rows] = await pool.query(
       `INSERT INTO sales (
-          login_username, 
-          transactionType, 
-          transactionDate, 
-          gender, 
-          prodName, 
-          productQ, 
-          prodImage, 
+          login_username,
+          transactionType,
+          transactionDate,
+          gender,
+          prodName,
+          productQ,
+          prodImage,
           prodPrice) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         username,
         feeType,
-        date,
+        new Date(date),
         item.category_id,
         item.title,
-        item.quantity,
+        parseInt(item.quantity),
         item.picture_url,
-        item.unit_price,
+        parseFloat(item.unit_price),
       ]
     );
   });
