@@ -48,34 +48,27 @@ export const receiveWebhook = async (req, res) => {
     if (payment.type === "payment") {
       const data = await mercadopago.payment.findById(payment["data.id"]);
       const { username } = req.params;
-      // console.log(
-      //   "items",
-      //   data.body.additional_info.items,
-      //   "date",
-      //   data.body.date_approved,
-      //   "fee",
-      //   data.body.fee_details.fee[0].type,
-      //   "webhook username",
-      //   username
-      // );
+      console.log(
+        "items",
+        data.body.additional_info.items,
+        "date",
+        data.body.date_approved,
+        "fee",
+        data.body.fee_details,
+        "webhook username",
+        username
+      );
 
-      registerSale(
+      await registerSale(
         data.body.additional_info.items,
         username,
         data.body.date_approved,
         "mercadopago"
       );
-      // const cart = null;
-      // const response = await cartUpdate({ username, cart });
-
-      // if (response.success) {
-      //   // res.status(204).json({ data });
-      //   // console.log("response cartUpdate", response);
-      // }
+      await cartUpdate({ username, cart: null });
     }
   } catch (error) {
     console.log(error);
-    // return res.status(500).json({ error: error.message });
   }
 };
 
