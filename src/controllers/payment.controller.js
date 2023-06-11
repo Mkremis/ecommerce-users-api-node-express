@@ -37,7 +37,7 @@ export const createOrder = async (req, res) => {
       },
       notification_url: `https://ecommerce-users-api-production.up.railway.app/api/webhook/${username}`,
     });
-    if (result) return res.json(result.body);
+    if (result) return res.status(200).json(result.body);
   } catch (error) {
     res.status(500).json({ message: error });
   }
@@ -49,9 +49,7 @@ export const receiveWebhook = async (req, res) => {
 
   if (payment.type === "payment") {
     const data = await mercadopago.payment.findById(payment["data.id"]);
-    console.log(data.body.status);
     if (data.body.status_detail === "accredited") {
-      console.log("Acreditado!!!!!!!!!!!!!!!");
       await registerSale(
         data.body.additional_info.items,
         username,
@@ -59,6 +57,7 @@ export const receiveWebhook = async (req, res) => {
         "mercadopago"
       );
       await cartUpdate({ username, cart: null });
+      return res.status(200);
     }
   }
 };
