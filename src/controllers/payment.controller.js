@@ -11,7 +11,7 @@ export const createOrder = async (req, res) => {
     if (parseInt(order[key]["productQ"]) > 0) {
       obj.id = key;
       obj.category_id = order[key]["gender"];
-      obj.picture_url = order[key]["prodImage"];
+      obj.picture_url = `https://${order[key]["prodImage"]}`;
       obj.title = order[key]["prodName"];
       obj.quantity = parseInt(order[key]["productQ"]);
       obj.currency_id = "USD";
