@@ -52,13 +52,14 @@ export const receiveWebhook = async (req, res) => {
     if (data) {
       console.log(
         "webhook!!!!!!!!!!!!!!!",
-        data,
+        // data.body,
+        data.body.response,
         "items",
         data.body.additional_info.items,
         "date",
         data.body.date_approved,
         "fee",
-        data.body.fee_details.fee,
+        data.body.fee_details[0],
         "webhook username",
         username
       );
