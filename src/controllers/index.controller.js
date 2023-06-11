@@ -10,7 +10,8 @@ export const tables = async (req, res) => {
   res.json(result[0]);
 };
 
-export const users = async (req, res) => {
-  const [result] = await pool.query("DESCRIBE users");
+export const db = async (req, res) => {
+  const { db } = req.params;
+  const [result] = await pool.query(`DESCRIBE ${db}`);
   res.json(result);
 };
