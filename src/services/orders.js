@@ -5,6 +5,6 @@ export const getOrders = async ({ username }) => {
     `SELECT * FROM sales WHERE login_username = ?`,
     username
   );
-  const data = { user: rows[0] };
+  const data = { orders: rows };
   return data;
 };
