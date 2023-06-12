@@ -13,7 +13,7 @@ export const registerSale = async (items, username, date, feeType) => {
         productQ,
         prodImage,
         prodPrice)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)`,
       [
         username,
         feeType,
