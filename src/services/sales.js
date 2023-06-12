@@ -3,8 +3,7 @@ import { pool } from "../db.js";
 export const registerSale = async (items, username, date, feeType) => {
   items.map(async (item) => {
     await pool.query(
-      `INSERT INTO sales (
-          login_username,
+      `UPDATE sales SET(
           transactionType,
           transactionDate,
           gender,
@@ -12,9 +11,8 @@ export const registerSale = async (items, username, date, feeType) => {
           productQ,
           prodImage,
           prodPrice) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          VALUES (?, ?, ?, ?, ?, ?, ?) WHERE login_username = ?`,
       [
-        username,
         feeType,
         new Date(date),
         item.category_id,
@@ -22,7 +20,32 @@ export const registerSale = async (items, username, date, feeType) => {
         parseInt(item.quantity),
         item.picture_url,
         parseFloat(item.unit_price),
+        username,
       ]
     );
   });
+  // items.map(async (item) => {
+  //   await pool.query(
+  //     `INSERT INTO sales (
+  //         login_username,
+  //         transactionType,
+  //         transactionDate,
+  //         gender,
+  //         prodName,
+  //         productQ,
+  //         prodImage,
+  //         prodPrice)
+  //         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+  //     [
+  //       username,
+  //       feeType,
+  //       new Date(date),
+  //       item.category_id,
+  //       item.title,
+  //       parseInt(item.quantity),
+  //       item.picture_url,
+  //       parseFloat(item.unit_price),
+  //     ]
+  //   );
+  // });
 };
