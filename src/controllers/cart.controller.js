@@ -17,12 +17,12 @@ export const getCart = async (req, res) => {
 
 //PUT CART
 export const updateCart = async (req, res) => {
-  // obtiene el nombre del usuario desde el parámetro de consulta
   const { username } = req.params;
-  // obtiene el cart del usuario desde el cuerpo de la solicitud
   const cart = JSON.stringify(req.body);
-  // crea un objeto con el nombre y el cart del usuario
-  const response = await cartUpdate({ username, cart });
-  res.json({ response });
-  return res.status(500).json(response.fail);
+  try {
+    const response = await cartUpdate({ username, cart });
+    res.status(200).json({ response });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
 };
