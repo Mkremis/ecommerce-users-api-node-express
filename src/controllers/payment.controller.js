@@ -44,10 +44,10 @@ export const createOrder = async (req, res) => {
 };
 
 export const receiveWebhook = async (req, res) => {
+  res.status(200);
   const payment = req.query;
   const { username } = req.params;
   if (payment.type === "payment") {
-    res.status(200);
     const data = await mercadopago.payment.findById(payment["data.id"]);
     await registerSale(
       data.body.additional_info.items,
