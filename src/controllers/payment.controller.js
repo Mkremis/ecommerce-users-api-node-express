@@ -44,19 +44,23 @@ export const createOrder = async (req, res) => {
 };
 
 export const receiveWebhook = async (req, res) => {
-  res.status(200);
   const payment = req.query;
   const { username } = req.params;
   if (payment.type === "payment") {
+      res.status(200).send('HTTP STATUS 200 (OK)')
     const data = await mercadopago.payment.findById(payment["data.id"]);
-    await registerSale(
-      data.body.additional_info.items,
-      username,
-      data.body.date_approved,
-      "mercadopago"
-    );
-    await cartUpdate({ username, cart: null });
-  }
+    
+    console.log(data.id)
+    console.log(`https://api.mercadopago.com/v1/payments/${data.id}`)
+    
+  //   await registerSale(
+  //     data.body.additional_info.items,
+  //     username,
+  //     data.body.date_approved,
+  //     "mercadopago"
+  //   );
+  //   await cartUpdate({ username, cart: null });
+  // }
 };
 
 export const success = async (req, res) => {
