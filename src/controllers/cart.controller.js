@@ -5,8 +5,7 @@ export const getCart = async (req, res) => {
   const { username } = req.params;
   try {
     const response = await getUserCart({ username });
-    res.status(200).json({ response });
-    console.log("getCart", response);
+    res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({ error });
   }
