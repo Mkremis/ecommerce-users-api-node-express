@@ -18,6 +18,7 @@ export const getUserCart = async ({ username }) => {
       `SELECT user_cart FROM users WHERE login_username = ?`,
       username
     );
+    console.log(rows, username);
     if (rows.affectedRows) return { success: rows };
   } catch (error) {
     return { fail: error };
