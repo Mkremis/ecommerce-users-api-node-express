@@ -1,13 +1,22 @@
 import { pool } from "../db.js";
-import { getData, loginUser, registerNewUser, updateUserData } from "../services/auth.js";
+import {
+  getData,
+  loginUser,
+  registerNewUser,
+  updateUserData,
+} from "../services/auth.js";
 
 //Dashboard
 export const getUserData = async (req, res) => {
-  const {username} = req.params;
-  const responseData = await getData({username});
-  if (responseData) res.json(responseData)
+  try {
+    const { username } = req.params;
+    const responseData = await getData({ username });
+    if (responseData.success) return res.status(200).json(responseData.success);
+    return res.status(404).json(responseData.error);
+  } catch (error) {
+    console.log(error);
+  }
 };
-
 
 //Login
 export const login = async (req, res) => {
