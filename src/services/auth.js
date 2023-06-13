@@ -4,7 +4,6 @@ import { generateToken } from "../utils/jwtHandle.js";
 
 const registerNewUser = async ({ userData }) => {
   userData.login_password = await encrypt(userData.login_password);
-
   try {
     // inserta el usuario en la tabla users
     const [rows] = await pool.query(
@@ -58,6 +57,7 @@ const getData = async ({ username }) => {
 };
 
 const updateUserData = async ({ userData }) => {
+  userData.login_password = await encrypt(userData.login_password);
   try {
     const query = `
       UPDATE users 
