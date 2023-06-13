@@ -45,15 +45,17 @@ const loginUser = async ({ login_username, login_password, passwordHash }) => {
 };
 
 const getData = async ({ username }) => {
- 
-  const [rows] = await pool.query(
-    `SELECT * FROM users WHERE login_username = ?`,
-    username
-  );
-  const data = { user: rows[0] };
-  return data;
+  try {
+    const [rows] = await pool.query(
+      `SELECT * FROM users WHERE login_username = ?`,
+      username
+    );
+    const data = { user: rows[0] };
+    return { success: data };
+  } catch (error) {
+    return { error };
+  }
 };
-
 
 const updateUserData = async ({ userData }) => {
   try {
@@ -76,7 +78,7 @@ const updateUserData = async ({ userData }) => {
         location_postcode = ?
       WHERE login_username = ?
     `;
-    
+
     const [rows] = await pool.query(query, [
       userData.login_username,
       userData.login_password,
@@ -94,13 +96,11 @@ const updateUserData = async ({ userData }) => {
       userData.location_postcode,
       userData.login_username, // Agregado el valor para el WHERE
     ]);
-    
-      return { success: rows };
-    
+
+    return { success: rows };
   } catch (error) {
     return { fail: error };
   }
 };
-
 
 export { registerNewUser, loginUser, getData, updateUserData };
