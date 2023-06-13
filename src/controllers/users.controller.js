@@ -59,3 +59,17 @@ export const updateUser = async (req, res) => {
   return res.status(500).json(responseUpdate.fail);
 };
 
+// DELETE ONE USER
+export const deleteUser = async (req, res) => {
+  const { username } = req.params;
+  try {
+    const [result] = await pool.query(`DELETE FROM users WHERE username = ?`, [
+      username,
+    ]);
+    if (result.affectedRows <= 0)
+      return res.status(404).json({ message: "user not found" });
+    res.status(204).send(`user ${username} deleted successfully`);
+  } catch (error) {
+    return res.status(500).json({ message: "something goes wrong" });
+  }
+};
