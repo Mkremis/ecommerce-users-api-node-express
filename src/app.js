@@ -7,6 +7,7 @@ import cartRoutes from "./routes/cart.routes.js";
 import indexRoutes from "./routes/index.routes.js";
 import payRoutes from "./routes/payment.routes.js";
 import orderRoutes from "./routes/orders.routes.js";
+import likesRoutes from "./routes/likes.routes.js";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app
   .use("/api", cartRoutes)
   .use("/api", payRoutes)
   .use("/api", orderRoutes)
+  .use("/api", likesRoutes)
   .use((req, res, next) =>
     res.status(404).json({ message: "endpoint not found" })
   );
