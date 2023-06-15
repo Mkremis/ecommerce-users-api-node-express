@@ -1,7 +1,7 @@
 import mercadopago from "mercadopago";
 import { MERCADOPAGO_API_KEY } from "../config.js";
-import { cartUpdate } from "../services/cart.js";
-import { registerSale } from "../services/sales.js";
+import { cartUpdate } from "../services/cart.services.js";
+import { registerSale } from "../services/payment.services.js";
 
 export const createOrder = async (req, res) => {
   const username = req.user.login_username;
@@ -20,11 +20,9 @@ export const createOrder = async (req, res) => {
       cartItems.push(obj);
     }
   }
-
   mercadopago.configure({
     access_token: MERCADOPAGO_API_KEY,
   });
-
   try {
     const result = await mercadopago.preferences.create({
       items: cartItems,

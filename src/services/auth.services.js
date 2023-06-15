@@ -32,15 +32,19 @@ const registerNewUser = async ({ userData }) => {
 };
 
 const loginUser = async ({ login_username, login_password, passwordHash }) => {
-  const isCorrect = await verified(login_password, passwordHash);
-  if (!isCorrect) return "INCORRECT_PASSWORD";
-  const token = generateToken(login_username);
-  const [rows] = await pool.query(
-    `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, user_cart FROM users WHERE login_username = ?`,
-    login_username
-  );
-  const data = { token, user: rows[0] };
-  return data;
+  try {
+    const isCorrect = await verified(login_password, passwordHash);
+    if (!isCorrect) return "INCORRECT_PASSWORD";
+    const token = generateToken(login_username);
+    const [rows] = await pool.query(
+      `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, user_cart FROM users WHERE login_username = ?`,
+      login_username
+    );
+    const data = { token, user: rows[0] };
+    return data;
+  } catch (error) {
+    return { fail: error };
+  }
 };
 
 const getData = async ({ username }) => {
@@ -52,7 +56,7 @@ const getData = async ({ username }) => {
     const data = { user: rows[0] };
     return { success: data };
   } catch (error) {
-    return { error };
+    return { fail: error };
   }
 };
 
