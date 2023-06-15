@@ -1,7 +1,11 @@
-import { getOrders } from "../services/orders.js";
+import { getOrders } from "../services/orders.services.js";
 
 export const getUserOrders = async (req, res) => {
-  const { username } = req.params;
-  const responseData = await getOrders({ username });
-  if (responseData) res.json(responseData);
+  try {
+    const { username } = req.params;
+    const responseData = await getOrders({ username });
+    res.status(200).json(responseData);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };

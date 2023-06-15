@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import path from "path";
+
 import usersRoutes from "./routes/users.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import indexRoutes from "./routes/index.routes.js";
@@ -15,8 +15,8 @@ app
   .use(cors())
   .use(morgan("dev"))
   .use(express.json())
-  // .use(express.static(path.resolve('scr/public')))
-  .get("/", (req, res) => res.send("<h1>Home</h1>"))
+
+  .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
   .use(indexRoutes)
   .use("/api", usersRoutes)
   .use("/api", cartRoutes)

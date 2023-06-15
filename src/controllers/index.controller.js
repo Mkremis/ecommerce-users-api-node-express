@@ -1,17 +1,29 @@
-import { pool } from "../db.js";
+import { describeDB, pong, showTables } from "../services/index.services.js";
 
 export const ping = async (req, res) => {
-  const [result] = await pool.query("SELECT 'pong' AS result");
-  res.json(result[0]);
+  try {
+    const pingResult = await pong();
+    res.status(200).json(pingResult);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };
 
 export const tables = async (req, res) => {
-  const [result] = await pool.query("SHOW TABLES");
-  res.json(result[0]);
+  try {
+    const tables = showTables();
+    res.status(200).json({ tables });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };
 
 export const db = async (req, res) => {
-  const { db } = req.params;
-  const [result] = await pool.query(`DESCRIBE ${db}`);
-  res.json(result);
+  try {
+    const { db } = req.params;
+    const dataBase = await describeDB(db);
+    res.status(200).json({ dataBase });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };
