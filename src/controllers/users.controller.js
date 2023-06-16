@@ -39,9 +39,8 @@ export const login = async (req, res) => {
 
 //register
 export const register = async (req, res) => {
-  if (req.passwordHash) throw new Error({ message: "ALREADY_USER" });
-  // obtiene los datos del usuario desde el cuerpo de la solicitud
   try {
+    if (req.passwordHash) throw new Error({ message: "ALREADY_USER" });
     let userData = req.body;
     const responseRegister = await registerNewUser({ userData });
     if (responseRegister.success)
