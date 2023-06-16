@@ -13,7 +13,7 @@ export const getUserData = async (req, res) => {
     if (responseData.success) return res.status(200).json(responseData.success);
     return res.status(404).json(responseData.fail);
   } catch (error) {
-    res.status(500).json({ error });
+    res.status(500).json(error);
   }
 };
 
