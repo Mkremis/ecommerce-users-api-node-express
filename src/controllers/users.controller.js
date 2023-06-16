@@ -39,21 +39,26 @@ export const login = async (req, res) => {
 
 //register
 export const register = async (req, res) => {
-  if (req.passwordHash)
-    return res.status(404).json({ message: "ALREADY_USER" });
+  if (req.passwordHash) throw res.status(404).json({ message: "ALREADY_USER" });
   // obtiene los datos del usuario desde el cuerpo de la solicitud
-  let userData = req.body;
-  const responseRegister = await registerNewUser({ userData });
-  if (responseRegister.success)
-    return res.status(200).json(responseRegister.success);
-  return res.status(500).json(responseRegister.fail);
+  try {
+    let userData = req.body;
+    const responseRegister = await registerNewUser({ userData });
+    if (responseRegister.success)
+      return res.status(200).json(responseRegister.success);
+  } catch (error) {
+    return res.status(500).json(responseRegister.fail);
+  }
 };
 
 //UPDATE USER
 export const updateUser = async (req, res) => {
-  let userData = req.body;
-  const responseUpdate = await updateUserData({ userData });
-  if (responseUpdate.success)
-    return res.status(200).json(responseUpdate.success);
-  return res.status(500).json(responseUpdate.fail);
+  try {
+    let userData = req.body;
+    const responseUpdate = await updateUserData({ userData });
+    if (responseUpdate.success)
+      return res.status(200).json(responseUpdate.success);
+  } catch (error) {
+    return res.status(500).json(responseUpdate.fail);
+  }
 };
