@@ -39,7 +39,7 @@ export const login = async (req, res) => {
 
 //register
 export const register = async (req, res) => {
-  if (req.passwordHash) throw res.status(404).json({ message: "ALREADY_USER" });
+  if (req.passwordHash) throw new Error({ message: "ALREADY_USER" });
   // obtiene los datos del usuario desde el cuerpo de la solicitud
   try {
     let userData = req.body;
@@ -47,7 +47,7 @@ export const register = async (req, res) => {
     if (responseRegister.success)
       return res.status(200).json(responseRegister.success);
   } catch (error) {
-    return res.status(500).json(responseRegister.fail);
+    return res.status(500).json(error);
   }
 };
 
@@ -59,6 +59,6 @@ export const updateUser = async (req, res) => {
     if (responseUpdate.success)
       return res.status(200).json(responseUpdate.success);
   } catch (error) {
-    return res.status(500).json(responseUpdate.fail);
+    return res.status(500).json(error);
   }
 };
