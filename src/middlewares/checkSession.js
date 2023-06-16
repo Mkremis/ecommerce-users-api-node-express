@@ -5,12 +5,13 @@ const checkSession = (req, res, next) => {
     const jwtByUser = req.headers.authorization || "";
     const jwt = jwtByUser.split(" ").pop(); //['Bearer','11111']
     const isUser = verifyToken(`${jwt}`);
-    if (!isUser) throw new Error({ message: "NO_TIENES_UNA_SESSION_VALIDA" });
-    req.user = isUser;
-    next();
+    if (isUser) {
+      req.user = isUser;
+      next();
+    }
   } catch (error) {
     res.status(400);
-    res.json(error);
+    res.json({ message: "NO_TIENES_UNA_SESSION_VALIDA" });
   }
 };
 export { checkSession };
