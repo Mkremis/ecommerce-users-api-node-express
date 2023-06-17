@@ -2,7 +2,6 @@ import { getUserLikes, likesUpdate } from "../services/likes.services.js";
 
 //GET LIKES
 export const getLikes = async (req, res) => {
-  console.log("holaaaaaaaaaaaaaaaaaaaaaa");
   const { username } = req.params;
   try {
     const response = await getUserLikes({ username });
