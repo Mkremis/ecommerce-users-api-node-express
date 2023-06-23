@@ -8,14 +8,12 @@ import indexRoutes from "./routes/index.routes.js";
 import payRoutes from "./routes/payment.routes.js";
 import orderRoutes from "./routes/orders.routes.js";
 import likesRoutes from "./routes/likes.routes.js";
-import { logEvents } from "./middlewares/logs.js";
 
 const app = express();
 
 app
   .use(cors())
-  // .use(morgan("dev"))
-  .use(logEvents(morgan("dev")))
+  .use(morgan("dev"))
   .use(express.json())
 
   .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
