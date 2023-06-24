@@ -9,6 +9,7 @@ import payRoutes from "./routes/payment.routes.js";
 import orderRoutes from "./routes/orders.routes.js";
 import likesRoutes from "./routes/likes.routes.js";
 import { logger } from "./middlewares/logEvents.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 // Configurar opciones del CORS
@@ -29,7 +30,15 @@ app
   .use("/api", payRoutes)
   .use("/api", orderRoutes)
   .use("/api", likesRoutes)
-  .use((req, res, next) =>
-    res.status(404).json({ message: "endpoint not found" })
-  );
+  .all("*", (req, res) => {
+    res.status(404);
+    if (req.accepts("html")) {
+      res.sendFile(path.join(__dirname, "views", "404.html"));
+    } else if (req.accepts("json")) {
+      res.json({ error: "404 Not Found" });
+    } else {
+      res.type("txt").send("404 Not Found");
+    }
+  })
+  .use(errorHandler);
 export default app;
