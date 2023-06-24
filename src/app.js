@@ -8,11 +8,23 @@ import indexRoutes from "./routes/index.routes.js";
 import payRoutes from "./routes/payment.routes.js";
 import orderRoutes from "./routes/orders.routes.js";
 import likesRoutes from "./routes/likes.routes.js";
+import { logger } from "./middlewares/logEvents.js";
 
 const app = express();
-
+const whiteList = ["https://mkremis.github.io/ecommerce-react/"];
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (whiteList.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  optionsSuccessStatus: 200,
+};
 app
-  .use(cors())
+  .use(logger)
+  .use(cors(corsOptions))
   .use(morgan("dev"))
   .use(express.json())
 
