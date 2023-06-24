@@ -18,7 +18,7 @@ const corsOptions = {
 };
 app
   .use(logger)
-  .use(cors(corsOptions))
+  .use(cors())
   .use(morgan("dev"))
   .use(express.json())
 
