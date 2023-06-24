@@ -13,12 +13,12 @@ import { logger } from "./middlewares/logEvents.js";
 const app = express();
 // Configurar opciones del CORS
 const corsOptions = {
-  origin: "https://mkremis.github.io/ecommerce-react",
+  origin: "https://mkremis.github.io/ecommerce-react/#/",
   optionsSuccessStatus: 200, // Algunos navegadores pueden requerir este código de estado para permitir las respuestas.
 };
 app
   .use(logger)
-  .use(cors())
+  .use(cors(corsOptions))
   .use(morgan("dev"))
   .use(express.json())
 
