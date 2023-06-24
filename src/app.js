@@ -11,16 +11,10 @@ import likesRoutes from "./routes/likes.routes.js";
 import { logger } from "./middlewares/logEvents.js";
 
 const app = express();
-const whiteList = ["https://mkremis.github.io/ecommerce-react/"];
+// Configurar opciones del CORS
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (whiteList.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  optionsSuccessStatus: 200,
+  origin: "https://mkremis.github.io/ecommerce-react",
+  optionsSuccessStatus: 200, // Algunos navegadores pueden requerir este código de estado para permitir las respuestas.
 };
 app
   .use(logger)
