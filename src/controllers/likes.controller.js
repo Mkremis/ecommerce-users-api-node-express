@@ -5,6 +5,7 @@ export const getLikes = async (req, res) => {
   const { username } = req.params;
   try {
     const response = await getUserLikes({ username });
+    console.log("get-likes", response.success);
     res.status(200).json(response.success);
   } catch (error) {
     return res.status(500).json({ error });
@@ -15,6 +16,7 @@ export const getLikes = async (req, res) => {
 export const updateLikes = async (req, res) => {
   const { username } = req.params;
   const likes = JSON.stringify(req.body);
+  console.log("update-likes", likes);
   try {
     const response = await likesUpdate({ username, likes });
     res.status(200).json({ response });

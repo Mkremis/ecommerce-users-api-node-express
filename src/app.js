@@ -20,7 +20,7 @@ const corsOptions = {
 app
   .use(express.json())
   .use(morgan("dev"))
-  .use(logger)
+  // .use(logger)
   .use(cors(corsOptions))
 
   .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
