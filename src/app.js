@@ -18,10 +18,11 @@ const corsOptions = {
   optionsSuccessStatus: 200, // Algunos navegadores pueden requerir este código de estado para permitir las respuestas.
 };
 app
+  .use(express.json())
   .use(morgan("dev"))
   .use(logger)
   .use(cors(corsOptions))
-  .use(express.json())
+
   .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
   .use(indexRoutes)
   .use("/api", usersRoutes)
