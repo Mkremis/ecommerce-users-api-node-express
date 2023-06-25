@@ -44,26 +44,28 @@ export const createOrder = async (req, res) => {
 export const receiveWebhook = async (req, res) => {
   const payment = req.query;
   const { username } = req.params;
+  console.log("PAYMENT");
   if (payment.type === "payment") {
-    console.log('PAYMENT OK!!')
     res.status(200).send("HTTP STATUS 200 (OK)");
     const data = await mercadopago.payment.findById(payment["data.id"]);
+
     registerSale(
       data.body.additional_info.items,
       username,
       data.body.date_approved,
       "mercadopago"
     );
+    console.log("PAYMENT OK!!");
     cartUpdate({ username, cart: {} });
   }
 };
 
 export const success = async (req, res) => {
-  res.send("success!");
+  console.log("success!");
 };
 export const failure = (req, res) => {
-  res.send("Failure!");
+  console.log("Failure!");
 };
 export const pending = (req, res) => {
-  res.send("Pending..");
+  console.log("Pending..");
 };
