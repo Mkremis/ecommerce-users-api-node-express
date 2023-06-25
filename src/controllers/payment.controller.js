@@ -53,7 +53,7 @@ export const receiveWebhook = async (req, res) => {
       data.body.date_approved,
       "mercadopago"
     );
-    cartUpdate({ username, cart: null });
+    cartUpdate({ username, cart: {} });
   }
 };
 
