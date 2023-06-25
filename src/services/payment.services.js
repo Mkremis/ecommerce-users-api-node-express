@@ -3,6 +3,7 @@ import { pool } from "../db.js";
 export const registerSale = async (items, username, date, feeType) => {
   try {
     items.map(async (item) => {
+      console.log("registerSale", item);
       await pool.query(
         `INSERT INTO sales (
         login_username,

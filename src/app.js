@@ -22,14 +22,13 @@ app
   .use(morgan("dev"))
   // .use(logger)
   .use(cors())
-
   .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
   .use(indexRoutes)
   .use("/api", usersRoutes)
   .use("/api", cartRoutes)
   .use("/api", payRoutes)
   .use("/api", orderRoutes)
-  .use("/api", likesRoutes)
-  .all("*", (req, res) => res.status(404))
-  .use(errorHandler);
+  .use("/api", likesRoutes);
+// .all("*", (req, res) => res.status(404))
+// .use(errorHandler);
 export default app;

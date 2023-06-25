@@ -1,6 +1,7 @@
 import { pool } from "../db.js";
 
 export const cartUpdate = async ({ username, cart }) => {
+  console.log("cartUpdate", cart);
   try {
     const [rows] = await pool.query(
       "UPDATE users SET user_cart = ? WHERE login_username = ?",
