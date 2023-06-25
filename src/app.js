@@ -21,7 +21,7 @@ app
   .use(express.json())
   .use(morgan("dev"))
   // .use(logger)
-  .use(cors(corsOptions))
+  .use(cors())
 
   .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
   .use(indexRoutes)
