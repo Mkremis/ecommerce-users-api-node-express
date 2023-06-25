@@ -5,7 +5,6 @@ export const getCart = async (req, res) => {
   const { username } = req.params;
   try {
     const response = await getUserCart({ username });
-    console.log("get-cart", response.success);
     res.status(200).json(response.success);
   } catch (error) {
     return res.status(500).json({ error });
@@ -16,7 +15,6 @@ export const getCart = async (req, res) => {
 export const updateCart = async (req, res) => {
   const { username } = req.params;
   const cart = JSON.stringify(req.body);
-  console.log("update-cart", cart);
   try {
     const response = await cartUpdate({ username, cart });
     res.status(200).json({ response });
