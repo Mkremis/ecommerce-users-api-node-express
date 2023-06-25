@@ -6,6 +6,7 @@ import { registerSale } from "../services/payment.services.js";
 export const createOrder = async (req, res) => {
   const username = req.user.login_username;
   const order = req.body;
+  console.log("createOrder", order);
   let cartItems = [];
   for (const key in order) {
     let obj = {};
