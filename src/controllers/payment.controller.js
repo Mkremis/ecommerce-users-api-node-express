@@ -6,25 +6,23 @@ import { registerSale } from "../services/payment.services.js";
 export const createOrder = async (req, res) => {
   const username = req.user.login_username;
   const order = req.body;
-  console.log("createOrder", order);
   let cartItems = [];
   for (const key in order) {
     let obj = {};
-    if (parseInt(order[key]["productQ"]) > 0) {
-      obj.id = key;
-      obj.category_id = order[key]["gender"];
-      obj.picture_url = `https://${order[key]["prodImage"]}`;
-      obj.title = order[key]["prodName"];
-      obj.quantity = parseInt(order[key]["productQ"]);
-      obj.currency_id = "USD";
-      obj.unit_price = parseFloat(order[key]["prodPrice"]);
-      cartItems.push(obj);
-    }
+    obj.id = key;
+    obj.category_id = order[key]["gender"];
+    obj.picture_url = `https://${order[key]["prodImage"]}`;
+    obj.title = order[key]["prodName"];
+    obj.quantity = parseInt(order[key]["productQ"]);
+    obj.currency_id = "USD";
+    obj.unit_price = parseFloat(order[key]["prodPrice"]);
+    cartItems.push(obj);
   }
   mercadopago.configure({
     access_token: MERCADOPAGO_API_KEY,
   });
   try {
+    console.log("cartItems", cartItems);
     const result = await mercadopago.preferences.create({
       items: cartItems,
       back_urls: {
@@ -43,21 +41,21 @@ export const createOrder = async (req, res) => {
 };
 
 export const receiveWebhook = async (req, res) => {
+  console.log("receiveWebhook");
   const payment = req.query;
   const { username } = req.params;
-  console.log("PAYMENT");
   if (payment.type === "payment") {
     res.status(200).send("HTTP STATUS 200 (OK)");
     const data = await mercadopago.payment.findById(payment["data.id"]);
-
-    registerSale(
+    console.log("PAYMENT");
+    await registerSale(
       data.body.additional_info.items,
       username,
       data.body.date_approved,
       "mercadopago"
     );
     console.log("PAYMENT OK!!");
-    cartUpdate({ username, cart: {} });
+    await cartUpdate({ username, cart: {} });
   }
 };
 
