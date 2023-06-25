@@ -1,6 +1,7 @@
 import { pool } from "../db.js";
 
 export const cartUpdate = async ({ username, cart }) => {
+  cart && JSON.stringify(cart);
   console.log("cartUpdate", cart);
   try {
     const [rows] = await pool.query(
