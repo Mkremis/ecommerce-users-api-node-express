@@ -1,5 +1,6 @@
 import bcryptjs from "bcryptjs";
 const { compare, hash } = bcryptjs;
+
 const encrypt = async (pass) => {
   const passwordHash = hash(pass, 8);
   return passwordHash;
