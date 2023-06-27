@@ -32,12 +32,12 @@ export const login = async (req, res) => {
       res.status(403).json({ message: responseUser });
     } else {
       res.json(responseUser.userData);
-      res.cookie("jwt", responseUser.refreshToken, {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
+      // res.cookie("jwt", responseUser.refreshToken, {
+      //   httpOnly: true,
+      //   sameSite: "None",
+      //   secure: true,
+      //   maxAge: 24 * 60 * 60 * 1000,
+      // });
     }
   } catch (error) {
     res.status(500).json({ error });
