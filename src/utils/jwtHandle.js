@@ -1,6 +1,6 @@
 import jsonwebtoken from "jsonwebtoken";
 const { sign, verify } = jsonwebtoken;
-const JWT_SECRET = process.env.JWT_SECRET || "token.01010101";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const generateToken = (login_username) => {
   const jwt = sign({ login_username }, JWT_SECRET, { expiresIn: "2h" });
