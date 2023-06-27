@@ -20,8 +20,6 @@ export const getUserData = async (req, res) => {
 //Login
 export const login = async (req, res) => {
   try {
-    if (!req.passwordHash)
-      return res.status(404).json({ message: "NOT_FOUND_USER" });
     const { body } = req;
     const { login_username, login_password } = body;
     const { passwordHash } = req;
