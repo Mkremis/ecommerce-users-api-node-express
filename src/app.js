@@ -10,6 +10,7 @@ import orderRoutes from "./routes/orders.routes.js";
 import likesRoutes from "./routes/likes.routes.js";
 import { logger } from "./middlewares/logEvents.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 // Configurar opciones del CORS
@@ -19,6 +20,7 @@ const corsOptions = {
 };
 app
   .use(express.json())
+  .use(cookieParser())
   .use(morgan("dev"))
   // .use(logger)
   .use(cors())
