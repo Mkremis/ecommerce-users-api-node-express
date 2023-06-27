@@ -41,8 +41,8 @@ const loginUser = async ({ login_username, login_password, passwordHash }) => {
       `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, user_cart, user_likes FROM users WHERE login_username = ?`,
       login_username
     );
-    const userData = { token, user: rows[0] };
-    return { refreshToken, userData };
+    const data = { token, user: rows[0] };
+    return data;
   } catch (error) {
     return { fail: error };
   }
