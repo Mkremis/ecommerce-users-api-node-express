@@ -11,6 +11,7 @@ import likesRoutes from "./routes/likes.routes.js";
 import { logger } from "./middlewares/logEvents.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
+import { credentials } from "./middlewares/credentials.js";
 
 const app = express();
 // Configurar opciones del CORS
@@ -20,6 +21,9 @@ const corsOptions = {
 };
 app
   .use(express.json())
+  // Handle options credentials check - before CORS!
+  // and fetch cookies credentials requirement
+  .use(credentials)
   .use(cookieParser())
   .use(morgan("dev"))
   // .use(logger)
