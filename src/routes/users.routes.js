@@ -7,12 +7,10 @@ import {
   register,
   getUserData,
 } from "../controllers/users.controller.js";
-import { handleRefreshToken } from "../controllers/refreshToken.controller.js";
 
 const router = Router();
 
 router
-  .get("/users/refresh/:username", handleRefreshToken)
   .get("/users/:username", checkSession, getUserData)
   .post("/users/login", isUser, login)
   .post("/users/register", isUser, register)
