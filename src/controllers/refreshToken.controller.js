@@ -4,7 +4,7 @@ import dotenv from ('dotenv')
 
 dotenv.config();
 
-const handleRefreshToken = (req, res) => {
+export const handleRefreshToken = (req, res) => {
   const {login_username} = req.params;
   const cookies = req.cookies;
   res.json(login_username, cookies)
@@ -26,4 +26,4 @@ const handleRefreshToken = (req, res) => {
   //   res.json({ accessToken });
   // });
 };
-module.exports = { handleRefreshToken };
+
