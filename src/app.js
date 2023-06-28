@@ -12,6 +12,7 @@ import { logger } from "./middlewares/logEvents.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 import { credentials } from "./middlewares/credentials.js";
+import { handleRefreshToken } from "./controllers/refreshToken.controller.js";
 
 const app = express();
 // Configurar opciones del CORS
@@ -29,6 +30,7 @@ app
   // .use(logger)
   .use(cors())
   .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
+  .get("/refresh/:username", handleRefreshToken)
   .use(indexRoutes)
   .use("/api", usersRoutes)
   .use("/api", cartRoutes)
