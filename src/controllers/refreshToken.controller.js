@@ -7,8 +7,8 @@ dotenv.config();
 export const handleRefreshToken = async (req, res) => {
   const { username } = req.params;
   const cookies = req.cookies;
-
-  if (!cookies?.jwt) return res.status(401).json({ message: cookies });
+  console.log(cookies);
+  if (!cookies?.jwt) return res.status(401).json({ cookies });
   const refreshToken = cookies.jwt;
 
   let [rows] = await pool.query(
