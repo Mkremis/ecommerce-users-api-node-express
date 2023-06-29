@@ -30,7 +30,8 @@ app
   // .use(logger)
   .use(cors())
   .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
-  .get("/refresh/:username", handleRefreshToken)
+  // Ruta para el refresco del token
+  .post("/refresh-token", handleRefreshToken)
   .use(indexRoutes)
   .use("/api", usersRoutes)
   .use("/api", cartRoutes)
