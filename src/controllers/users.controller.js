@@ -18,7 +18,7 @@ export const getUserData = async (req, res) => {
 };
 
 //Login
-export const login = async (req, res) => {
+export const login = async (req, res) => { 
   try {
     const { body } = req;
     const { login_username, login_password } = body;
@@ -31,7 +31,7 @@ export const login = async (req, res) => {
     if (responseUser === "INCORRECT_PASSWORD") {
       res.status(403).json({ message: responseUser });
     } else {
-      res.cookie("jwt", responseUser?.freshToken, {
+      res.cookie('refreshToken', responseUser?.freshToken, {
         httpOnly: true,
         sameSite: "None",
         secure: true,

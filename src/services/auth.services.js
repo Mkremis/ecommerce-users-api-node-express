@@ -36,7 +36,7 @@ const loginUser = async ({ login_username, login_password, passwordHash }) => {
     if (!isCorrect) return "INCORRECT_PASSWORD";
     const token = generateToken(login_username);
     const freshToken = refreshToken(login_username);
-    saveFreshToken(freshToken, login_username);
+    // saveFreshToken(freshToken, login_username);
     const [rows] = await pool.query(
       `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, user_cart, user_likes FROM users WHERE login_username = ?`,
       login_username

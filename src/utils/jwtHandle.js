@@ -1,5 +1,7 @@
 import jsonwebtoken from "jsonwebtoken";
 const { sign, verify } = jsonwebtoken;
+import dotenv from "dotenv";
+dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const REFRESH_JWT_SECRET = process.env.REFRESH_JWT_SECRET;
 
