@@ -31,7 +31,7 @@ export const login = async (req, res) => {
     if (responseUser === "INCORRECT_PASSWORD") {
       res.status(403).json({ message: responseUser });
     } else {
-      res.cookie('refreshToken', responseUser?.freshToken, {
+      res.cookie('accessToken', responseUser?.accessToken, {
         httpOnly: true,
         sameSite: "None",
         secure: true,
