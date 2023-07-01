@@ -1,5 +1,3 @@
 export const allowedOrigins = [
-  "https://mkremis.github.io",
-  "http://localhost:5173/ecommerce-react/",
-  //   'http://localhost:3500',
+  "https://mkremis-studious-computing-machine-q5wg4q544x72xrrv-5173.preview.app.github.dev/",
 ];
