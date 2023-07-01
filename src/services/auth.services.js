@@ -34,7 +34,7 @@ const loginUser = async ({ login_username, login_password, passwordHash }) => {
   try {
     const isCorrect = await verified(login_password, passwordHash);
     if (!isCorrect) return "INCORRECT_PASSWORD";
-    const token = generateToken(login_username);
+    const token = generateToken(login_username); 
     const freshToken = refreshToken(login_username);
     // saveFreshToken(freshToken, login_username);
     const [rows] = await pool.query(
