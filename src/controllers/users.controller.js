@@ -37,8 +37,8 @@ export const login = async (req, res) => {
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
-      
-      res.json(responseUser.accessToken, responseUser?.userData);
+      const {accessToken, userData} = responseUser
+      res.json(accessToken ,userData);
     }
   } catch (error) {
     res.status(500).json({ error });
