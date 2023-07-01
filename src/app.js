@@ -17,8 +17,7 @@ import { handleRefreshToken } from "./controllers/refreshToken.controller.js";
 const app = express();
 // Configurar opciones del CORS
 const corsOptions = {
-  origin:
-    "https://mkremis-studious-computing-machine-q5wg4q544x72xrrv-5173.preview.app.github.dev/",
+  origin: "https://mkremis.github.io/ecommerce-react",
   optionsSuccessStatus: 200, // Algunos navegadores pueden requerir este código de estado para permitir las respuestas.
 };
 app
