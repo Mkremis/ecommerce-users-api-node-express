@@ -24,7 +24,7 @@ app
   .use(express.json())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
-  // .use(credentials)
+  .use(credentials)
   .use(cookieParser())
   .use(morgan("dev"))
   // .use(logger)
