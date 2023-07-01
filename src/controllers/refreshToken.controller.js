@@ -6,8 +6,9 @@ const REFRESH_JWT_SECRET = process.env.REFRESH_JWT_SECRET;
 
 export const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
-  if (!cookies?.accessToken) return res.status(401).json({message:'hola'});
+  if (!cookies?.accessToken) return res.sendStatus(401);
   const refreshToken = cookies.accessToken;
+
 
   // Verificar y decodificar el token de actualización
   jsonwebtoken.verify(refreshToken, REFRESH_JWT_SECRET, (err, decoded) => {
