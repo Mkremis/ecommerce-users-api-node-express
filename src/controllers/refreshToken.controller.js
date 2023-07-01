@@ -9,9 +9,6 @@ export const handleRefreshToken = async (req, res) => {
   if (!cookies?.accessToken) return res.sendStatus(401);
   const refreshToken = cookies.accessToken;
 
-
-
- 
   // Verificar y decodificar el token de actualización
   jsonwebtoken.verify(refreshToken, REFRESH_JWT_SECRET, (err, decoded) => {
     if (err) {
