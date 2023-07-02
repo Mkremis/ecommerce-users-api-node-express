@@ -26,7 +26,7 @@ export const logEvents = async (message, fileName) => {
 };
 
 export const logger = (req, res, next) => {
-  const message = `${req.method}\t${req.headers.origin}\t\t${req.cookies}\t${req.url}\tStatus Code:${res.statusCode}\n`;
+  const message = `${req.method}\t${req.headers.origin}\t${req.url}\tStatus Code:${res.statusCode}\n`;
   console.log(message);
   logEvents(message, "reqLog.txt");
   next();
