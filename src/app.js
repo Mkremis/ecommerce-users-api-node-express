@@ -13,21 +13,19 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 import { credentials } from "./middlewares/credentials.js";
 import { handleRefreshToken } from "./controllers/refreshToken.controller.js";
+import { allowedOrigins } from "./config/allowedOrigins.js";
 
 const app = express();
 
 // Configurar opciones del CORS
-const corsOptions = {
-  origin: "https://mkremis-studious-computing-machine-q5wg4q544x72xrrv-5173.preview.app.github.dev",
-  optionsSuccessStatus: 200, // Algunos navegadores pueden requerir este código de estado para permitir las respuestas.
-};
+
 app
   .use(cookieParser())
   .use(express.json())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
   .use(credentials)
-  .use(cors(corsOptions))
+  .use(cors({origin:allowedOrigins}))
   .use(morgan("dev"))
   // .use(logger)
   
