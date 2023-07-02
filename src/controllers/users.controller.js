@@ -34,8 +34,8 @@ export const login = async (req, res) => {
     } else {
       res.cookie('accessToken', responseUser?.accessToken, {
         httpOnly: true,
-        sameSite: "None",
-        secure: false,
+        secure: false,  //changes secure
+        sameSite: 'None',
         maxAge: 24 * 60 * 60 * 1000,
       });
       const {accessToken, userData} = responseUser
