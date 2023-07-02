@@ -9,8 +9,9 @@ import {
 export const getUserData = async (req, res) => {
   try {
     const { username } = req.params;
+    const {fresh} = req
     const responseData = await getData({ username });
-    if (responseData.success) return res.status(200).json(responseData.success);
+    if (responseData.success) return res.status(200).json(responseData.success, fresh);
     return res.status(404).json(responseData.fail);
   } catch (error) {
     res.status(500).json(error);
