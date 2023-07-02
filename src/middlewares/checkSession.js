@@ -4,6 +4,7 @@ const checkSession = (req, res, next) => {
   try {
     const jwtByUser = req.headers.authorization || "";
     const jwt = jwtByUser.split(" ").pop(); //['Bearer','11111']
+    console.log('token',jwt)
     const isUser = verifyToken(`${jwt}`);
     if (isUser) {
       req.user = isUser;
