@@ -21,17 +21,15 @@ const app = express();
 
 app
   .use(cookieParser())
-  .use(express.json())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
   .use(credentials)
   .use(cors({origin:allowedOrigins, credentials: true }))
-  .use(morgan("dev"))
+  .use(express.json())
   // .use(logger)
   
-  .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
+
   // Ruta para el refresco del token
-  .get("/refresh-token", handleRefreshToken)
   .use(indexRoutes)
   .use("/api", usersRoutes)
   .use("/api", cartRoutes)
