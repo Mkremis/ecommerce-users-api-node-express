@@ -1,4 +1,4 @@
-import { allowedOrigins } from "./allowedOrigins";
+import { allowedOrigins } from "./allowedOrigins.js";
 
 export const corsOptions = {
     credentials: true,
