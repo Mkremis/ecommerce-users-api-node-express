@@ -7,7 +7,6 @@ const checkSession = (req, res, next) => {
     const isUser = verifyToken(`${jwt}`);
     if (isUser) {
       req.user = isUser;
-      req.fresh = req.cookies;
       next();
     }
   } catch (error) {
