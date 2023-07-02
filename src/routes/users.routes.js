@@ -11,7 +11,7 @@ import {
 const router = Router();
 
 router
-  .get("/users/:username", checkSession, getUserData)
+  .post("/users/:username", checkSession, getUserData)
   .post("/users/login", isUser, login)
   .post("/users/register", isUser, register)
   .put("/users/update", updateUser);
