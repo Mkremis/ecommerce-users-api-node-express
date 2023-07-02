@@ -1,8 +1,8 @@
 import { verifyToken } from "../utils/jwtHandle.js";
 
 const checkSession = (req, res, next) => {
-  const cookieValue = req.cookies.accessToken;
-  console.log({message: cookieValue})
+  
+  console.log(req.cookies)
   
   try {
     const jwtByUser = req.headers.authorization || "";
