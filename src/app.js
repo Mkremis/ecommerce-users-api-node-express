@@ -25,7 +25,7 @@ app
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
   .use(credentials)
-  .use(cors({origin:allowedOrigins}))
+  .use(cors({origin:allowedOrigins, credentials: true }))
   .use(morgan("dev"))
   // .use(logger)
   
