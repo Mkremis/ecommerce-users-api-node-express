@@ -23,6 +23,7 @@ app
   .use(credentials)
   .use(cors(corsOptions))
   // .use(cors({origin:allowedOrigins, credentials: true }))
+  app.use(express.urlencoded({ extended: false }))
   .use(logger)
   .use(express.json())
   
