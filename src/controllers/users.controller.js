@@ -7,6 +7,7 @@ import {
 
 //Dashboard
 export const getUserData = async (req, res) => {
+  console.log("cookies",req.cookies)
   try {
     const { username } = req.params;
     const responseData = await getData({ username });
