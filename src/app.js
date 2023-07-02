@@ -16,13 +16,14 @@ import { corsOptions } from "./config/corsOptions.js";
 
 const app = express();
 app
-  .use(logger)
+
   .use(cookieParser())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
   .use(credentials)
   .use(cors(corsOptions))
   // .use(cors({origin:allowedOrigins, credentials: true }))
+  .use(logger)
   .use(express.json())
   
   .use(indexRoutes)
