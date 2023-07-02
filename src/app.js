@@ -15,20 +15,22 @@ import { credentials } from "./middlewares/credentials.js";
 import { handleRefreshToken } from "./controllers/refreshToken.controller.js";
 
 const app = express();
+
 // Configurar opciones del CORS
 const corsOptions = {
   origin: "https://mkremis-studious-computing-machine-q5wg4q544x72xrrv-5173.preview.app.github.dev",
   optionsSuccessStatus: 200, // Algunos navegadores pueden requerir este código de estado para permitir las respuestas.
 };
 app
+  .use(cookieParser())
   .use(express.json())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
   .use(credentials)
-  .use(cookieParser())
+  .use(cors(corsOptions))
   .use(morgan("dev"))
   // .use(logger)
-  .use(cors(corsOptions))
+  
   .get("/", (req, res) => res.send("<h1>ecommerce api</h1>"))
   // Ruta para el refresco del token
   .get("/refresh-token", handleRefreshToken)
