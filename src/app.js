@@ -16,6 +16,7 @@ import { corsOptions } from "./config/corsOptions.js";
 
 const app = express();
 app
+  .use(logger)
   .use(cookieParser())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
@@ -30,6 +31,6 @@ app
   .use("/api", payRoutes)
   .use("/api", orderRoutes)
   .use("/api", likesRoutes)
-  .use(logger)
+
 // .use(errorHandler);
 export default app;
