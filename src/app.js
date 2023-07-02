@@ -12,8 +12,6 @@ import { logger } from "./middlewares/logEvents.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 import { credentials } from "./middlewares/credentials.js";
-import { handleRefreshToken } from "./controllers/refreshToken.controller.js";
-import { allowedOrigins } from "./config/allowedOrigins.js";
 import { corsOptions } from "./config/corsOptions.js";
 
 const app = express();
@@ -25,14 +23,13 @@ app
   .use(cors(corsOptions))
   // .use(cors({origin:allowedOrigins, credentials: true }))
   .use(express.json())
-  // .use(logger)
   
   .use(indexRoutes)
   .use("/api", usersRoutes)
   .use("/api", cartRoutes)
   .use("/api", payRoutes)
   .use("/api", orderRoutes)
-  .use("/api", likesRoutes);
-// .all("*", (req, res) => res.status(404))
+  .use("/api", likesRoutes)
+  .use(logger)
 // .use(errorHandler);
 export default app;
