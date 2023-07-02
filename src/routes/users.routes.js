@@ -11,7 +11,6 @@ import {
 const router = Router();
 
 router
-  
   .post("/users/login", isUser, login)
   .post("/users/dashboard/:username", checkSession, getUserData)
   .post("/users/register", isUser, register)

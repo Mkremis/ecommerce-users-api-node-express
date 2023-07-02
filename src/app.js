@@ -14,22 +14,19 @@ import cookieParser from "cookie-parser";
 import { credentials } from "./middlewares/credentials.js";
 import { handleRefreshToken } from "./controllers/refreshToken.controller.js";
 import { allowedOrigins } from "./config/allowedOrigins.js";
+import { corsOptions } from "./config/corsOptions.js";
 
 const app = express();
-
-// Configurar opciones del CORS
-
 app
   .use(cookieParser())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
   .use(credentials)
-  .use(cors({origin:allowedOrigins, credentials: true }))
+  .use(cors(corsOptions))
+  // .use(cors({origin:allowedOrigins, credentials: true }))
   .use(express.json())
   // .use(logger)
   
-
-  // Ruta para el refresco del token
   .use(indexRoutes)
   .use("/api", usersRoutes)
   .use("/api", cartRoutes)
