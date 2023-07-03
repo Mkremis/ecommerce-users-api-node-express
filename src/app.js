@@ -22,9 +22,9 @@ app
   // and fetch cookies credentials requirement
   .use(credentials)
   .use(cors(corsOptions))
-  // .use(cors({origin:allowedOrigins, credentials: true }))
+
   app.use(express.urlencoded({ extended: false }))
-  .use(logger)
+  .use(morgan('combined'))
   .use(express.json())
   
   .use(indexRoutes)
