@@ -5,14 +5,12 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const REFRESH_JWT_SECRET = process.env.REFRESH_JWT_SECRET;
 
-const generateToken = (login_username) => {
-  const jwt = sign({ login_username }, JWT_SECRET, { expiresIn: "2h" });
+const generateToken = (user) => {
+  const jwt = sign(user, JWT_SECRET, { expiresIn: "15m" });
   return jwt;
 };
-const refreshToken = (login_username) => {
-  const freshJWT = sign({ login_username }, REFRESH_JWT_SECRET, {
-    expiresIn: "1d",
-  });
+const generateRefreshToken = (user) => {
+  const freshJWT = sign(user, REFRESH_JWT_SECRET);
   return freshJWT;
 };
 
@@ -21,4 +19,4 @@ const verifyToken = (jwt) => {
   return isVerified;
 };
 
-export { generateToken, refreshToken, verifyToken };
+export { generateToken, generateRefreshToken, verifyToken };
