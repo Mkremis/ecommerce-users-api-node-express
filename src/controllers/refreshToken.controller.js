@@ -1,28 +1,24 @@
-import { getRefreshToken } from "../services/auth.services.js";
+import { getRefreshToken, getUserData, setRefreshToken } from "../services/auth.services.js";
+import { refreshJWT, verifyRefreshToken } from "../utils/jwtHandle.js";
 
 export const handleRefreshToken = async (req, res) => {
-  // const cookies = req.cookies;
-  // if (!cookies?.accessToken) return res.sendStatus(401);
-  // const refreshToken = cookies.accessToken;
   const {refreshToken} = req.body;
-  const isRefreshToken = await getRefreshToken(isUser.username)
-  if(!refreshToken || !isRefreshToken ) res.sendStatus(401)
-  console.log('refreshtoken', isRefreshToken)
-  res.json({refreshToken}) 
+  if(!refreshToken) res.sendStatus(401)
+  const response = verifyRefreshToken(refreshToken);
+  if (response?.fail){
+    res.sendStatus(401)
+  }else{
+    const {newAccessToken, username} = response.success;
+     const isRefreshToken = await getRefreshToken(username)
+    if(!isRefreshToken){ 
+      res.sendStatus(401)
+      }else{
+        const newRefreshToken = refreshJWT(username)
+        await setRefreshToken(newRefreshToken)
+        const {userData} = await getUserData(username)
+       
+        res.status(200).json({accessToken:newAccessToken, refreshToken: newRefreshToken, userData}) 
+      }
 
-  // Verificar y decodificar el token de actualización
-  // jsonwebtoken.verify(refreshToken, REFRESH_JWT_SECRET, (err, decoded) => {
-  //   if (err) {
-  //     // El token de actualización no es válido
-  //     return res.sendStatus(403);
-  //   }
-
-  //   // El token de actualización es válido, generar un nuevo token de acceso
-  //   const newAccessToken = jsonwebtoken.sign(
-  //     { login_username: decoded.login_username },
-  //     JWT_SECRET,
-  //     { expiresIn: "15m" }
-  //   );
-  //   res.json({  newAccessToken });
-  // });
+  }
 };

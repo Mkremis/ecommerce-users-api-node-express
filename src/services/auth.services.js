@@ -122,4 +122,17 @@ const getRefreshToken = async (login_username) => {
   return refreshToken
 };
 
-export { registerNewUser, loginUser, getData, updateUserData, getRefreshToken };
+const getUserData = async (username) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, user_cart, user_likes FROM users WHERE login_username = ?`,
+      username
+    );
+    const userData = { user: rows[0] };
+    return  {userData};
+  } catch (error) {
+    return { fail: error };
+  }
+};
+
+export { registerNewUser, loginUser, getData, updateUserData, getRefreshToken, setRefreshToken, getUserData };

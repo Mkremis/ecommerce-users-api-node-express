@@ -20,7 +20,7 @@ const verifyToken = (jwt) => {
 };
 
 const verifyRefreshToken = (refreshToken)=>{
-  verify(refreshToken, REFRESH_JWT_SECRET, (err, decoded) => {
+  const result = verify(refreshToken, REFRESH_JWT_SECRET, (err, decoded) => {
     if (err) {
       // El token de actualización no es válido
       return {fail: err};
@@ -31,8 +31,9 @@ const verifyRefreshToken = (refreshToken)=>{
       JWT_SECRET,
       { expiresIn: '15m'}
     );
-   return ({ success: newAccessToken });
+   return {success: {newAccessToken, username: decoded.username}};
   });
+  return result
 }
-export { accessJWT, refreshJWT , verifyToken };
+export { accessJWT, refreshJWT , verifyToken, verifyRefreshToken };
  
