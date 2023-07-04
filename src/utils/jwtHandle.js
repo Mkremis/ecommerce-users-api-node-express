@@ -26,12 +26,7 @@ const verifyRefreshToken = (refreshToken)=>{
       return {fail: err};
     }
     // El token de actualización es válido, generar un nuevo token de acceso
-    const newAccessToken = sign(
-      { username : decoded.username },
-      JWT_SECRET,
-      { expiresIn: '15m'}
-    );
-   return {success: {newAccessToken, username: decoded.username}};
+   return {success: { username: decoded.username}};
   });
   return result
 }

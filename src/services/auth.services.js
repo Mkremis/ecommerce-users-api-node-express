@@ -36,13 +36,18 @@ const loginUser = async ({ login_username, login_password, passwordHash }) => {
     if (!isCorrect) return "INCORRECT_PASSWORD";
     const accessToken = accessJWT(login_username); 
     const refreshToken = refreshJWT(login_username);
-    await setRefreshToken(refreshToken)
-    const [rows] = await pool.query(
-      `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, user_cart, user_likes FROM users WHERE login_username = ?`,
-      login_username
-    );
-    const userData = { user: rows[0] };
-    return { accessToken, refreshToken, userData };
+    const resSetRefreshToken = await setRefreshToken(refreshToken, login_username)
+    if(resSetRefreshToken.success){
+      const response = await getUserData(login_username);
+      if(response.success){
+       return { accessToken, refreshToken, userData: response.success };
+      }else{
+        return {fail: response.fail}
+      }
+    }else{
+      return {fail: resSetRefreshToken.fail}
+    }
+   
   } catch (error) {
     return { fail: error };
   }
@@ -108,10 +113,19 @@ const updateUserData = async ({ userData }) => {
   }
 };
 
-const setRefreshToken = async (refreshToken, login_username) => {
-  const query = `UPDATE users SET refresh_token = ? WHERE login_username = ?`;
-  await pool.query(query, [refreshToken, login_username]);
-};
+const setRefreshToken = async (refreshToken, username) => {
+  try{
+    const query = `UPDATE users SET refresh_token = ? WHERE login_username = ?`;
+    const [rows] = await pool.query(query, [refreshToken, username]);
+    if(rows.affectedRows>0){
+      return {success: rows.affectedRows}
+    }else{
+      return {fail: 'refresh token was not updated'}
+    }
+  }catch(err){
+    return {fail: err}
+  }
+ };
 
 const getRefreshToken = async (login_username) => {
   const [rows] = await pool.query(
@@ -128,8 +142,8 @@ const getUserData = async (username) => {
       `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, user_cart, user_likes FROM users WHERE login_username = ?`,
       username
     );
-    const userData = { user: rows[0] };
-    return  {userData};
+    const userData = rows[0];
+    return  {success: userData};
   } catch (error) {
     return { fail: error };
   }
