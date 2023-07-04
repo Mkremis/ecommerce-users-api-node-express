@@ -1,6 +1,6 @@
 import { pool } from "../db.js";
 import { encrypt, verified } from "../utils/bcryptHandle.js";
-import { generateRefreshToken, generateToken} from "../utils/jwtHandle.js";
+import { accessJWT, refreshJWT} from "../utils/jwtHandle.js";
 
 const registerNewUser = async ({ userData }) => {
   userData.login_password = await encrypt(userData.login_password);
@@ -34,10 +34,9 @@ const loginUser = async ({ login_username, login_password, passwordHash }) => {
   try {
     const isCorrect = await verified(login_password, passwordHash);
     if (!isCorrect) return "INCORRECT_PASSWORD";
-    const accessToken = generateToken(login_username); 
-    const refreshToken = generateRefreshToken(login_username);
-    console.log(refreshToken)
-    // await saveRefreshToken(refreshToken)
+    const accessToken = accessJWT(login_username); 
+    const refreshToken = refreshJWT(login_username);
+    await setRefreshToken(refreshToken)
     const [rows] = await pool.query(
       `SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, user_cart, user_likes FROM users WHERE login_username = ?`,
       login_username
@@ -109,7 +108,7 @@ const updateUserData = async ({ userData }) => {
   }
 };
 
-const saveRefreshToken = async (refreshToken, login_username) => {
+const setRefreshToken = async (refreshToken, login_username) => {
   const query = `UPDATE users SET refresh_token = ? WHERE login_username = ?`;
   await pool.query(query, [refreshToken, login_username]);
 };
@@ -119,9 +118,8 @@ const getRefreshToken = async (login_username) => {
     `SELECT refresh_token FROM users WHERE login_username = ?`,
     login_username
   );
-  const refreshToken = { user: rows[0] };
-  return { refreshToken };
+  const refreshToken = rows[0];
+  return refreshToken
 };
-
 
 export { registerNewUser, loginUser, getData, updateUserData, getRefreshToken };

@@ -7,7 +7,6 @@ import {
 
 //Dashboard
 export const getUserData = async (req, res) => {
-  console.log("cookies", req.cookies)
   try {
     const { username } = req.params;
     const responseData = await getData({ username });
@@ -38,8 +37,8 @@ export const login = async (req, res) => {
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
-      const {accessToken, userData} = responseUser
-      res.status(200).json({accessToken ,userData});
+      const  { accessToken, refreshToken, userData }= responseUser
+      res.status(200).json( { accessToken, refreshToken, userData });
     }
   } catch (error) {
     res.status(500).json({ error });

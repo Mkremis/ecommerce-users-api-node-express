@@ -24,7 +24,7 @@ app
   .use(cors(corsOptions))
 
   app.use(express.urlencoded({ extended: false }))
-  .use(morgan('combined'))
+  .use(morgan('dev'))
   .use(express.json())
   
   .use(indexRoutes)

@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 config();
-export const PORT = process.env.PORT || 3000,
+export const PORT = process.env.PORT || 3500,
   DB_HOST = process.env.DB_HOST || "containers-us-west-92.railway.app",
   DB_PORT = process.env.DB_PORT || 6079,
   DB_USER = process.env.DB_USER || "root",

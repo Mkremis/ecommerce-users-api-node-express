@@ -2,15 +2,15 @@ import jsonwebtoken from "jsonwebtoken";
 const { sign, verify } = jsonwebtoken;
 import dotenv from "dotenv";
 dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET 
 const REFRESH_JWT_SECRET = process.env.REFRESH_JWT_SECRET;
 
-const generateToken = (user) => {
-  const jwt = sign(user, JWT_SECRET, { expiresIn: "15m" });
-  return jwt;
+const accessJWT =  (username) => {
+  const accessToken = sign({username}, process.env.JWT_SECRET,{ expiresIn: '5m' });
+  return accessToken;
 };
-const generateRefreshToken = (user) => {
-  const freshJWT = sign(user, REFRESH_JWT_SECRET);
+const refreshJWT = (username) => {
+  const freshJWT = sign({username}, REFRESH_JWT_SECRET, { expiresIn: '1d' });
   return freshJWT;
 };
 
@@ -19,4 +19,20 @@ const verifyToken = (jwt) => {
   return isVerified;
 };
 
-export { generateToken, generateRefreshToken, verifyToken };
+const verifyRefreshToken = (refreshToken)=>{
+  verify(refreshToken, REFRESH_JWT_SECRET, (err, decoded) => {
+    if (err) {
+      // El token de actualización no es válido
+      return {fail: err};
+    }
+    // El token de actualización es válido, generar un nuevo token de acceso
+    const newAccessToken = sign(
+      { username : decoded.username },
+      JWT_SECRET,
+      { expiresIn: '15m'}
+    );
+   return ({ success: newAccessToken });
+  });
+}
+export { accessJWT, refreshJWT , verifyToken };
+ 
