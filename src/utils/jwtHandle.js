@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET
 const REFRESH_JWT_SECRET = process.env.REFRESH_JWT_SECRET;
 
 const accessJWT =  (username) => {
-  const accessToken = sign({username}, process.env.JWT_SECRET,{ expiresIn: '5m' });
+  const accessToken = sign({username}, process.env.JWT_SECRET,{ expiresIn: '30s' });
   return accessToken;
 };
 const refreshJWT = (username) => {
@@ -15,7 +15,12 @@ const refreshJWT = (username) => {
 };
 
 const verifyToken = (jwt) => {
-  const isVerified = verify(jwt, JWT_SECRET);
+  const isVerified = verify(jwt, JWT_SECRET, (err, decoded)=>{
+    if (err) {
+      return {fail: err};
+    }
+   return {success: { username: decoded.username}};
+  });
   return isVerified;
 };
 

@@ -14,7 +14,7 @@ export const getLikes = async (req, res) => {
 //PUT LIKES
 export const updateLikes = async (req, res) => {
   const { username } = req.params;
-  const likes = JSON.stringify(req.body);
+  const likes = JSON.stringify(req.body.likes);
   try {
     const response = await likesUpdate({ username, likes });
     res.status(200).json({ response });
