@@ -15,6 +15,6 @@ router
   .post("/users/login", isUser, login)
   .post("/users/dashboard/:username", checkSession, getUserData)
   .post("/users/register", isUser, register)
-  .put("/users/update", updateUser);
+  .put("/users/update",  checkSession, updateUser);
 
 export default router;

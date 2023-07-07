@@ -12,11 +12,8 @@ const isUser = async (req, res, next) => {
     `SELECT login_password FROM users WHERE login_username = ?`,
     [login_username]
   );
-  if (rows.length > 0) {
-    req.passwordHash = rows[0].login_password;
-    next();
-  } else {
-    return res.status(401).json({ message: "NOT_USER_FOUND" });
-  }
+  
+  if (rows.length > 0) req.passwordHash = rows[0].login_password;
+  next()
 };
 export { isUser };

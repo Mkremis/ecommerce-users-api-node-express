@@ -22,6 +22,7 @@ export const login = async (req, res) => {
   try {
     const { body } = req;
     const { login_username, login_password } = body;
+    if(!req.passwordHash) return res.status(401).json({ message: "NOT_USER_FOUND" });
     const { passwordHash } = req;
     const responseUser = await loginUser({
       login_username,
@@ -51,6 +52,7 @@ export const register = async (req, res) => {
     if (req.passwordHash)
       return res.status(409).json({ message: "ALREADY_USER" });
     let userData = req.body;
+    console.log(req.body)
     const responseRegister = await registerNewUser({ userData });
     if (responseRegister.success)
       return res.status(200).json(responseRegister.success);
@@ -63,7 +65,7 @@ export const register = async (req, res) => {
 //UPDATE USER
 export const updateUser = async (req, res) => {
   try {
-    let userData = req.body;
+    let {userData} = req.body;
     const responseUpdate = await updateUserData({ userData });
     if (responseUpdate.success)
       return res.status(200).json(responseUpdate.success);
