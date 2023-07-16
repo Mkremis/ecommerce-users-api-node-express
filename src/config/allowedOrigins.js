@@ -1,1 +1,4 @@
-export const allowedOrigins = ["https://mkremis-opulent-dollop-gvgwrqvrvvvcw4r6-5173.preview.app.github.dev", "https://mkremis.github.io"];
+export const allowedOrigins = [
+  "https://8f3qkl-5173.csb.app",
+  "https://mkremis.github.io",
+];
