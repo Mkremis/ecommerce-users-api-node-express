@@ -17,22 +17,23 @@ import { corsOptions } from "./config/corsOptions.js";
 const app = express();
 app
 
-  .use(cookieParser())
+  // .use(cookieParser())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
   .use(credentials)
-  .use(cors(corsOptions))
+  .use(cors(corsOptions));
 
-  app.use(express.urlencoded({ extended: false }))
-  .use(morgan('dev'))
+app
+  .use(express.urlencoded({ extended: false }))
+  .use(morgan("dev"))
   .use(express.json())
-  
+
   .use(indexRoutes)
   .use("/api", usersRoutes)
   .use("/api", cartRoutes)
   .use("/api", payRoutes)
   .use("/api", orderRoutes)
-  .use("/api", likesRoutes)
+  .use("/api", likesRoutes);
 
 // .use(errorHandler);
 export default app;
