@@ -19,6 +19,7 @@ export const getUserData = async (req, res) => {
 
 //Login
 export const login = async (req, res) => {
+  console.log('cookie', req.cookies)
   try {
     const { body } = req;
     const { login_username, login_password } = body;
