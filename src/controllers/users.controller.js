@@ -19,7 +19,6 @@ export const getUserData = async (req, res) => {
 
 //Login
 export const login = async (req, res) => {
-  console.log('cookie', req.cookies)
   try {
     const { body } = req;
     const { login_username, login_password } = body;
@@ -34,14 +33,12 @@ export const login = async (req, res) => {
     if (responseUser === "INCORRECT_PASSWORD") {
       res.status(403).json({ message: responseUser });
     } else {
-      // res.cookie('accessToken', responseUser?.accessToken, {
-      //   httpOnly: true,
-      //   sameSite: "None",
-      //   secure: true,
-      //   maxAge: 24 * 60 * 60 * 1000,
-      // });
-      res.cookie("accessToken", responseUser?.accessToken);
-      res.cookie("refreshToken", responseUser?.refreshToken);
+      res.cookie("accessToken", responseUser?.accessToken, {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
       const { accessToken, refreshToken, userData } = responseUser;
       res.status(200).json({ accessToken, refreshToken, userData });
     }
