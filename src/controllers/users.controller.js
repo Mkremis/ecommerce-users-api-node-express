@@ -33,12 +33,15 @@ export const login = async (req, res) => {
     if (responseUser === "INCORRECT_PASSWORD") {
       res.status(403).json({ message: responseUser });
     } else {
-      res.cookie("accessToken", responseUser?.accessToken, {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
+      //  res.cookie("accessToken", responseUser?.accessToken, {
+      //   httpOnly: true,
+      //   sameSite: "None",
+      //   secure: true,
+      //   maxAge: 24 * 60 * 60 * 1000,
+      // });
+
+      res.cookie("accessToken", responseUser?.accessToken);
+      res.cookie("accessToken", responseUser?.refreshToken);
       const { accessToken, refreshToken, userData } = responseUser;
       res.status(200).json({ accessToken, refreshToken, userData });
     }
