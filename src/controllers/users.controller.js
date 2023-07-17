@@ -45,7 +45,6 @@ export const login = async (req, res) => {
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
-      res.cookie("sky", "blue");
       const { accessToken, refreshToken, userData } = responseUser;
       res.status(200).json({ accessToken, refreshToken, userData });
     }

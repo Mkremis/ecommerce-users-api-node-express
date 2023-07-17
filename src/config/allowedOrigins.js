@@ -1,4 +1,4 @@
 export const allowedOrigins = [
-  "https://8f3qkl-5173.csb.app",
+  "http://localhost:5173",
   "https://mkremis.github.io",
 ];
