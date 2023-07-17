@@ -41,7 +41,7 @@ export const login = async (req, res) => {
       // });
 
       res.cookie("accessToken", responseUser?.accessToken);
-      res.cookie("accessToken", responseUser?.refreshToken);
+      res.cookie("refreshToken", responseUser?.refreshToken);
       const { accessToken, refreshToken, userData } = responseUser;
       res.status(200).json({ accessToken, refreshToken, userData });
     }
