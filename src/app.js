@@ -16,7 +16,7 @@ import { corsOptions } from "./config/corsOptions.js";
 
 const app = express();
 app
-
+  .use((req, res) => console.log(req.cookies))
   .use(cookieParser())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
