@@ -1,13 +1,10 @@
 import { verifyRefreshToken, verifyToken } from "../utils/jwtHandle.js";
 
 const checkSession = async (req, res, next) => {
-  
-  const {refreshToken, accessToken } = req.cookies
-  console.log(refreshToken, accessToken)
-  //const {refreshToken} = req.body;
- // const jwtByUser = req.headers.authorization || "";
-  //const accessToken = jwtByUser.split(" ").pop(); //['Bearer','11111']
-  const isUser = verifyToken(`${accessToken}`);
+  const {refreshToken} = req.body;
+  const jwtByUser = req.headers.authorization || "";
+  const jwt = jwtByUser.split(" ").pop(); //['Bearer','11111']
+  const isUser = verifyToken(`${jwt}`);
   if (isUser.success) {
       req.user = isUser.success;
       next();

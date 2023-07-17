@@ -34,15 +34,15 @@ export const login = async (req, res) => {
       res.status(403).json({ message: responseUser });
     } else {
       res.cookie("accessToken", responseUser?.accessToken, {
-       // httpOnly: true,
+        httpOnly: true,
         sameSite: "None",
-       // secure: true,
+        secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
       res.cookie("refreshToken", responseUser?.refreshToken, {
-       // httpOnly: true,
+        httpOnly: true,
         sameSite: "None",
-       // secure: true,
+        secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
       const { accessToken, refreshToken, userData } = responseUser;
