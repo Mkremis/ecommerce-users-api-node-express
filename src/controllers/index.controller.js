@@ -1,4 +1,9 @@
-import { describeDB, pong, showTables } from "../services/index.services.js";
+import {
+  describeDB,
+  pong,
+  showTables,
+  createDB,
+} from "../services/index.services.js";
 
 export const ping = async (req, res) => {
   try {
@@ -12,6 +17,15 @@ export const ping = async (req, res) => {
 export const tables = async (req, res) => {
   try {
     const tables = showTables();
+    res.status(200).json({ tables });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+export const newDB = async (req, res) => {
+  try {
+    const tables = createDB();
     res.status(200).json({ tables });
   } catch (error) {
     res.status(500).json({ error });

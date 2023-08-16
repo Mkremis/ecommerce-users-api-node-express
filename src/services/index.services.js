@@ -1,4 +1,14 @@
 import { pool } from "../db.js";
+
+export const createDB = async () => {
+  try {
+    const [result] = await pool.query("CREATE DATABASE IF NOT EXISTS users;");
+    return result;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const pong = async () => {
   try {
     const [result] = await pool.query("SELECT 'pong' AS result");
