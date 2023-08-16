@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import morgan from "morgan";
+// import morgan from "morgan";
 
 import usersRoutes from "./routes/users.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
@@ -29,7 +29,7 @@ app
 
 app
   .use(express.urlencoded({ extended: false }))
-  .use(morgan("dev"))
+  // .use(morgan("dev"))
   .use(express.json())
 
   .use(indexRoutes)
