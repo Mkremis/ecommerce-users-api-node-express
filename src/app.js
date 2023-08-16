@@ -16,18 +16,13 @@ import { corsOptions } from "./config/corsOptions.js";
 
 const app = express();
 app
+  .use(cors(corsOptions))
+  // .use(credentials)
 
   .use(cookieParser())
   // Handle options credentials check - before CORS!
   // and fetch cookies credentials requirement
-  .use((req, res, next) => {
-    console.log(req.cookies);
-    next();
-  })
-  .use(credentials)
-  .use(cors(corsOptions));
 
-app
   .use(express.urlencoded({ extended: false }))
   // .use(morgan("dev"))
   .use(express.json())
