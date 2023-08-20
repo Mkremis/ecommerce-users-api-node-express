@@ -13,7 +13,7 @@ const router = Router();
 router
   .post("/users/refresh", handleRefreshToken)
   .post("/users/login", isUser, login)
-  .post("/users/dashboard/:username", checkSession, getUserData)
+  .get("/users/dashboard/:username", checkSession, getUserData)
   .post("/users/register", isUser, register)
   .put("/users/update",  checkSession, updateUser);
 
