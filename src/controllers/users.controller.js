@@ -1,16 +1,16 @@
 import {
-  getData,
-  loginUser,
+  getUserData,
+  getLoginData,
   registerNewUser,
   updateUserData,
 } from '../services/auth.services.js';
 
-//Dashboard
-export const getUserData = async (req, res) => {
+import { encrypt, verified } from '../utils/bcryptHandle.js';
+
+export const dashboard = async (req, res) => {
   try {
     const { username } = req.user;
-    console.log(username);
-    const responseData = await getData({ username });
+    const responseData = await getUserData({ username });
     if (responseData.success) return res.status(200).json(responseData.success);
     return res.status(404).json(responseData.fail);
   } catch (error) {
@@ -18,60 +18,55 @@ export const getUserData = async (req, res) => {
   }
 };
 
-//Login
 export const login = async (req, res) => {
   try {
     const { body } = req;
     const { login_username, login_password } = body;
-    if (!req.passwordHash)
+    if (!req.passwordHash) {
       return res.status(401).json({ message: 'NOT_USER_FOUND' });
-    const { passwordHash } = req;
-    const responseUser = await loginUser({
-      login_username,
-      login_password,
-      passwordHash,
-    });
-    if (responseUser === 'INCORRECT_PASSWORD') {
-      res.status(403).json({ message: responseUser });
-    } else {
-      res.cookie('accessToken', responseUser?.accessToken, {
-        httpOnly: process.env.NODE_ENV !== 'development',
-        secure: true,
-        sameSite: 'none',
-      });
-
-      const { userData } = responseUser;
-      res.status(200).json({ userData });
     }
+    const { passwordHash } = req;
+    const isCorrect = await verified(login_password, passwordHash);
+    if (!isCorrect) {
+      return res.status(401).json({ message: 'INCORRECT_CREDENTIALS' });
+    }
+    const accessToken = accessJWT(login_username);
+    const userData = await getLoginData(login_username);
+    res.cookie('accessToken', accessToken, {
+      httpOnly: process.env.NODE_ENV !== 'development',
+      secure: true,
+      sameSite: 'none',
+    });
+    res.status(200).json({ userData });
   } catch (error) {
     res.status(500).json({ error });
   }
 };
 
-//register
 export const register = async (req, res) => {
   try {
     if (req.passwordHash)
       return res.status(409).json({ message: 'ALREADY_USER' });
     let userData = req.body;
-    console.log(req.body);
-    const responseRegister = await registerNewUser({ userData });
-    if (responseRegister.success)
-      return res.status(200).json(responseRegister.success);
+    userData.login_password = await encrypt(userData.login_password);
+    const response = await registerNewUser({ userData });
+    if (response.success) {
+      return res.status(200).json(response.success);
+    }
     return res.status(409).json(responseRegister.fail);
   } catch (error) {
-    res.status(500).json({ error });
+    res.status(500).json({ error: error.message });
   }
 };
 
-//UPDATE USER
 export const updateUser = async (req, res) => {
   try {
-    let { userData } = req.body;
-    const responseUpdate = await updateUserData({ userData });
-    if (responseUpdate.success)
-      return res.status(200).json(responseUpdate.success);
-    return res.status(500).json(responseUpdate.fail);
+    const { userData } = req.body;
+    const response = await updateUserData({ userData });
+    if (response.success) {
+      return res.status(200).json(response.success);
+    }
+    return res.status(500).json(response.fail);
   } catch (error) {
     res.status(500).json({ error });
   }
