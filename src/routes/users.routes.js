@@ -5,14 +5,13 @@ import {
   login,
   updateUser,
   register,
-  getUserData,
+  dashboard,
 } from '../controllers/users.controller.js';
 
 const router = Router();
 router
-  .post('/users/refresh', handleRefreshToken)
   .post('/users/login', isUser, login)
-  .get('/users/dashboard/:username', checkSession, getUserData)
+  .get('/users/dashboard/:username', checkSession, dashboard)
   .post('/users/register', isUser, register)
   .put('/users/update', checkSession, updateUser);
 
