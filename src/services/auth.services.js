@@ -1,7 +1,6 @@
 import { pool } from '../db.js';
 
 const registerNewUser = async ({ userData }) => {
-  console.log('register data', userData)
   try {
     const [rows] = await pool.query(
       'INSERT INTO users (login_password, login_username, fullname_title, fullname_first, fullname_last, contact_email, contact_phone, picture_thumbnail, location_city, location_state, location_number, location_street, location_country, location_postcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -80,8 +79,6 @@ const updateUserData = async ({ userData }) => {
       userData.location_postcode,
       userData.login_username, // Agregado el valor para el WHERE
     ]);
-
-    console.log(rows);
     return { success: rows };
   } catch (error) {
     return { fail: error };

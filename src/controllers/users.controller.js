@@ -38,7 +38,6 @@ export const login = async (req, res) => {
       secure: true,
       sameSite: 'none',
     });
-    console.log(userData);
     res.status(200).json({ userData });
   } catch (error) {
     res.status(500).json({ error });
@@ -47,7 +46,6 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    console.log(req.passwordHash);
     if (('req.passwordHash', req.passwordHash)) {
       return res.status(409).json({ message: 'ALREADY_USER' });
     }
@@ -55,7 +53,6 @@ export const register = async (req, res) => {
     console.log(userData);
     userData.login_password = await encrypt(userData.login_password);
     const response = await registerNewUser({ userData });
-    console.log('response', response);
     if (response.success) {
       return res.status(200).json(response.success);
     }
