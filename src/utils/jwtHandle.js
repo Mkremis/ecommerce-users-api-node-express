@@ -8,7 +8,7 @@ const accessJWT = (username) => {
   const accessToken = sign({ username }, process.env.JWT_SECRET, {
     expiresIn: '1d',
   });
-  return accessToken;
+  return accessToken; 
 };
 
 const verifyToken = (jwt) => {

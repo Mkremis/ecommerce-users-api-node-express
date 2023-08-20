@@ -6,6 +6,7 @@ import {
 } from '../services/auth.services.js';
 
 import { encrypt, verified } from '../utils/bcryptHandle.js';
+import { accessJWT } from '../utils/jwtHandle.js';
 
 export const dashboard = async (req, res) => {
   try {
