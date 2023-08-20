@@ -8,7 +8,8 @@ import {
 //Dashboard
 export const getUserData = async (req, res) => {
   try {
-    const { username } = req.params;
+    const { username } = req.user;
+    console.log(username);
     const responseData = await getData({ username });
     if (responseData.success) return res.status(200).json(responseData.success);
     return res.status(404).json(responseData.fail);
