@@ -38,6 +38,7 @@ export const login = async (req, res) => {
       secure: true,
       sameSite: 'none',
     });
+    console.log(userData);
     res.status(200).json({ userData });
   } catch (error) {
     res.status(500).json({ error });
@@ -46,11 +47,15 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    if (req.passwordHash)
+    console.log(req.passwordHash);
+    if (('req.passwordHash', req.passwordHash)) {
       return res.status(409).json({ message: 'ALREADY_USER' });
+    }
     let userData = req.body;
+    console.log(userData);
     userData.login_password = await encrypt(userData.login_password);
     const response = await registerNewUser({ userData });
+    console.log('response', response);
     if (response.success) {
       return res.status(200).json(response.success);
     }
@@ -65,7 +70,6 @@ export const updateUser = async (req, res) => {
     const { userData } = req.body;
     userData.login_password = await encrypt(userData.login_password);
     const response = await updateUserData({ userData });
-    console.log('response', response);
     if (response.success) {
       return res.status(200).json(response.success);
     }
