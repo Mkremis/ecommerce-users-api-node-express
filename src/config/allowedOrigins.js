@@ -1,4 +1,5 @@
 export const allowedOrigins = [
-  "http://localhost:5173",
-  "https://mkremis.github.io",
+  'https://localhost:3000',
+  'https://mkremis.github.io',
+  'https://wmryv5-5173.csb.app',
 ];

@@ -3,7 +3,7 @@ import {
   loginUser,
   registerNewUser,
   updateUserData,
-} from "../services/auth.services.js";
+} from '../services/auth.services.js';
 
 //Dashboard
 export const getUserData = async (req, res) => {
@@ -23,30 +23,24 @@ export const login = async (req, res) => {
     const { body } = req;
     const { login_username, login_password } = body;
     if (!req.passwordHash)
-      return res.status(401).json({ message: "NOT_USER_FOUND" });
+      return res.status(401).json({ message: 'NOT_USER_FOUND' });
     const { passwordHash } = req;
     const responseUser = await loginUser({
       login_username,
       login_password,
       passwordHash,
     });
-    if (responseUser === "INCORRECT_PASSWORD") {
+    if (responseUser === 'INCORRECT_PASSWORD') {
       res.status(403).json({ message: responseUser });
     } else {
-      res.cookie("accessToken", responseUser?.accessToken, {
-        httpOnly: true,
-        sameSite: "None",
+      res.cookie('accessToken', responseUser?.accessToken, {
+        httpOnly: process.env.NODE_ENV !== 'development',
         secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: 'none',
       });
-      res.cookie("refreshToken", responseUser?.refreshToken, {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-      const { accessToken, refreshToken, userData } = responseUser;
-      res.status(200).json({ accessToken, refreshToken, userData });
+
+      const { userData } = responseUser;
+      res.status(200).json({ userData });
     }
   } catch (error) {
     res.status(500).json({ error });
@@ -57,7 +51,7 @@ export const login = async (req, res) => {
 export const register = async (req, res) => {
   try {
     if (req.passwordHash)
-      return res.status(409).json({ message: "ALREADY_USER" });
+      return res.status(409).json({ message: 'ALREADY_USER' });
     let userData = req.body;
     console.log(req.body);
     const responseRegister = await registerNewUser({ userData });
