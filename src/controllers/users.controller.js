@@ -63,7 +63,7 @@ export const register = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { userData } = req.body;
-    console.log(userData);
+    userData.login_password = await encrypt(userData.login_password);
     const response = await updateUserData({ userData });
     console.log('response', response);
     if (response.success) {

@@ -41,7 +41,7 @@ const getUserData = async ({ username }) => {
 };
 
 const updateUserData = async ({ userData }) => {
-  userData.login_password = await encrypt(userData.login_password);
+  console.log(userData);
   try {
     const query = `
       UPDATE users 
@@ -81,6 +81,7 @@ const updateUserData = async ({ userData }) => {
       userData.login_username, // Agregado el valor para el WHERE
     ]);
 
+    console.log(rows);
     return { success: rows };
   } catch (error) {
     return { fail: error };
