@@ -78,3 +78,8 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ error });
   }
 };
+
+export const logout = async (req, res) => {
+  res.clearCookie('accessToken', { httpOnly: true });
+  res.status(200).json({ message: 'User logged out successfully' });
+};
