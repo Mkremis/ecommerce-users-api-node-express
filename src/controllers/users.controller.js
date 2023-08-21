@@ -82,7 +82,9 @@ export const logout = async (req, res) => {
 
 export const reloadSession = async (req, res) => {
   try {
+    console.log(req.user);
     const userData = await getLoginData(req.user);
+    console.log(userData);
     res.status(200).json({ userData });
   } catch (error) {
     res.status(500).json({ error });
