@@ -50,7 +50,6 @@ export const register = async (req, res) => {
       return res.status(409).json({ message: 'ALREADY_USER' });
     }
     let userData = req.body;
-    console.log(userData);
     userData.login_password = await encrypt(userData.login_password);
     const response = await registerNewUser({ userData });
     if (response.success) {
@@ -79,4 +78,13 @@ export const updateUser = async (req, res) => {
 export const logout = async (req, res) => {
   res.clearCookie('accessToken', { httpOnly: true });
   res.status(200).json({ message: 'User logged out successfully' });
+};
+
+export const verifyToken = async (req, res) => {
+  try {
+    const userData = await getLoginData(req.user);
+    res.status(200).json({ userData });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };

@@ -15,6 +15,7 @@ router
   .post('/users/register', isUser, register)
   .get('/users/logout', checkSession, logout)
   .get('/users/dashboard/:username', checkSession, dashboard)
-  .put('/users/update', checkSession, updateUser);
+  .put('/users/update', checkSession, updateUser)
+  .get('/verify', checkSession, verifyToken);
 
 export default router;
