@@ -1,6 +1,5 @@
-import { getUserLikes, likesUpdate } from "../services/likes.services.js";
+import { getUserLikes, likesUpdate } from '../services/likes.services.js';
 
-//GET LIKES
 export const getLikes = async (req, res) => {
   const { username } = req.params;
   try {

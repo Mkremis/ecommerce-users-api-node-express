@@ -1,10 +1,10 @@
-import { Router } from "express";
-import { checkSession } from "../middlewares/checkSession.js";
-import { getLikes, updateLikes } from "../controllers/likes.controller.js";
+import { Router } from 'express';
+import { checkSession } from '../middlewares/checkSession.js';
+import { getLikes, updateLikes } from '../controllers/likes.controller.js';
 const router = Router();
 
 router
-  .post("/users/:username/likes", checkSession, getLikes)
-  .put("/users/:username/update-likes", checkSession, updateLikes);
+  .get('/users/:username/likes', checkSession, getLikes)
+  .put('/users/:username/update-likes', checkSession, updateLikes);
 
 export default router;
