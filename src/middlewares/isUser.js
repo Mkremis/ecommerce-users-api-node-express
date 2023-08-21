@@ -1,8 +1,7 @@
 import { pool } from '../db.js';
 
 const isUser = async (req, res, next) => {
-  const { body } = req;
-  const { login_username, login_password } = body;
+  const { login_username, login_password } = req.body;
   // if (!login_username || !login_password)
   //   return res
   //     .status(400)

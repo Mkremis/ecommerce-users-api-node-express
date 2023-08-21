@@ -49,7 +49,7 @@ export const register = async (req, res) => {
     if (('req.passwordHash', req.passwordHash)) {
       return res.status(409).json({ message: 'ALREADY_USER' });
     }
-    let { userData } = req.body;
+    let userData = req.body;
     console.log('register', userData);
     userData.login_password = await encrypt(userData.login_password);
     const response = await registerNewUser({ userData });
@@ -64,7 +64,7 @@ export const register = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const { userData } = req.body;
+    const userData = req.body;
     console.log('update', userData);
     userData.login_password = await encrypt(userData.login_password);
     const response = await updateUserData({ userData });
