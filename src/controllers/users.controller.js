@@ -80,7 +80,7 @@ export const logout = async (req, res) => {
   res.status(200).json({ message: 'User logged out successfully' });
 };
 
-export const verifyToken = async (req, res) => {
+export const reloadSession = async (req, res) => {
   try {
     const userData = await getLoginData(req.user);
     res.status(200).json({ userData });

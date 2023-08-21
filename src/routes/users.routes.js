@@ -7,6 +7,7 @@ import {
   register,
   dashboard,
   logout,
+  reloadSession,
 } from '../controllers/users.controller.js';
 
 const router = Router();
@@ -16,6 +17,6 @@ router
   .get('/users/logout', checkSession, logout)
   .get('/users/dashboard/:username', checkSession, dashboard)
   .put('/users/update', checkSession, updateUser)
-  .get('/verify', checkSession, verifyToken);
+  .get('/verify', checkSession, reloadSession);
 
 export default router;
