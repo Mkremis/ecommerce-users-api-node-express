@@ -82,8 +82,8 @@ export const logout = async (req, res) => {
 
 export const reloadSession = async (req, res) => {
   try {
-    console.log(req.user);
-    const userData = await getLoginData(req.user);
+    const { username } = req.user;
+    const userData = await getLoginData(username);
     console.log(userData);
     res.status(200).json({ userData });
   } catch (error) {
