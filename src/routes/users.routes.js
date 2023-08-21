@@ -17,6 +17,6 @@ router
   .get('/users/logout', checkSession, logout)
   .get('/users/dashboard/:username', checkSession, dashboard)
   .put('/users/update', checkSession, updateUser)
-  .get('/verify', checkSession, reloadSession);
+  .get('/users/reload', checkSession, reloadSession);
 
 export default router;
