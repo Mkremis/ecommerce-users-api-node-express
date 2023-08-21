@@ -3,7 +3,6 @@ import cors from 'cors';
 import { corsOptions } from './config/corsOptions.js';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import { errorHandler } from './middlewares/errorHandler.js';
 
 import usersRoutes from './routes/users.routes.js';
 import cartRoutes from './routes/cart.routes.js';

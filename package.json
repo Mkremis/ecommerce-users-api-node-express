@@ -27,7 +27,8 @@
     "jsonwebtoken": "^9.0.0",
     "mercadopago": "^1.5.16",
     "mysql2": "^3.2.3",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "morgan": "^1.10.0",

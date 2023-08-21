@@ -9,11 +9,13 @@ import {
   logout,
   reloadSession,
 } from '../controllers/users.controller.js';
+import { validateSchema } from '../middlewares/validateSchema.js';
+import { loginSchema, registerSchema } from '../schemas/users.schema.js';
 
 const router = Router();
 router
-  .post('/users/login', isUser, login)
-  .post('/users/register', isUser, register)
+  .post('/users/login', validateSchema(loginSchema), isUser, login)
+  .post('/users/register', validateSchema(registerSchema), isUser, register)
   .get('/users/logout', checkSession, logout)
   .get('/users/dashboard/:username', checkSession, dashboard)
   .put('/users/update', checkSession, updateUser)
