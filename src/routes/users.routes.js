@@ -12,9 +12,9 @@ import {
 const router = Router();
 router
   .post('/users/login', isUser, login)
-  .get('/users/dashboard/:username', checkSession, dashboard)
-  .get('/users/logout', checkSession, logout)
   .post('/users/register', isUser, register)
+  .get('/users/logout', checkSession, logout)
+  .get('/users/dashboard/:username', checkSession, dashboard)
   .put('/users/update', checkSession, updateUser);
 
 export default router;
