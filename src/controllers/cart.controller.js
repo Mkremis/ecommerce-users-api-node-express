@@ -1,4 +1,4 @@
-import { cartUpdate, getUserCart } from "../services/cart.services.js";
+import { cartUpdate, getUserCart } from '../services/cart.services.js';
 
 //GET CART
 export const getCart = async (req, res) => {
@@ -11,7 +11,6 @@ export const getCart = async (req, res) => {
   }
 };
 
-//PUT CART
 export const updateCart = async (req, res) => {
   const { username } = req.params;
   const cart = JSON.stringify(req.body.cart);
