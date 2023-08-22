@@ -55,9 +55,9 @@ export const register = async (req, res) => {
     userData.login_password = await encrypt(userData.login_password);
     const response = await registerNewUser({ userData });
     if (response.success) {
-      return res.status(200).json(response.success);
+      return res.status(200).json({ message: [response.success] });
     }
-    return res.status(409).json(responseRegister.fail);
+    return res.status(409).json({ message: [responseRegister.fail] });
   } catch (error) {
     res.status(500).json({ error: [error.message] });
   }
@@ -69,11 +69,11 @@ export const updateUser = async (req, res) => {
     userData.login_password = await encrypt(userData.login_password);
     const response = await updateUserData({ userData });
     if (response.success) {
-      return res.status(200).json(response.success);
+      return res.status(200).json({ message: [response.success] });
     }
-    return res.status(500).json(response.fail);
+    return res.status(500).json({ message: [response.fail] });
   } catch (error) {
-    res.status(500).json({ error });
+    res.status(500).json({  message: [error.message] }});
   }
 };
 
