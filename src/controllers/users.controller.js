@@ -24,12 +24,12 @@ export const login = async (req, res) => {
     const { body } = req;
     const { login_username, login_password } = body;
     if (!req.passwordHash) {
-      return res.status(401).json({ message: 'NOT_USER_FOUND' });
+      return res.status(401).json({ message: ['NOT_USER_FOUND'] });
     }
     const { passwordHash } = req;
     const isCorrect = await verified(login_password, passwordHash);
     if (!isCorrect) {
-      return res.status(401).json({ message: 'INCORRECT_CREDENTIALS' });
+      return res.status(401).json({ message: ['INCORRECT_CREDENTIALS'] });
     }
     const accessToken = accessJWT(login_username);
     const userData = await getLoginData(login_username);
@@ -50,7 +50,6 @@ export const register = async (req, res) => {
       return res.status(409).json({ message: 'ALREADY_USER' });
     }
     let userData = req.body;
-    console.log('register', userData);
     userData.login_password = await encrypt(userData.login_password);
     const response = await registerNewUser({ userData });
     if (response.success) {
@@ -65,7 +64,6 @@ export const register = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const userData = req.body;
-    console.log('update', userData);
     userData.login_password = await encrypt(userData.login_password);
     const response = await updateUserData({ userData });
     if (response.success) {
