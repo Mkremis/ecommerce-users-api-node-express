@@ -21,9 +21,9 @@ const registerNewUser = async ({ userData }) => {
         userData.location_postcode,
       ]
     );
-    if (rows.affectedRows) return { success: rows };
+    if (rows.affectedRows) return { success: [rows] };
   } catch (error) {
-    return { fail: error };
+    return { fail: [error.message] };
   }
 };
 
