@@ -13,9 +13,9 @@ export const dashboard = async (req, res) => {
     const { username } = req.user;
     const responseData = await getUserData({ username });
     if (responseData.success) return res.status(200).json(responseData.success);
-    return res.status(404).json(responseData.fail);
+    return res.status(404).json({ message: responseData.fail });
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
