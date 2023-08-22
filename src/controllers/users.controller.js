@@ -73,7 +73,7 @@ export const updateUser = async (req, res) => {
     }
     return res.status(500).json({ message: [response.fail] });
   } catch (error) {
-    res.status(500).json({  message: [error.message] }});
+    res.status(500).json({ message: [error.message] });
   }
 };
 
