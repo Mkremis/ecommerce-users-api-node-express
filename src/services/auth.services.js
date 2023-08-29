@@ -1,42 +1,12 @@
 import { pool } from "../db.js";
 
 const registerNewUser = async ({ userData }) => {
-  const {
-    login_username,
-    login_password,
-    fullname_title,
-    fullname_first,
-    fullname_last,
-    contact_email,
-    contact_phone,
-    picture_thumbnail,
-    location_city,
-    location_state,
-    location_number,
-    location_street,
-    location_country,
-    location_postcode,
-  } = userData;
   try {
-    const [rows] = await pool.query("INSERT INTO users SET ?", {
-      login_username,
-      login_password,
-      fullname_title,
-      fullname_first,
-      fullname_last,
-      contact_email,
-      contact_phone,
-      picture_thumbnail,
-      location_city,
-      location_state,
-      location_number,
-      location_street,
-      location_country,
-      location_postcode,
-    });
+    const [rows] = await pool.query("INSERT INTO users SET ?", userData);
     if (rows.affectedRows) return { success: [rows] };
   } catch (error) {
-    return { fail: [error.message] };
+    console.log(error);
+    return { fail: error.sqlMessage };
   }
 };
 
@@ -49,7 +19,7 @@ const getUserData = async ({ username }) => {
     const data = { user: rows[0] };
     return { success: data };
   } catch (error) {
-    return { fail: error };
+    return { fail: error.sqlMessage };
   }
 };
 
@@ -61,7 +31,8 @@ const updateUserData = async ({ userData }) => {
     );
     return { success: rows };
   } catch (error) {
-    return { fail: error };
+    console.log(error.sqlMessage);
+    return { fail: error.sqlMessage };
   }
 };
 
@@ -74,7 +45,7 @@ const getLoginData = async (username) => {
     const userData = rows[0];
     return userData;
   } catch (error) {
-    return { fail: error };
+    return { fail: error.sqlMessage };
   }
 };
 
