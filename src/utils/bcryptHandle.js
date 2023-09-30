@@ -6,9 +6,9 @@ const encrypt = async (pass) => {
   return passwordHash;
 };
 
-const verified = (pass, passHash) => {
+const verify = (pass, passHash) => {
   const isCorrect = compare(pass, passHash);
   return isCorrect;
 };
 
-export { encrypt, verified };
+export { encrypt, verify };

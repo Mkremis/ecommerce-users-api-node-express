@@ -10,7 +10,11 @@ import {
   reloadSession,
 } from "../controllers/users.controller.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
-import { loginSchema, registerSchema } from "../schemas/users.schema.js";
+import {
+  loginSchema,
+  registerSchema,
+  updateSchema,
+} from "../schemas/users.schema.js";
 
 const router = Router();
 router
@@ -18,10 +22,10 @@ router
   .post("/users/register", validateSchema(registerSchema), isUser, register)
   .get("/users/logout", checkSession, logout)
   .get("/users/dashboard", checkSession, dashboard)
-  .put(
+  .patch(
     "/users/update",
     checkSession,
-    validateSchema(registerSchema),
+    validateSchema(updateSchema),
     updateUser
   )
   .get("/users/reload", checkSession, reloadSession);

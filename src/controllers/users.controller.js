@@ -1,17 +1,13 @@
-import {
-  getUserData,
-  getLoginData,
-  registerNewUser,
-  updateUserData,
-} from "../services/auth.services.js";
-
-import { encrypt, verified } from "../utils/bcryptHandle.js";
+import PostgreSQLAdapter from "../adapters/postgres.js";
+import { encrypt, verify } from "../utils/bcryptHandle.js";
 import { accessJWT } from "../utils/jwtHandle.js";
+
+const db = new PostgreSQLAdapter();
 
 export const dashboard = async (req, res) => {
   try {
     const { username } = req.user;
-    const responseData = await getUserData({ username });
+    const responseData = await db.getUserByUsername({ username });
     if (responseData.success) return res.status(200).json(responseData.success);
     return res.status(404).json({ message: responseData.fail });
   } catch (error) {
@@ -23,16 +19,17 @@ export const login = async (req, res) => {
   try {
     const { body } = req;
     const { login_username, login_password } = body;
+    console.log(login_username, login_password, req.passwordHash);
     if (!req.passwordHash) {
       return res.status(401).json({ message: ["Not user found"] });
     }
     const { passwordHash } = req;
-    const isCorrect = await verified(login_password, passwordHash);
+    const isCorrect = await verify(login_password, passwordHash);
     if (!isCorrect) {
       return res.status(401).json({ message: ["Incorrect credentials"] });
     }
     const accessToken = accessJWT(login_username);
-    const userData = await getLoginData(login_username);
+    const userData = await db.getLoginData(login_username);
     res.cookie("accessToken", accessToken, {
       httpOnly: process.env.NODE_ENV !== "development",
       secure: true,
@@ -46,14 +43,14 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    if (("req.passwordHash", req.passwordHash)) {
+    if (req.passwordHash) {
       return res
         .status(409)
         .json({ message: ["Already user with this username"] });
     }
     let userData = req.body;
     userData.login_password = await encrypt(userData.login_password);
-    const response = await registerNewUser({ userData });
+    const response = await db.registerNewUser({ userData });
     if (response.success) {
       return res.status(200).json({ message: [response.success] });
     }
@@ -66,13 +63,16 @@ export const register = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const userData = req.body;
-    userData.login_password = await encrypt(userData.login_password);
-    const response = await updateUserData({ userData });
+    if (userData.login_password) {
+      userData.login_password = await encrypt(userData.login_password);
+    }
+    const response = await db.updateUserData({ userData });
     if (response.success) {
       return res.status(200).json({ message: [response.success] });
     }
     return res.status(500).json({ message: [response.fail] });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: [error.message] });
   }
 };
@@ -85,7 +85,7 @@ export const logout = async (req, res) => {
 export const reloadSession = async (req, res) => {
   try {
     const { username } = req.user;
-    const userData = await getLoginData(username);
+    const userData = await db.getLoginData(username);
     res.status(200).json({ userData });
   } catch (error) {
     res.status(500).json({ error });
