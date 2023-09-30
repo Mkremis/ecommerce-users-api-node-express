@@ -17,8 +17,6 @@ export const dashboard = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { body } = req;
-    const { login_username, login_password } = body;
     console.log(login_username, login_password, req.passwordHash);
     if (!req.passwordHash) {
       return res.status(401).json({ message: ["Not user found"] });
