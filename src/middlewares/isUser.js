@@ -10,7 +10,7 @@ const isUser = async (req, res, next) => {
     }
 
     const response = await db.getUserByUsername(login_username);
-
+    console.log(response);
     if (response.success) {
       req.passwordHash = response.success.user.login_password;
     }
