@@ -3,7 +3,6 @@ import { verifyToken } from "../utils/jwtHandle.js";
 const checkSession = async (req, res, next) => {
   try {
     const { accessToken } = req.cookies;
-    console.log(accessToken);
     if (!accessToken) {
       return res
         .status(401)

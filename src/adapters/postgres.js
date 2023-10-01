@@ -116,6 +116,112 @@ class PostgreSQLAdapter {
       return { fail: error.message };
     }
   }
+
+  async getUserCart({ username }) {
+    try {
+      const id = await this.getUserId({ username });
+      if (id) {
+        const query = {
+          text: "SELECT user_cart FROM users_carts WHERE user_id = $1",
+          values: [id],
+        };
+        const {
+          rows: [{ user_cart }],
+        } = await this.pool.query(query);
+        return { success: user_cart };
+      } else {
+        throw error; // Puedes manejar este error en el controlador
+      }
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
+
+  async updateUserCart({ username, cart }) {
+    try {
+      const id = await this.getUserId({ username });
+      if (id) {
+        const query = {
+          text: `
+        INSERT INTO users_carts (user_id, user_cart)
+        VALUES ($1, $2)
+        ON CONFLICT (user_id)
+        DO UPDATE SET user_cart = $2
+      `,
+          values: [id, cart],
+        };
+        const { rowCount } = await this.pool.query(query);
+        return { success: rowCount };
+      } else {
+        throw error; // Puedes manejar este error en el controlador
+      }
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
+
+  async getUserLikes({ username }) {
+    try {
+      const id = await this.getUserId({ username });
+      if (id) {
+        const query = {
+          text: "SELECT user_likes FROM users_likes WHERE user_id = $1",
+          values: [id],
+        };
+        const {
+          rows: [{ user_likes }],
+        } = await this.pool.query(query);
+        return { success: user_likes };
+      } else {
+        throw error; // Puedes manejar este error en el controlador
+      }
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
+
+  async updateUserLikes({ username, likes }) {
+    try {
+      const id = await this.getUserId({ username });
+      if (id) {
+        const query = {
+          text: `
+        INSERT INTO users_likes (user_id, user_likes)
+        VALUES ($1, $2)
+        ON CONFLICT (user_id)
+        DO UPDATE SET user_likes = $2
+      `,
+          values: [id, likes],
+        };
+        const { rowCount } = await this.pool.query(query);
+        return { success: rowCount };
+      } else {
+        throw error; // Puedes manejar este error en el controlador
+      }
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
+
+  async getUserId({ username }) {
+    try {
+      const query = {
+        text: "SELECT id FROM users WHERE login_username = $1",
+        values: [username],
+      };
+      const {
+        rows: [{ id }],
+      } = await this.pool.query(query);
+      return id;
+    } catch (error) {
+      console.log(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
 }
 
 export default PostgreSQLAdapter;

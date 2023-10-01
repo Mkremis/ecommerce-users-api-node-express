@@ -1,22 +1,24 @@
-// import { getUserLikes, likesUpdate } from '../services/likes.services.js';
+import PostgreSQLAdapter from "../adapters/postgres.js";
+const db = new PostgreSQLAdapter();
 
-// export const getLikes = async (req, res) => {
-//   const { username } = req.params;
-//   try {
-//     const response = await getUserLikes({ username });
-//     res.status(200).json(response.success);
-//   } catch (error) {
-//     return res.status(500).json({ error });
-//   }
-// };
+export const getLikes = async (req, res) => {
+  const { username } = req.params;
+  try {
+    const response = await db.getUserLikes({ username });
+    if (response.success) res.status(200).json(response.success);
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};
 
-// export const updateLikes = async (req, res) => {
-//   const { username } = req.params;
-//   const likes = JSON.stringify(req.body.likes);
-//   try {
-//     const response = await likesUpdate({ username, likes });
-//     res.status(200).json({ response });
-//   } catch (error) {
-//     return res.status(500).json({ error });
-//   }
-// };
+export const updateLikes = async (req, res) => {
+  const { username } = req.params;
+  const likes = JSON.stringify(req.body);
+  try {
+    const response = await db.updateUserLikes({ username, likes });
+    if (response.success)
+      res.status(200).json({ message: "Likes updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};
