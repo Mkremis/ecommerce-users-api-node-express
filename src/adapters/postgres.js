@@ -51,7 +51,7 @@ class PostgreSQLAdapter {
     }
   }
 
-  async getUserByUsername(username) {
+  async getUserByUsername({ username }) {
     try {
       const query = {
         text: "SELECT * FROM users WHERE login_username = $1",
@@ -59,8 +59,8 @@ class PostgreSQLAdapter {
       };
       const { rows } = await this.pool.query(query);
       if (rows.length > 0) {
-        const data = { user: rows[0] };
-        return { success: data };
+        const user_data = rows[0];
+        return { success: user_data };
       } else {
         return { fail: "User not found" };
       }
@@ -99,36 +99,21 @@ class PostgreSQLAdapter {
     }
   }
 
-  async getLoginData(username) {
+  async getUserCart({ username, id = null }) {
     try {
-      const query = {
-        text: "SELECT login_username, fullname_title, fullname_first, fullname_last, picture_thumbnail, location_city, location_state, location_number, location_street, location_country, location_postcode FROM users WHERE login_username = $1",
-        values: [username],
-      };
-      const { rows } = await this.pool.query(query);
-      if (rows.length > 0) {
-        return rows[0];
-      } else {
-        return { fail: "User not found" };
-      }
-    } catch (error) {
-      console.error(error);
-      return { fail: error.message };
-    }
-  }
-
-  async getUserCart({ username }) {
-    try {
-      const id = await this.getUserId({ username });
+      console.log("id", id);
+      if (!id) id = await this.getUserId({ username });
       if (id) {
         const query = {
           text: "SELECT user_cart FROM users_carts WHERE user_id = $1",
           values: [id],
         };
-        const {
-          rows: [{ user_cart }],
-        } = await this.pool.query(query);
-        return { success: user_cart };
+        const { rows } = await this.pool.query(query);
+        if (rows.length > 0) {
+          return { success: rows[0] };
+        } else {
+          return { success: { user_cart: {} } };
+        }
       } else {
         throw error; // Puedes manejar este error en el controlador
       }
@@ -162,18 +147,21 @@ class PostgreSQLAdapter {
     }
   }
 
-  async getUserLikes({ username }) {
+  async getUserLikes({ username, id = null }) {
     try {
-      const id = await this.getUserId({ username });
+      console.log("id", id);
+      if (!id) id = await this.getUserId({ username });
       if (id) {
         const query = {
           text: "SELECT user_likes FROM users_likes WHERE user_id = $1",
           values: [id],
         };
-        const {
-          rows: [{ user_likes }],
-        } = await this.pool.query(query);
-        return { success: user_likes };
+        const { rows } = await this.pool.query(query);
+        if (rows.length > 0) {
+          return { success: rows[0] };
+        } else {
+          return { success: { user_likes: [] } };
+        }
       } else {
         throw error; // Puedes manejar este error en el controlador
       }

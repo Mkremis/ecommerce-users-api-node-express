@@ -7,6 +7,7 @@ const db = new PostgreSQLAdapter();
 export const dashboard = async (req, res) => {
   try {
     const { username } = req.user;
+    console.log(username);
     const responseData = await db.getUserByUsername({ username });
     if (responseData.success) return res.status(200).json(responseData.success);
     return res.status(404).json({ message: responseData.fail });
@@ -18,22 +19,29 @@ export const dashboard = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { login_username, login_password } = req.body;
-    if (!req.passwordHash) {
+    if (!req.user_data) {
       return res.status(401).json({ message: ["Not user found"] });
     }
-    const { passwordHash } = req;
+    const passwordHash = req.user_data.login_password;
     const isCorrect = await verify(login_password, passwordHash);
     if (!isCorrect) {
       return res.status(401).json({ message: ["Incorrect credentials"] });
     }
     const accessToken = accessJWT(login_username);
-    const userData = await db.getLoginData(login_username);
     res.cookie("accessToken", accessToken, {
       httpOnly: process.env.NODE_ENV !== "development",
       secure: true,
       sameSite: "none",
     });
-    res.status(200).json({ userData });
+    const { user_data } = req;
+    const { username } = req.user_data;
+    const { id } = req.user_data;
+    const { success: user_likes } = await db.getUserLikes({ username, id });
+    const { success: user_cart } = await db.getUserCart({ username, id });
+
+    delete user_data.login_password;
+    delete user_data.id;
+    res.status(200).json({ user_data, ...user_cart, ...user_likes });
   } catch (error) {
     console.log(error);
 

@@ -9,10 +9,9 @@ const isUser = async (req, res, next) => {
       throw new Error("username and password are required");
     }
 
-    const response = await db.getUserByUsername(login_username);
-    console.log(response);
+    const response = await db.getUserByUsername({ username: login_username });
     if (response.success) {
-      req.passwordHash = response.success.user.login_password;
+      req.user_data = response.success;
     }
     next();
   } catch (error) {
