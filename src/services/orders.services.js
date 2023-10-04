@@ -3,7 +3,7 @@
 // export const getOrders = async ({ username }) => {
 //   try {
 //     const [rows] = await pool.query(
-//       `SELECT * FROM sales WHERE login_username = ?`,
+//       `SELECT * FROM sales WHERE username = ?`,
 //       username
 //     );
 //     const data = { orders: rows };

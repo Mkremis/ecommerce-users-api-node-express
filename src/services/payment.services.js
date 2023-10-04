@@ -7,7 +7,7 @@
 //       console.log("registerSale", item);
 //       await pool.query(
 //         `INSERT INTO sales (
-//         login_username,
+//         username,
 //         transactionType,
 //         transactionDate,
 //         gender,

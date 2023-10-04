@@ -3,7 +3,7 @@
 // export const likesUpdate = async ({ username, likes }) => {
 //   try {
 //     const [rows] = await pool.query(
-//       "UPDATE users SET user_likes = ? WHERE login_username = ?",
+//       "UPDATE users SET user_likes = ? WHERE username = ?",
 //       [likes, username]
 //     );
 //     if (rows.affectedRows) return { success: rows };
@@ -15,7 +15,7 @@
 // export const getUserLikes = async ({ username }) => {
 //   try {
 //     const [rows] = await pool.query(
-//       `SELECT user_likes FROM users WHERE login_username = ?`,
+//       `SELECT user_likes FROM users WHERE username = ?`,
 //       username
 //     );
 //     return { success: rows[0] };

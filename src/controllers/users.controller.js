@@ -18,28 +18,27 @@ export const dashboard = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { login_username, login_password } = req.body;
+    const { username, password } = req.body;
     if (!req.user_data) {
       return res.status(401).json({ message: ["Not user found"] });
     }
-    const passwordHash = req.user_data.login_password;
-    const isCorrect = await verify(login_password, passwordHash);
+    const passwordHash = req.user_data.password;
+    const isCorrect = await verify(password, passwordHash);
     if (!isCorrect) {
       return res.status(401).json({ message: ["Incorrect credentials"] });
     }
-    const accessToken = accessJWT(login_username);
+    const accessToken = accessJWT(username);
     res.cookie("accessToken", accessToken, {
       httpOnly: process.env.NODE_ENV !== "development",
       secure: true,
       sameSite: "none",
     });
     const { user_data } = req;
-    const { username } = req.user_data;
     const { id } = req.user_data;
     const { success: user_likes } = await db.getUserLikes({ username, id });
     const { success: user_cart } = await db.getUserCart({ username, id });
 
-    delete user_data.login_password;
+    delete user_data.password;
     delete user_data.id;
     res.status(200).json({ user_data, ...user_cart, ...user_likes });
   } catch (error) {
@@ -57,7 +56,7 @@ export const register = async (req, res) => {
         .json({ message: ["Already user with this username"] });
     }
     let userData = req.body;
-    userData.login_password = await encrypt(userData.login_password);
+    userData.password = await encrypt(userData.password);
     const response = await db.registerNewUser({ userData });
     if (response.success) {
       return res.status(200).json({ message: [response.success] });
@@ -71,8 +70,8 @@ export const register = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const userData = req.body;
-    if (userData.login_password) {
-      userData.login_password = await encrypt(userData.login_password);
+    if (userData.password) {
+      userData.password = await encrypt(userData.password);
     }
     const response = await db.updateUserData({ userData });
     if (response.success) {

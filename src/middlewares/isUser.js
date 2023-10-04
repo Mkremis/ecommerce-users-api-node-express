@@ -3,13 +3,13 @@ import db from "../database.js";
 
 const isUser = async (req, res, next) => {
   try {
-    const { login_username, login_password } = req.body;
+    const { username, password } = req.body;
 
-    if (!login_username || !login_password) {
+    if (!username || !password) {
       throw new Error("username and password are required");
     }
 
-    const response = await db.getUserByUsername({ username: login_username });
+    const response = await db.getUserByUsername({ username: username });
     if (response.success) {
       req.user_data = response.success;
     }

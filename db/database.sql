@@ -3,24 +3,24 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 DROP table if exists users CASCADE;
 CREATE TABLE users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    login_username VARCHAR(15) NOT NULL UNIQUE,
-    login_password VARCHAR(60) NOT NULL,
-    fullname_title VARCHAR(5),
-    fullname_first VARCHAR(30),
-    fullname_last VARCHAR(30),
-    contact_email VARCHAR(50) NOT NULL UNIQUE,
-    contact_phone VARCHAR(10) UNIQUE,
-    picture_thumbnail TEXT,
-    location_city VARCHAR(20),
-    location_state VARCHAR(20),
-    location_number VARCHAR(20),
-    location_street VARCHAR(20),
-    location_country VARCHAR(20),
-    location_postcode VARCHAR(10)
+    username VARCHAR(15) NOT NULL UNIQUE,
+    password VARCHAR(60) NOT NULL,
+    title VARCHAR(5),
+    first VARCHAR(30),
+    last VARCHAR(30),
+    email VARCHAR(50) NOT NULL UNIQUE,
+    phone VARCHAR(10) UNIQUE,
+    thumbnail TEXT,
+    city VARCHAR(20),
+    state VARCHAR(20),
+    street_number VARCHAR(20),
+    street VARCHAR(20),
+    country VARCHAR(20),
+    postcode VARCHAR(10)
 );
 
-DROP table if exists users_carts;
-CREATE TABLE user_cart (
+DROP table if exists users_cart;
+CREATE TABLE users_cart (
     user_id UUID REFERENCES users(id),
     user_cart JSON,
     PRIMARY KEY (user_id)

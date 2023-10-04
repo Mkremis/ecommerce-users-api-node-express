@@ -24,22 +24,22 @@ class PostgreSQLAdapter {
   async registerNewUser({ userData }) {
     try {
       const query = {
-        text: "INSERT INTO users(login_username, login_password, fullname_title, fullname_first, fullname_last, contact_email, contact_phone, picture_thumbnail, location_city, location_state, location_number, location_street, location_country, location_postcode) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)",
+        text: "INSERT INTO users(username, password, title, first, last, email, phone, thumbnail, city, state, street_number, street, country, postcode) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)",
         values: [
-          userData.login_username,
-          userData.login_password,
-          userData.fullname_title,
-          userData.fullname_first,
-          userData.fullname_last,
-          userData.contact_email,
-          userData.contact_phone,
-          userData.picture_thumbnail,
-          userData.location_city,
-          userData.location_state,
-          userData.location_number,
-          userData.location_street,
-          userData.location_country,
-          userData.location_postcode,
+          userData.username,
+          userData.password,
+          userData.title,
+          userData.first,
+          userData.last,
+          userData.email,
+          userData.phone,
+          userData.thumbnail,
+          userData.city,
+          userData.state,
+          userData.street_number,
+          userData.street,
+          userData.country,
+          userData.postcode,
         ],
       };
       const { rowCount } = await this.pool.query(query);
@@ -54,7 +54,7 @@ class PostgreSQLAdapter {
   async getUserByUsername({ username }) {
     try {
       const query = {
-        text: "SELECT * FROM users WHERE login_username = $1",
+        text: "SELECT * FROM users WHERE username = $1",
         values: [username],
       };
       const { rows } = await this.pool.query(query);
@@ -73,22 +73,22 @@ class PostgreSQLAdapter {
   async updateUserData({ userData }) {
     try {
       const query = {
-        text: "UPDATE users SET login_password = COALESCE($1, login_password), fullname_title = COALESCE($2, fullname_title), fullname_first = COALESCE($3, fullname_first), fullname_last = COALESCE($4, fullname_last), contact_email = COALESCE($5, contact_email), contact_phone = COALESCE($6, contact_phone), picture_thumbnail = COALESCE($7, picture_thumbnail), location_city = COALESCE($8, location_city), location_state = COALESCE($9, location_state), location_number = COALESCE($10, location_number), location_street = COALESCE($11, location_street), location_country = COALESCE($12, location_country), location_postcode = COALESCE($13, location_postcode) WHERE login_username = $14",
+        text: "UPDATE users SET password = COALESCE($1, password), title = COALESCE($2, title), first = COALESCE($3, first), last = COALESCE($4, last), email = COALESCE($5, email), phone = COALESCE($6, phone), thumbnail = COALESCE($7, thumbnail), city = COALESCE($8, city), state = COALESCE($9, state), street_number = COALESCE($10, street_number), street = COALESCE($11, street), country = COALESCE($12, country), postcode = COALESCE($13, postcode) WHERE username = $14",
         values: [
-          userData.login_password,
-          userData.fullname_title,
-          userData.fullname_first,
-          userData.fullname_last,
-          userData.contact_email,
-          userData.contact_phone,
-          userData.picture_thumbnail,
-          userData.location_city,
-          userData.location_state,
-          userData.location_number,
-          userData.location_street,
-          userData.location_country,
-          userData.location_postcode,
-          userData.login_username,
+          userData.password,
+          userData.title,
+          userData.first,
+          userData.last,
+          userData.email,
+          userData.phone,
+          userData.thumbnail,
+          userData.city,
+          userData.state,
+          userData.street_number,
+          userData.street,
+          userData.country,
+          userData.postcode,
+          userData.username,
         ],
       };
       const { rowCount } = await this.pool.query(query);
@@ -105,7 +105,7 @@ class PostgreSQLAdapter {
       if (!id) id = await this.getUserId({ username });
       if (id) {
         const query = {
-          text: "SELECT user_cart FROM users_carts WHERE user_id = $1",
+          text: "SELECT user_cart FROM users_cart WHERE user_id = $1",
           values: [id],
         };
         const { rows } = await this.pool.query(query);
@@ -198,7 +198,7 @@ class PostgreSQLAdapter {
   async getUserId({ username }) {
     try {
       const query = {
-        text: "SELECT id FROM users WHERE login_username = $1",
+        text: "SELECT id FROM users WHERE username = $1",
         values: [username],
       };
       const {
