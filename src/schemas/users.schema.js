@@ -90,6 +90,7 @@ export const updateSchema = z.object({
     .min(6, {
       message: "Password must be at least 6 characters",
     })
+    .nullable()
     .optional(),
   title: z
     .string()

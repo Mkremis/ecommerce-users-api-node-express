@@ -74,6 +74,8 @@ export const updateUser = async (req, res) => {
       userData.password = await encrypt(userData.password);
     }
     const response = await db.updateUserData({ userData });
+    console.log(response);
+
     if (response.success) {
       return res.status(200).json({ message: [response.success] });
     }
