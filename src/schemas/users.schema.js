@@ -84,7 +84,9 @@ export const updateSchema = z.object({
     .string({
       required_error: "Username is required",
     })
-    .max(15, { message: "Username must not exceed 15 characters" }),
+    .max(15, { message: "Username must not exceed 15 characters" })
+    .nullable()
+    .optional(),
   password: z
     .string()
     .min(6, {
