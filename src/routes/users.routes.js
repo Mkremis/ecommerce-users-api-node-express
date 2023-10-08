@@ -24,11 +24,10 @@ router
   .get("/users/dashboard", checkSession, dashboard)
   .patch(
     "/users/update",
-    checkSession,
     validateSchema(updateSchema),
+    checkSession,
     updateUser
   )
   .get("/users/reload", checkSession, reloadSession);
 
 export default router;
- 

@@ -70,10 +70,29 @@ class PostgreSQLAdapter {
     }
   }
 
-  async updateUserData({ userData }) {
+  async getUserById({ id }) {
     try {
       const query = {
-        text: "UPDATE users SET password = COALESCE($1, password), title = COALESCE($2, title), first = COALESCE($3, first), last = COALESCE($4, last), email = COALESCE($5, email), phone = COALESCE($6, phone), thumbnail = COALESCE($7, thumbnail), city = COALESCE($8, city), state = COALESCE($9, state), street_number = COALESCE($10, street_number), street = COALESCE($11, street), country = COALESCE($12, country), postcode = COALESCE($13, postcode) WHERE username = $14",
+        text: "SELECT * FROM users WHERE id = $1",
+        values: [id],
+      };
+      const { rows } = await this.pool.query(query);
+      if (rows.length > 0) {
+        const user_data = rows[0];
+        return { success: user_data };
+      } else {
+        return { fail: "User not found" };
+      }
+    } catch (error) {
+      console.error(error);
+      return { fail: error.message };
+    }
+  }
+
+  async updateUserData({ userData, id }) {
+    try {
+      const query = {
+        text: "UPDATE users SET password = COALESCE($1, password), title = COALESCE($2, title), first = COALESCE($3, first), last = COALESCE($4, last), email = COALESCE($5, email), phone = COALESCE($6, phone), thumbnail = COALESCE($7, thumbnail), city = COALESCE($8, city), state = COALESCE($9, state), street_number = COALESCE($10, street_number), street = COALESCE($11, street), country = COALESCE($12, country), postcode = COALESCE($13, postcode) WHERE id = $14",
         values: [
           userData.password,
           userData.title,
@@ -88,7 +107,7 @@ class PostgreSQLAdapter {
           userData.street,
           userData.country,
           userData.postcode,
-          userData.username,
+          id,
         ],
       };
       const { rowCount } = await this.pool.query(query);
@@ -101,7 +120,6 @@ class PostgreSQLAdapter {
 
   async getUserCart({ username, id = null }) {
     try {
-      console.log("id", id);
       if (!id) id = await this.getUserId({ username });
       if (id) {
         const query = {

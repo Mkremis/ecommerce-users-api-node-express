@@ -11,7 +11,10 @@ const isUser = async (req, res, next) => {
 
     const response = await db.getUserByUsername({ username: username });
     if (response.success) {
-      req.user_data = response.success;
+      req.user = {
+        id: response.success.id,
+        password: response.success.password,
+      };
     }
     next();
   } catch (error) {

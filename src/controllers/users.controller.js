@@ -6,9 +6,7 @@ const db = new PostgreSQLAdapter();
 
 export const dashboard = async (req, res) => {
   try {
-    const { username } = req.user;
-    console.log(username);
-    const responseData = await db.getUserByUsername({ username });
+    const responseData = await db.getUserById({ id: req.user.id });
     if (responseData.success) return res.status(200).json(responseData.success);
     return res.status(404).json({ message: responseData.fail });
   } catch (error) {
@@ -19,22 +17,24 @@ export const dashboard = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!req.user_data) {
-      return res.status(401).json({ message: ["Not user found"] });
-    }
-    const passwordHash = req.user_data.password;
+    if (!req?.user?.id)
+      return res
+        .status(404)
+        .json({ message: [`Not user found with username ${username}`] });
+
+    const passwordHash = req.user.password;
     const isCorrect = await verify(password, passwordHash);
     if (!isCorrect) {
       return res.status(401).json({ message: ["Incorrect credentials"] });
     }
-    const accessToken = accessJWT(username);
+    const { id } = req.user;
+    const accessToken = accessJWT({ id });
     res.cookie("accessToken", accessToken, {
       httpOnly: process.env.NODE_ENV !== "development",
       secure: true,
       sameSite: "none",
     });
-    const { user_data } = req;
-    const { id } = req.user_data;
+    const { success: user_data } = await db.getUserById({ id });
     const { success: user_likes } = await db.getUserLikes({ username, id });
     const { success: user_cart } = await db.getUserCart({ username, id });
 
@@ -60,7 +60,7 @@ export const register = async (req, res) => {
     userData.password = await encrypt(userData.password);
     const response = await db.registerNewUser({ userData });
     if (response.success) {
-      return res.status(200).json({ message: [response.success] });
+      return res.sendStatus(204);
     }
     return res.status(409).json({ message: [response.fail] });
   } catch (error) {
@@ -74,11 +74,11 @@ export const updateUser = async (req, res) => {
     if (userData.password) {
       userData.password = await encrypt(userData.password);
     }
-    const response = await db.updateUserData({ userData });
-    console.log(response);
+    console.log(req.user.id);
+    const response = await db.updateUserData({ userData, id: req.user.id });
 
     if (response.success) {
-      return res.status(200).json({ message: [response.success] });
+      return res.sendStatus(204);
     }
     return res.status(500).json({ message: [response.fail] });
   } catch (error) {
@@ -101,3 +101,26 @@ export const reloadSession = async (req, res) => {
     res.status(500).json({ error });
   }
 };
+
+// const handleChange = (name, value) => {
+//   const schema = isUpdate ? updateSchema : registerSchema;
+//   setFormData((prevFormData) => ({
+//     ...prevFormData,
+//     [name]: value,
+//   }));
+//   if (isUpdate && !value) return;
+//   const inputValidate = schema.safeParse({ [name]: value });
+//   const errorMessage = inputValidate?.error?.issues[0]?.message;
+//   console.log(inputValidate?.error?.issues[0]);
+//   if (errorMessage) {
+//     setInputErrors((prevInputErrors) => ({
+//       ...prevInputErrors,
+//       [name]: errorMessage,
+//     }));
+//   } else {
+//     setInputErrors((prevInputErrors) => ({
+//       ...prevInputErrors,
+//       [name]: false,
+//     }));
+//   }
+// };

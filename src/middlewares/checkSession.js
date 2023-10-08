@@ -8,9 +8,9 @@ const checkSession = async (req, res, next) => {
         .status(401)
         .json({ message: ["You do not have a valid session"] });
     }
-    const isUser = verifyToken(accessToken);
-    if (isUser.success) {
-      req.user = isUser.success;
+    const isSession = verifyToken({ accessToken });
+    if (isSession.success) {
+      req.user = { id: isSession.success.user_id };
       next();
     } else {
       return res
