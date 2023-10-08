@@ -15,6 +15,7 @@ export const getCart = async (req, res) => {
 
 export const updateCart = async (req, res) => {
   const { username } = req.params;
+  console.log(username, req.body);
   const cart = JSON.stringify(req.body);
   try {
     const response = await db.updateUserCart({ username, cart });

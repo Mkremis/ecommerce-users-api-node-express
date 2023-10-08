@@ -5,7 +5,9 @@ export const getLikes = async (req, res) => {
   const { username } = req.params;
   try {
     const response = await db.getUserLikes({ username });
-    if (response.success) res.status(200).json(response.success);
+    console.log(response);
+    if (response.success)
+      res.status(200).json(response.success.user_likes.likes);
   } catch (error) {
     return res.status(500).json({ error });
   }

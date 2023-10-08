@@ -129,7 +129,7 @@ class PostgreSQLAdapter {
       if (id) {
         const query = {
           text: `
-        INSERT INTO users_carts (user_id, user_cart)
+        INSERT INTO users_cart (user_id, user_cart)
         VALUES ($1, $2)
         ON CONFLICT (user_id)
         DO UPDATE SET user_cart = $2
