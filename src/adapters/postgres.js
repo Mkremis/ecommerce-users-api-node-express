@@ -92,8 +92,9 @@ class PostgreSQLAdapter {
   async updateUserData({ userData, id }) {
     try {
       const query = {
-        text: "UPDATE users SET password = COALESCE($1, password), title = COALESCE($2, title), first = COALESCE($3, first), last = COALESCE($4, last), email = COALESCE($5, email), phone = COALESCE($6, phone), thumbnail = COALESCE($7, thumbnail), city = COALESCE($8, city), state = COALESCE($9, state), street_number = COALESCE($10, street_number), street = COALESCE($11, street), country = COALESCE($12, country), postcode = COALESCE($13, postcode) WHERE id = $14",
+        text: "UPDATE users SET username = COALESCE($1, username), password = COALESCE($2, password), title = COALESCE($3, title), first = COALESCE($4, first), last = COALESCE($5, last), email = COALESCE($6, email), phone = COALESCE($7, phone), thumbnail = COALESCE($8, thumbnail), city = COALESCE($9, city), state = COALESCE($10, state), street_number = COALESCE($11, street_number), street = COALESCE($12, street), country = COALESCE($13, country), postcode = COALESCE($14, postcode) WHERE id = $15",
         values: [
+          userData.username,
           userData.password,
           userData.title,
           userData.first,

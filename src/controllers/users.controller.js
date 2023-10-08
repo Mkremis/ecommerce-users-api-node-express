@@ -74,7 +74,7 @@ export const updateUser = async (req, res) => {
     if (userData.password) {
       userData.password = await encrypt(userData.password);
     }
-    console.log(req.user.id);
+
     const response = await db.updateUserData({ userData, id: req.user.id });
 
     if (response.success) {
@@ -93,34 +93,23 @@ export const logout = async (req, res) => {
 };
 
 export const reloadSession = async (req, res) => {
+  console.log("reload!!");
   try {
-    const { username } = req.user;
-    const userData = await db.getLoginData(username);
-    res.status(200).json({ userData });
+    const { id } = req.user;
+    console.log("id", id);
+    const { success: user_data } = await db.getUserById({ id });
+    const { success: user_likes } = await db.getUserLikes({
+      username: null,
+      id,
+    });
+    const { success: user_cart } = await db.getUserCart({ username: null, id });
+
+    delete user_data.password;
+    delete user_data.id;
+
+    res.status(200).json({ user_data, ...user_cart, ...user_likes });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error });
   }
 };
-
-// const handleChange = (name, value) => {
-//   const schema = isUpdate ? updateSchema : registerSchema;
-//   setFormData((prevFormData) => ({
-//     ...prevFormData,
-//     [name]: value,
-//   }));
-//   if (isUpdate && !value) return;
-//   const inputValidate = schema.safeParse({ [name]: value });
-//   const errorMessage = inputValidate?.error?.issues[0]?.message;
-//   console.log(inputValidate?.error?.issues[0]);
-//   if (errorMessage) {
-//     setInputErrors((prevInputErrors) => ({
-//       ...prevInputErrors,
-//       [name]: errorMessage,
-//     }));
-//   } else {
-//     setInputErrors((prevInputErrors) => ({
-//       ...prevInputErrors,
-//       [name]: false,
-//     }));
-//   }
-// };
