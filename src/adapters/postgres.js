@@ -43,7 +43,6 @@ class PostgreSQLAdapter {
         ],
       };
       const { rowCount } = await this.pool.query(query);
-      console.log(rowCount);
       if (rowCount) return { success: "User created successfully" };
     } catch (error) {
       console.error(error);
@@ -168,7 +167,6 @@ class PostgreSQLAdapter {
 
   async getUserLikes({ username, id = null }) {
     try {
-      console.log("id", id);
       if (!id) id = await this.getUserId({ username });
       if (id) {
         const query = {

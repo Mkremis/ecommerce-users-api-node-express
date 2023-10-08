@@ -93,7 +93,6 @@ export const logout = async (req, res) => {
 };
 
 export const reloadSession = async (req, res) => {
-  console.log("reload!!");
   try {
     const { id } = req.user;
     console.log("id", id);
