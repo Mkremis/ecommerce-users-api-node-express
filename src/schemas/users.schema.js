@@ -5,6 +5,9 @@ export const registerSchema = z.object({
     .string({
       required_error: "Username is required",
     })
+    .min(6, {
+      message: "Username must be at least 6 characters",
+    })
     .max(15, { message: "Username must not exceed 15 characters" }),
   password: z
     .string({
@@ -34,9 +37,10 @@ export const registerSchema = z.object({
     })
     .max(50, { message: "Email must not exceed 50 characters" }),
   phone: z
-    .string()
-    .max(10, { message: "Phone number must not exceed 10 characters" })
-    .optional(),
+    .string({
+      required_error: "Phone numberis required",
+    })
+    .max(10, { message: "Phone number must not exceed 10 characters" }),
   thumbnail: z.string().optional(),
   city: z
     .string()
@@ -81,8 +85,9 @@ export const loginSchema = z.object({
 
 export const updateSchema = z.object({
   username: z
-    .string({
-      required_error: "Username is required",
+    .string()
+    .min(6, {
+      message: "Username must be at least 6 characters",
     })
     .max(15, { message: "Username must not exceed 15 characters" })
     .nullable()

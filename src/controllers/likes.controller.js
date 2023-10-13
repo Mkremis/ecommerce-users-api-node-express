@@ -1,19 +1,19 @@
-import PostgreSQLAdapter from "../adapters/postgres.js";
-const db = new PostgreSQLAdapter();
+import dbPromise from "../index.js";
 
 export const getLikes = async (req, res) => {
+  const db = await dbPromise;
   const { username } = req.params;
   try {
     const response = await db.getUserLikes({ username });
-    console.log(response);
-    if (response.success)
-      res.status(200).json(response.success.user_likes.likes);
+
+    if (response.success) res.status(200).json(response.success);
   } catch (error) {
     return res.status(500).json({ error });
   }
 };
 
 export const updateLikes = async (req, res) => {
+  const db = await dbPromise;
   const { username } = req.params;
   const likes = JSON.stringify(req.body);
   try {

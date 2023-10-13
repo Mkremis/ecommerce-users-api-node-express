@@ -1,7 +1,7 @@
-import PostgreSQLAdapter from "../adapters/postgres.js";
-const db = new PostgreSQLAdapter();
+import dbPromise from "../index.js";
 
 export const getCart = async (req, res) => {
+  const db = await dbPromise;
   const { username } = req.params;
   try {
     const response = await db.getUserCart({ username });
@@ -14,6 +14,7 @@ export const getCart = async (req, res) => {
 };
 
 export const updateCart = async (req, res) => {
+  const db = await dbPromise;
   const { username } = req.params;
   console.log(username, req.body);
   const cart = JSON.stringify(req.body);

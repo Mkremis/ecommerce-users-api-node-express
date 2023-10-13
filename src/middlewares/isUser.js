@@ -1,5 +1,5 @@
 // isUser.js
-import db from "../database.js";
+import dbPromise from "../index.js";
 
 const isUser = async (req, res, next) => {
   try {
@@ -8,7 +8,7 @@ const isUser = async (req, res, next) => {
     if (!username || !password) {
       throw new Error("username and password are required");
     }
-
+    const db = await dbPromise;
     const response = await db.getUserByUsername({ username: username });
     if (response.success) {
       req.user = {

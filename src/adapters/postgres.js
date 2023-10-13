@@ -51,6 +51,7 @@ class PostgreSQLAdapter {
   }
 
   async getUserByUsername({ username }) {
+    console.log(username);
     try {
       const query = {
         text: "SELECT * FROM users WHERE username = $1",
@@ -175,7 +176,7 @@ class PostgreSQLAdapter {
         };
         const { rows } = await this.pool.query(query);
         if (rows.length > 0) {
-          return { success: rows[0] };
+          return { success: rows[0].user_likes.likes };
         } else {
           return { success: { user_likes: [] } };
         }
