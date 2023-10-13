@@ -41,7 +41,9 @@ export const login = async (req, res) => {
     delete user_data.password;
     delete user_data.id;
 
-    res.status(200).json({ user_data, ...user_cart, user_likes: likes });
+    res
+      .status(200)
+      .json({ user_data, ...user_cart, user_likes: { likes: likes } });
   } catch (error) {
     console.log(error);
 
