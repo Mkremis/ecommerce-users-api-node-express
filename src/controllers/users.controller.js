@@ -66,7 +66,6 @@ export const login = async (req, res) => {
 export const register = async (req, res) => {
   try {
     if (req?.user?.id) {
-      console.log("register", req.user.id);
       return res
         .status(409)
         .json({ message: ["Already user with this username"] });

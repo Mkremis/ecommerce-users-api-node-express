@@ -6,22 +6,28 @@ import MySQLAdapter from "./adapters/mysql.js";
 import PostgreSQLAdapter from "./adapters/postgres.js";
 import MongoDBAdapter from "./adapters/mongodb.js";
 
-async function initializeServer() {
+async function initializeDB() {
   try {
-    let db;
-
     if (DB_TYPE === "mysql") {
-      db = new MySQLAdapter(); // Inicializa el adaptador MySQL
+      return new MySQLAdapter();
     } else if (DB_TYPE === "postgres") {
-      db = new PostgreSQLAdapter(); // Inicializa el adaptador PostgreSQL
+      return new PostgreSQLAdapter();
     } else if (DB_TYPE === "mongodb") {
-      db = new MongoDBAdapter(); // Inicializa el adaptador MongoDB
+      return new MongoDBAdapter();
     } else {
       throw new Error(`DB_TYPE "${DB_TYPE}" no es compatible.`);
     }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function initializeServer() {
+  try {
+    // Inicia la base de datos
+    const db = await initializeDB();
 
     // Inicia el servidor después de que la base de datos esté lista
-    await db; // Espera a que la base de datos esté lista
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV}`);
