@@ -113,21 +113,22 @@ export const logout = async (req, res) => {
 
 export const reloadSession = async (req, res) => {
   const db = await dbPromise;
-
   try {
     const { id } = req.user;
-    console.log("id", id);
     const { success: user_data } = await db.getUserById({ id });
-    const { success: user_likes } = await db.getUserLikes({
-      username: null,
-      id,
+    const { success: likes } = await db.getUserLikes({ username, id });
+    const { success: user_cart } = await db.getUserCart({ username, id });
+
+    // Excluir propiedades no deseadas
+    delete user_data?.password;
+    delete user_data?._id;
+    delete user_data?.id;
+
+    res.status(200).json({
+      user_data: user_data,
+      ...user_cart,
+      user_likes: { likes: likes },
     });
-    const { success: user_cart } = await db.getUserCart({ username: null, id });
-
-    delete user_data.password;
-    delete user_data.id;
-
-    res.status(200).json({ user_data, ...user_cart, ...user_likes });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error });
