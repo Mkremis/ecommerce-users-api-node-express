@@ -6,7 +6,15 @@ export const dashboard = async (req, res) => {
   const db = await dbPromise;
   try {
     const responseData = await db.getUserById({ id: req.user.id });
-    if (responseData.success) return res.status(200).json(responseData.success);
+    if (responseData.success) {
+      const user_data = responseData.success;
+      // Excluir propiedades no deseadas
+      delete user_data?.password;
+      delete user_data?._id;
+      delete user_data?.id;
+
+      return res.status(200).json(user_data);
+    }
     return res.status(404).json({ message: responseData.fail });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -38,12 +46,16 @@ export const login = async (req, res) => {
     const { success: likes } = await db.getUserLikes({ username, id });
     const { success: user_cart } = await db.getUserCart({ username, id });
 
-    delete user_data.password;
-    delete user_data.id;
+    // Excluir propiedades no deseadas
+    delete user_data?.password;
+    delete user_data?._id;
+    delete user_data?.id;
 
-    res
-      .status(200)
-      .json({ user_data, ...user_cart, user_likes: { likes: likes } });
+    res.status(200).json({
+      user_data: user_data,
+      ...user_cart,
+      user_likes: { likes: likes },
+    });
   } catch (error) {
     console.log(error);
 
@@ -53,8 +65,8 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    if (req.user.id) {
-      console.log(req.user.id);
+    if (req?.user?.id) {
+      console.log("register", req.user.id);
       return res
         .status(409)
         .json({ message: ["Already user with this username"] });
@@ -68,6 +80,7 @@ export const register = async (req, res) => {
     }
     return res.status(409).json({ message: [response.fail] });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: [error.message] });
   }
 };

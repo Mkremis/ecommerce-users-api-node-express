@@ -4,7 +4,7 @@ import app from "./app.js";
 import { DB_TYPE } from "./config.js";
 import MySQLAdapter from "./adapters/mysql.js";
 import PostgreSQLAdapter from "./adapters/postgres.js";
-// import { MongoDBAdapter } from "./adapters/mongodb.js";
+import MongoDBAdapter from "./adapters/mongodb.js";
 
 async function initializeServer() {
   try {
