@@ -116,8 +116,8 @@ export const reloadSession = async (req, res) => {
   try {
     const { id } = req.user;
     const { success: user_data } = await db.getUserById({ id });
-    const { success: likes } = await db.getUserLikes({ username, id });
-    const { success: user_cart } = await db.getUserCart({ username, id });
+    const { success: likes } = await db.getUserLikes({ id });
+    const { success: user_cart } = await db.getUserCart({ id });
 
     // Excluir propiedades no deseadas
     delete user_data?.password;

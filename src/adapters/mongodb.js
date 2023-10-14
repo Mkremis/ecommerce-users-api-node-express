@@ -94,11 +94,15 @@ class MongoDBAdapter {
     }
   }
 
-  async getUserCart({ username }) {
+  async getUserCart({ username, id = null }) {
     try {
-      const user = await User.findOne({ username });
+      if (!id) id = await this.getUserId({ username });
+      const user = id
+        ? await User.findById(id)
+        : await User.findOne({ username });
       if (user && user.user_cart) {
         const cart = JSON.parse(user.user_cart);
+        console.log(cart);
 
         return { success: { user_cart: cart } };
       } else {
@@ -128,9 +132,14 @@ class MongoDBAdapter {
     }
   }
 
-  async getUserLikes({ username }) {
+  async getUserLikes({ username, id = null }) {
+    console.log(username, id);
     try {
-      const user = await User.findOne({ username });
+      if (!id) id = await this.getUserId({ username });
+      const user = id
+        ? await User.findById(id)
+        : await User.findOne({ username });
+
       if (user && user.user_likes) {
         const likes = JSON.parse(user.user_likes).likes;
         return { success: likes };
@@ -158,6 +167,20 @@ class MongoDBAdapter {
     } catch (error) {
       console.error(error);
       return { fail: error.message };
+    }
+  }
+  async getUserId({ username }) {
+    try {
+      const user = await User.findOne({ username });
+
+      if (user) {
+        return user._id;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
     }
   }
 }
