@@ -4,6 +4,7 @@ import { corsOptions } from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 
+import authRoutes from "./routes/auth.rutes.js";
 import usersRoutes from "./routes/users.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import likesRoutes from "./routes/likes.routes.js";
@@ -19,12 +20,16 @@ app
   .use(morgan("dev"))
   .use(express.json())
 
-  .use("/api", usersRoutes)
-  .use("/api", cartRoutes)
-  .use("/api", likesRoutes);
+  //public rutes
+  .use("/auth", authRoutes)
 
-// .use('/api', payRoutes)
-// .use('/api', orderRoutes)
+  //private routes
+  .use("/api/users", usersRoutes)
+  .use("/api/users", cartRoutes)
+  .use("/api/users", likesRoutes);
+
+// .use('/api/users', payRoutes)
+// .use('/api/users', orderRoutes)
 
 // .use(errorHandler);
 export default app;

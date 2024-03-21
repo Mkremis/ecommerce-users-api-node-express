@@ -5,14 +5,14 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const accessJWT = ({ id }) => {
-  const accessToken = sign({ id }, process.env.JWT_SECRET, {
+  const jwt = sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
-  return accessToken;
+  return jwt;
 };
 
-const verifyToken = ({ accessToken }) => {
-  const isVerified = verify(accessToken, JWT_SECRET, (err, decoded) => {
+const verifyToken = ({ jwt }) => {
+  const isVerified = verify(jwt, JWT_SECRET, (err, decoded) => {
     if (err) {
       return { fail: err };
     }

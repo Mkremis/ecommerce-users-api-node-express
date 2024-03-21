@@ -2,13 +2,13 @@ import { verifyToken } from "../utils/jwtHandle.js";
 
 const checkSession = async (req, res, next) => {
   try {
-    const { accessToken } = req.cookies;
-    if (!accessToken) {
+    const { jwt } = req.cookies;
+    if (!jwt) {
       return res
         .status(401)
         .json({ message: ["You do not have a valid session"] });
     }
-    const isSession = verifyToken({ accessToken });
+    const isSession = verifyToken({ jwt });
 
     if (isSession.success) {
       req.user = { id: isSession.success.user_id };

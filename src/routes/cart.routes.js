@@ -5,7 +5,7 @@ const router = Router();
 
 router
   .use(checkSession)
-  .get("/users/:username/cart", checkSession, getCart)
-  .put("/users/:username/update-cart", checkSession, updateCart);
+  .get("/:username/cart", checkSession, getCart)
+  .put("/:username/update-cart", checkSession, updateCart);
 
 export default router;

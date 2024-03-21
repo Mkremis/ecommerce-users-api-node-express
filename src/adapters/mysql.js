@@ -5,6 +5,7 @@ import {
   MYSQL_PASSWORD,
   MYSQL_DATABASE,
 } from "../config.js";
+import { v4 as uuidv4 } from "uuid";
 
 class MySQLAdapter {
   constructor() {
@@ -29,74 +30,94 @@ class MySQLAdapter {
 
   async registerNewUser({ userData }) {
     try {
-      const query = `
-        INSERT INTO users(username, password, title, first, last, email, phone, thumbnail, city, state, street_number, street, country, postcode)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
-      const values = [
-        userData.username,
+      const userId = uuidv4({ format: "binary" });
+
+      const queryInsertUser = `
+      INSERT INTO users(id, user_name, password, email)
+      VALUES (?, ?, ?, ?)
+    `;
+      const valuesInsertUser = [
+        userId,
+        userData.userName,
         userData.password,
-        userData.title,
-        userData.first,
-        userData.last,
         userData.email,
-        userData.phone,
-        userData.thumbnail,
-        userData.city,
-        userData.state,
-        userData.street_number,
-        userData.street,
-        userData.country,
-        userData.postcode,
       ];
 
-      const [rows] = await this.pool.execute(query, values);
-      if (rows.affectedRows) return { success: "User created successfully" };
+      const [resultInsertUser] = await this.pool.execute(
+        queryInsertUser,
+        valuesInsertUser
+      );
+
+      if (resultInsertUser.affectedRows) {
+        const roles = userData.roles || []; // Roles del usuario
+
+        for (const roleName of roles) {
+          // Obtiene el role_id correspondiente al roleName
+          const queryGetRoleId = `
+          SELECT id FROM role WHERE role_name = ?
+        `;
+          const [roleResult] = await this.pool.execute(queryGetRoleId, [
+            roleName,
+          ]);
+
+          if (roleResult.length > 0) {
+            const roleId = roleResult[0].id;
+
+            // Inserta el user_id y role_id en user_role
+            const queryInsertUserRole = `
+            INSERT INTO user_role(user_id, role_id)
+            VALUES (?, ?)
+          `;
+            const valuesInsertUserRole = [userId, roleId];
+            await this.pool.execute(queryInsertUserRole, valuesInsertUserRole);
+          }
+        }
+
+        return { success: "User created successfully", userId };
+      }
     } catch (error) {
       console.error(error);
       return { fail: error.message };
     }
   }
 
-  async getUserByUsername({ username }) {
+  async getUserByUsername({ userName }) {
     try {
       const query = `
-        SELECT HEX(id) AS id, username, password, title, first, last, email, phone, thumbnail, city, state, street_number, street, country, postcode
-        FROM users WHERE username = ?
+        SELECT id, user_name, password, email
+        FROM users WHERE user_name = ?
       `;
-      const [rows] = await this.pool.execute(query, [username]);
+      const [rows] = await this.pool.execute(query, [userName]);
 
       if (rows.length > 0) {
-        const user_data = rows[0];
-        user_data.id = this.convertHexToUUID(user_data.id);
-        return { success: user_data };
+        return { success: rows[0] };
       } else {
         return { fail: "User not found" };
       }
     } catch (error) {
       console.error(error);
-      return { fail: error.message };
+      throw error; // Puedes manejar este error en el controlador
     }
   }
 
   async getUserById({ id }) {
     try {
       const query = `
-        SELECT HEX(id) AS id, username, password, title, first, last, email, phone, thumbnail, city, state, street_number, street, country, postcode
-        FROM users WHERE id = UUID_TO_BIN(?)
+        SELECT HEX(id) AS id, user_name, password, email
+        FROM users WHERE id = ?
       `;
       const [rows] = await this.pool.execute(query, [id]);
 
       if (rows.length > 0) {
-        const user_data = rows[0];
-        user_data.id = this.convertHexToUUID(user_data.id);
-        return { success: user_data };
+        const success = rows[0];
+        success.id = this.convertHexToUUID(success.id);
+        return success;
       } else {
         return { fail: "User not found" };
       }
     } catch (error) {
       console.error(error);
-      return { fail: error.message };
+      throw error; // Puedes manejar este error en el controlador
     }
   }
 
@@ -142,19 +163,10 @@ class MySQLAdapter {
   async getUserCart({ username, id = null }) {
     try {
       if (!id) id = await this.getUserId({ username });
-      if (id) {
-        const query =
-          "SELECT user_cart FROM users_cart WHERE user_id = UUID_TO_BIN(?)";
-        const [rows] = await this.pool.execute(query, [id]);
 
-        if (rows.length > 0) {
-          return { success: rows[0] };
-        } else {
-          return { success: { user_cart: {} } };
-        }
-      } else {
-        throw error; // Puedes manejar este error en el controlador
-      }
+      const query = "SELECT * FROM users_cart WHERE user_id = UUID_TO_BIN(?)";
+      const [rows] = await this.pool.execute(query, [id]);
+      return rows[0];
     } catch (error) {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
@@ -183,22 +195,13 @@ class MySQLAdapter {
     }
   }
 
-  async getUserLikes({ username, id = null }) {
+  async getUserLikes({ userName, id = null }) {
+    console.log(userName, id);
     try {
-      if (!id) id = await this.getUserId({ username });
-      if (id) {
-        const query =
-          "SELECT user_likes FROM users_likes WHERE user_id = UUID_TO_BIN(?)";
-        const [rows] = await this.pool.execute(query, [id]);
-        const likes = JSON.parse(rows[0].user_likes).likes;
-        if (likes.length > 0) {
-          return { success: likes };
-        } else {
-          return { success: [] };
-        }
-      } else {
-        throw error; // Puedes manejar este error en el controlador
-      }
+      if (!id) id = await this.getUserId({ userName });
+      const query = "SELECT * FROM users_likes WHERE user_id = ?";
+      const [rows] = await this.pool.execute(query, [id]);
+      return rows[0];
     } catch (error) {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
