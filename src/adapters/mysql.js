@@ -163,10 +163,10 @@ class MySQLAdapter {
   async getUserCart({ username, id = null }) {
     try {
       if (!id) id = await this.getUserId({ username });
-
-      const query = "SELECT * FROM users_cart WHERE user_id = UUID_TO_BIN(?)";
+      const query =
+        "SELECT id, price_currency AS priceCurrency, prod_Gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice, productq AS productQ FROM users_cart WHERE user_id = ?";
       const [rows] = await this.pool.execute(query, [id]);
-      return rows[0];
+      return rows;
     } catch (error) {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
@@ -196,12 +196,12 @@ class MySQLAdapter {
   }
 
   async getUserLikes({ userName, id = null }) {
-    console.log(userName, id);
     try {
       if (!id) id = await this.getUserId({ userName });
-      const query = "SELECT * FROM users_likes WHERE user_id = ?";
+      const query =
+        "SELECT id, price_currency AS priceCurrency, prod_Gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice FROM users_likes WHERE user_id = ?";
       const [rows] = await this.pool.execute(query, [id]);
-      return rows[0];
+      return rows;
     } catch (error) {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
