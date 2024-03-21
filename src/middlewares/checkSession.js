@@ -9,7 +9,6 @@ const checkSession = async (req, res, next) => {
         .json({ message: ["You do not have a valid session"] });
     }
     const isSession = verifyToken({ jwt });
-
     if (isSession.success) {
       req.user = { id: isSession.success.user_id };
       next();

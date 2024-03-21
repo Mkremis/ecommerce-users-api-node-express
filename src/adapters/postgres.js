@@ -88,7 +88,7 @@ class PostgreSQLAdapter {
       return { fail: error.message };
     }
   }
-
+  async getUserDataById({ id }) {}
   async updateUserData({ userData, id }) {
     try {
       const query = {

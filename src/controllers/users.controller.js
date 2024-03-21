@@ -3,18 +3,10 @@ import { encrypt } from "../utils/bcryptHandle.js";
 
 export const dashboard = async (req, res) => {
   const db = await dbPromise;
-  try {
-    const responseData = await db.getUserById({ id: req.user.id });
-    if (responseData.success) {
-      const user_data = responseData.success;
-      // Excluir propiedades no deseadas
-      delete user_data?.password;
-      delete user_data?._id;
-      delete user_data?.id;
 
-      return res.status(200).json(user_data);
-    }
-    return res.status(404).json({ message: responseData.fail });
+  try {
+    const response = await db.getUserDataById({ id: req.user.id });
+    return res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

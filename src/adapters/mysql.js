@@ -121,6 +121,21 @@ class MySQLAdapter {
     }
   }
 
+  async getUserDataById({ id }) {
+    try {
+      const query = `
+      SELECT city, country, email, first, last, phone, postcode, state, street, street_number AS streetNumber, thumbnail, title
+      FROM users_dashboard
+      WHERE user_id = ?
+    `;
+      const [rows] = await this.pool.execute(query, [id]);
+      return rows[0];
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
+
   async updateUserData({ userData, id }) {
     console.log(userData);
     try {
@@ -195,9 +210,8 @@ class MySQLAdapter {
     }
   }
 
-  async getUserLikes({ userName, id = null }) {
+  async getUserLikes({ id }) {
     try {
-      if (!id) id = await this.getUserId({ userName });
       const query =
         "SELECT id, price_currency AS priceCurrency, prod_Gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice FROM users_likes WHERE user_id = ?";
       const [rows] = await this.pool.execute(query, [id]);
@@ -207,20 +221,42 @@ class MySQLAdapter {
       throw error; // Puedes manejar este error en el controlador
     }
   }
-  async updateUserLikes({ username, likes }) {
-    try {
-      const id = await this.getUserId({ username });
-      if (id) {
-        const query = `
-        INSERT INTO users_likes (user_id, user_likes)
-        VALUES (UUID_TO_BIN(?), ?)
-        ON DUPLICATE KEY UPDATE user_likes = VALUES(user_likes)
-      `;
-        const values = [id, JSON.stringify(likes)];
+  async createUserLike({ id, newLike }) {
+    console.log(id);
+    console.log(newLike);
 
-        const [rows] = await this.pool.execute(query, values);
-        return { success: rows.affectedRows };
-      }
+    try {
+      const query = `
+      INSERT INTO users_likes ( user_id, prod_id, prod_name, prod_gender, prod_image, prod_price, price_currency)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+      const values = [
+        id,
+        newLike.prodId,
+        newLike.prodName,
+        newLike.prodGender,
+        newLike.prodImage,
+        newLike.prodPrice,
+        newLike.priceCurrency,
+      ];
+
+      const [rows] = await this.pool.execute(query, values);
+      return { success: rows.affectedRows > 0 };
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
+  async deleteUserLikeByProdId({ id, prodId }) {
+    try {
+      const query = `
+      DELETE FROM users_likes 
+      WHERE user_id = ? AND prod_id = ?
+    `;
+      const values = [id, prodId];
+
+      const [rows] = await this.pool.execute(query, values);
+      return { success: rows.affectedRows > 0 };
     } catch (error) {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
