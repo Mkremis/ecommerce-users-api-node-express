@@ -4,7 +4,7 @@ export const getLikes = async (req, res) => {
   const { id } = req.user;
   const db = await dbPromise;
   try {
-    const response = await db.getUserLikes({ id });
+    const response = await db.getLikesByUserId({ id });
     res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({ error });

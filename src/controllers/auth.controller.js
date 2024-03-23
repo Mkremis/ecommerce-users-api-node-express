@@ -26,8 +26,8 @@ export const login = async (req, res) => {
     });
     const db = await dbPromise;
     const userData = { userName, email };
-    const userLikes = await db.getUserLikes({ userName, id });
-    const userCart = await db.getUserCart({ userName, id });
+    const userLikes = await db.getLikesByUserId({ id });
+    const userCart = await db.getCartByUserId({ id });
     res.status(200).json({ userData, userLikes, userCart });
   } catch (error) {
     console.log(error);

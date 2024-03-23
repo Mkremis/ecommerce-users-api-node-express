@@ -28,6 +28,7 @@ class MySQLAdapter {
     });
   }
 
+  //user services
   async registerNewUser({ userData }) {
     try {
       const userId = uuidv4({ format: "binary" });
@@ -175,9 +176,9 @@ class MySQLAdapter {
     }
   }
 
-  async getUserCart({ username, id = null }) {
+  // cart services
+  async getCartByUserId({ id }) {
     try {
-      if (!id) id = await this.getUserId({ username });
       const query =
         "SELECT id, price_currency AS priceCurrency, prod_Gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice, productq AS productQ FROM users_cart WHERE user_id = ?";
       const [rows] = await this.pool.execute(query, [id]);
@@ -188,21 +189,20 @@ class MySQLAdapter {
     }
   }
 
-  async updateUserCart({ username, cart }) {
+  async getUserCartItem({ userId, prodId }) {
     try {
-      const id = await this.getUserId({ username });
-      if (id) {
-        const query = `
-        INSERT INTO users_cart (user_id, user_cart)
-        VALUES (UUID_TO_BIN(?), ?)
-        ON DUPLICATE KEY UPDATE user_cart = VALUES(user_cart)
-      `;
-        const values = [id, JSON.stringify(cart)];
+      const query = `
+      SELECT productq
+      FROM users_cart
+      WHERE user_id = ? AND prod_id = ?
+    `;
+      const [rows] = await this.pool.execute(query, [userId, prodId]);
 
-        const [rows] = await this.pool.execute(query, values);
-        return { success: rows.affectedRows };
+      if (rows.length > 0) {
+        // Si se encontró un resultado, devolver el primer elemento (debería ser único por user_id y prod_id)
+        return rows[0];
       } else {
-        throw error; // Puedes manejar este error en el controlador
+        return null; // Devuelve null si no se encuentra ningún resultado
       }
     } catch (error) {
       console.error(error);
@@ -210,7 +210,75 @@ class MySQLAdapter {
     }
   }
 
-  async getUserLikes({ id }) {
+  async updateUserCartItem({ userId, prodId, productQ }) {
+    try {
+      const query = `
+      UPDATE users_cart
+      SET productq = ?
+      WHERE user_id = ? AND prod_id = ?
+    `;
+      const values = [productQ, userId, prodId];
+
+      const [rows] = await this.pool.execute(query, values);
+
+      if (rows.affectedRows > 0) {
+        return { success: true };
+      } else {
+        return { success: false };
+      }
+    } catch (error) {
+      console.error(error);
+      return { success: false, error: "Error updating user cart item" };
+    }
+  }
+
+  async saveUserCartItem({ userId, cartItem }) {
+    console.log(userId, cartItem);
+    try {
+      const query = `
+      INSERT INTO users_cart
+      (user_id, prod_id, prod_name, prod_gender, prod_image, prod_price, price_currency, productq)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+      const values = [
+        userId,
+        cartItem.prodId,
+        cartItem.prodName,
+        cartItem.prodGender,
+        cartItem.prodImage,
+        cartItem.prodPrice,
+        cartItem.priceCurrency,
+        cartItem.productQ,
+      ];
+
+      const [rows] = await this.pool.execute(query, values);
+      if (rows.affectedRows > 0) {
+        return { success: true };
+      } else {
+        return { success: false };
+      }
+    } catch (error) {
+      console.error(error);
+      return { success: false, error: "Error saving user cart item" };
+    }
+  }
+
+  async deleteCartItem({ cartId }) {
+    try {
+      const query = `
+      DELETE FROM users_cart 
+      WHERE id = ?
+    `;
+      const values = [cartId];
+      const [rows] = await this.pool.execute(query, values);
+      return { success: rows.affectedRows > 0 };
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
+  // like services
+  async getLikesByUserId({ id }) {
     try {
       const query =
         "SELECT id, price_currency AS priceCurrency, prod_Gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice FROM users_likes WHERE user_id = ?";
@@ -221,6 +289,7 @@ class MySQLAdapter {
       throw error; // Puedes manejar este error en el controlador
     }
   }
+
   async createUserLike({ id, newLike }) {
     console.log(id);
     console.log(newLike);
@@ -247,6 +316,7 @@ class MySQLAdapter {
       throw error; // Puedes manejar este error en el controlador
     }
   }
+
   async deleteUserLikeByProdId({ id, prodId }) {
     try {
       const query = `
@@ -261,33 +331,6 @@ class MySQLAdapter {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
     }
-  }
-
-  async getUserId({ username }) {
-    try {
-      const query = "SELECT HEX(id) AS id FROM users WHERE username = ?";
-      const [rows] = await this.pool.execute(query, [username]);
-
-      if (rows.length > 0) {
-        return this.convertHexToUUID(rows[0].id);
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error(error);
-      throw error; // Puedes manejar este error en el controlador
-    }
-  }
-
-  // Agrega una función para convertir el formato hexadecimal a UUID
-  convertHexToUUID(hex) {
-    const uuid = `${hex.substr(0, 8)}-${hex.substr(8, 4)}-${hex.substr(
-      12,
-      4
-    )}-${hex.substr(16, 4)}-${hex.substr(20)}`;
-    console.log(uuid);
-
-    return uuid;
   }
 }
 
