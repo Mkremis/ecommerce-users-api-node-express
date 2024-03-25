@@ -14,6 +14,6 @@ router
   .get("/logout", checkSession, logout)
   .get("/dashboard", checkSession, dashboard)
   .patch("/update", validateSchema(updateSchema), checkSession, updateUser)
-  .get("/users/reload", checkSession, reloadSession);
+  .get("/reload", checkSession, reloadSession);
 
 export default router;

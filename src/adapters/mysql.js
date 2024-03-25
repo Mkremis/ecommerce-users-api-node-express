@@ -137,6 +137,21 @@ class MySQLAdapter {
     }
   }
 
+  async getUserProfilePictureById({ id }) {
+    try {
+      const query = `
+      SELECT thumbnail
+      FROM users_dashboard
+      WHERE user_id = ?
+    `;
+      const [rows] = await this.pool.execute(query, [id]);
+      return rows[0];
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
+
   async updateUserData({ userData, id }) {
     console.log(userData);
     try {

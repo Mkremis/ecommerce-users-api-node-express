@@ -41,21 +41,12 @@ export const logout = async (req, res) => {
 export const reloadSession = async (req, res) => {
   const db = await dbPromise;
   try {
-    const { id } = req.user;
-    const { success: user_data } = await db.getUserById({ id });
-    const { success: likes } = await db.getUserLikes({ id });
-    const { success: user_cart } = await db.getUserCart({ id });
-
-    // Excluir propiedades no deseadas
-    delete user_data?.password;
-    delete user_data?._id;
-    delete user_data?.id;
-
-    res.status(200).json({
-      user_data: user_data,
-      ...user_cart,
-      user_likes: { likes: likes },
-    });
+    const { id, email, userName } = req.user;
+    const profilePicture = await db.getUserProfilePictureById({ id });
+    const userData = { userName, email, thumbnail: profilePicture?.thumbnail };
+    const userLikes = await db.getLikesByUserId({ id });
+    const userCart = await db.getCartByUserId({ id });
+    res.status(200).json({ userData, userLikes, userCart });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error });

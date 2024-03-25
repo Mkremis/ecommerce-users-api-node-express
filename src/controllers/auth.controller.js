@@ -25,7 +25,9 @@ export const login = async (req, res) => {
       sameSite: "none",
     });
     const db = await dbPromise;
-    const userData = { userName, email };
+    const profilePicture = await db.getUserProfilePictureById({ id });
+
+    const userData = { userName, email, thumbnail: profilePicture?.thumbnail };
     const userLikes = await db.getLikesByUserId({ id });
     const userCart = await db.getCartByUserId({ id });
     res.status(200).json({ userData, userLikes, userCart });

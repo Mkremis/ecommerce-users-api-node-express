@@ -8,6 +8,7 @@ const isUser = async (req, res, next) => {
     const response = await db.getUserByUsername({ userName });
     if (response.success) {
       req.user = {
+        userName,
         id: response.success.id,
         password: response.success.password,
         email: response.success.email,

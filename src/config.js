@@ -3,7 +3,7 @@ config();
 
 export const DB_TYPE = process.env.DB_TYPE || "postgres";
 
-export const PORT = process.env.PORT || 8080;
+export const PORT = process.env.PORT || 8090;
 
 export const POSTGRES_URL = process.env.POSTGRES_URL;
 

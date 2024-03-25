@@ -32,7 +32,7 @@ export const deleteLike = async (req, res) => {
 
   try {
     const deleteResult = await db.deleteUserLikeByProdId({ id, prodId });
-
+    console.log(deleteResult);
     if (deleteResult.success) {
       return res.status(200).json({ message: "Like eliminado correctamente." });
     } else {
