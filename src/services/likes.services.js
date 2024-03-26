@@ -1,25 +1,45 @@
-// import { pool } from "../db.js";
+import dbPromise from "../index.js";
 
-// export const likesUpdate = async ({ username, likes }) => {
-//   try {
-//     const [rows] = await pool.query(
-//       "UPDATE users SET user_likes = ? WHERE username = ?",
-//       [likes, username]
-//     );
-//     if (rows.affectedRows) return { success: rows };
-//   } catch (error) {
-//     return { fail: error };
-//   }
-// };
+export const getLikesService = async ({ userId }) => {
+  const db = await dbPromise;
 
-// export const getUserLikes = async ({ username }) => {
-//   try {
-//     const [rows] = await pool.query(
-//       `SELECT user_likes FROM users WHERE username = ?`,
-//       username
-//     );
-//     return { success: rows[0] };
-//   } catch (error) {
-//     return { fail: error };
-//   }
-// };
+  try {
+    const likes = await db.getLikesByUserId({ userId });
+    return likes;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error retrieving user likes");
+  }
+};
+
+export const createLikeService = async ({ userId, newLike }) => {
+  const db = await dbPromise;
+  try {
+    const saveResult = await db.saveUserLike({ userId, newLike });
+    if (saveResult.success) {
+      return { success: "User like created successfully" };
+    } else {
+      return { fail: "Error creating user like" };
+    }
+  } catch (error) {
+    console.error(error);
+    return { fail: "Internal Server Error" };
+  }
+};
+
+export const deleteLikeService = async ({ userId, prodId }) => {
+  const db = await dbPromise;
+
+  try {
+    const deleteResult = await db.deleteUserLikeByProdId({ userId, prodId });
+
+    if (deleteResult.success) {
+      return { success: true };
+    } else {
+      return { fail: true };
+    }
+  } catch (error) {
+    console.error(error);
+    return { fail: "Internal Server Error" };
+  }
+};

@@ -29,19 +29,19 @@ class MySQLAdapter {
   }
 
   //user services
-  async registerNewUser({ userData }) {
+  async registerNewUser({ registerData }) {
     try {
       const userId = uuidv4({ format: "binary" });
 
       const queryInsertUser = `
-      INSERT INTO users(id, user_name, password, email)
-      VALUES (?, ?, ?, ?)
-    `;
+        INSERT INTO users(id, user_name, password, email)
+        VALUES (?, ?, ?, ?)
+      `;
       const valuesInsertUser = [
         userId,
-        userData.userName,
-        userData.password,
-        userData.email,
+        registerData.userName,
+        registerData.password,
+        registerData.email,
       ];
 
       const [resultInsertUser] = await this.pool.execute(
@@ -50,13 +50,12 @@ class MySQLAdapter {
       );
 
       if (resultInsertUser.affectedRows) {
-        const roles = userData.roles || []; // Roles del usuario
+        const roles = registerData.roles || [];
 
         for (const roleName of roles) {
-          // Obtiene el role_id correspondiente al roleName
           const queryGetRoleId = `
-          SELECT id FROM role WHERE role_name = ?
-        `;
+            SELECT id FROM role WHERE role_name = ?
+          `;
           const [roleResult] = await this.pool.execute(queryGetRoleId, [
             roleName,
           ]);
@@ -64,11 +63,10 @@ class MySQLAdapter {
           if (roleResult.length > 0) {
             const roleId = roleResult[0].id;
 
-            // Inserta el user_id y role_id en user_role
             const queryInsertUserRole = `
-            INSERT INTO user_role(user_id, role_id)
-            VALUES (?, ?)
-          `;
+              INSERT INTO user_role(user_id, role_id)
+              VALUES (?, ?)
+            `;
             const valuesInsertUserRole = [userId, roleId];
             await this.pool.execute(queryInsertUserRole, valuesInsertUserRole);
           }
@@ -78,7 +76,22 @@ class MySQLAdapter {
       }
     } catch (error) {
       console.error(error);
-      return { fail: error.message };
+      throw error;
+    }
+  }
+
+  async getUserThumbnailById({ userId }) {
+    try {
+      const query = `
+      SELECT thumbnail
+      FROM users_dashboard
+      WHERE user_id = ?
+    `;
+      const [rows] = await this.pool.execute(query, [userId]);
+      return rows.length ? rows[0] : "";
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
     }
   }
 
@@ -101,73 +114,44 @@ class MySQLAdapter {
     }
   }
 
-  async getUserById({ id }) {
+  async getUserDataById({ userId }) {
     try {
       const query = `
-        SELECT HEX(id) AS id, user_name, password, email
-        FROM users WHERE id = ?
+        SELECT city, country, email, first, last, phone, postcode, state, street, street_number AS streetNumber, thumbnail, title
+        FROM users_dashboard
+        WHERE user_id = ?
       `;
-      const [rows] = await this.pool.execute(query, [id]);
-
-      if (rows.length > 0) {
-        const success = rows[0];
-        success.id = this.convertHexToUUID(success.id);
-        return success;
-      } else {
-        return { fail: "User not found" };
-      }
+      const [rows] = await this.pool.execute(query, [userId]);
+      if (rows.length > 0) return { success: rows[0] };
+      return { fail: true };
     } catch (error) {
       console.error(error);
-      throw error; // Puedes manejar este error en el controlador
+      throw error;
     }
   }
 
-  async getUserDataById({ id }) {
+  async updateUserData({ userData, userId }) {
     try {
-      const query = `
-      SELECT city, country, email, first, last, phone, postcode, state, street, street_number AS streetNumber, thumbnail, title
-      FROM users_dashboard
-      WHERE user_id = ?
+      // Update users_dashboard
+      let updateUserDashboardQuery = `
+      INSERT INTO users_dashboard (user_id, title, first, last, email, phone, thumbnail, city, state, street_number, street, country, postcode)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        title = COALESCE(?, title),
+        first = COALESCE(?, first),
+        last = COALESCE(?, last),
+        email = COALESCE(?, email),
+        phone = COALESCE(?, phone),
+        thumbnail = COALESCE(?, thumbnail),
+        city = COALESCE(?, city),
+        state = COALESCE(?, state),
+        street_number = COALESCE(?, street_number),
+        street = COALESCE(?, street),
+        country = COALESCE(?, country),
+        postcode = COALESCE(?, postcode)
     `;
-      const [rows] = await this.pool.execute(query, [id]);
-      return rows[0];
-    } catch (error) {
-      console.error(error);
-      throw error; // Puedes manejar este error en el controlador
-    }
-  }
-
-  async getUserProfilePictureById({ id }) {
-    try {
-      const query = `
-      SELECT thumbnail
-      FROM users_dashboard
-      WHERE user_id = ?
-    `;
-      const [rows] = await this.pool.execute(query, [id]);
-      return rows[0];
-    } catch (error) {
-      console.error(error);
-      throw error; // Puedes manejar este error en el controlador
-    }
-  }
-
-  async updateUserData({ userData, id }) {
-    console.log(userData);
-    try {
-      const query = `
-        UPDATE users
-        SET username = COALESCE(?, username), password = COALESCE(?, password), title = COALESCE(?, title),
-        first = COALESCE(?, first), last = COALESCE(?, last), email = COALESCE(?, email),
-        phone = COALESCE(?, phone), thumbnail = COALESCE(?, thumbnail), city = COALESCE(?, city),
-        state = COALESCE(?, state), street_number = COALESCE(?, street_number), street = COALESCE(?, street),
-        country = COALESCE(?, country), postcode = COALESCE(?, postcode)
-        WHERE id = UUID_TO_BIN(?)
-      `;
-
-      const values = [
-        userData.username || null,
-        userData.password || null,
+      const updateUserDashboardValues = [
+        userId,
         userData.title || null,
         userData.first || null,
         userData.last || null,
@@ -180,30 +164,59 @@ class MySQLAdapter {
         userData.street || null,
         userData.country || null,
         userData.postcode || null,
-        id,
+        userData.title || null,
+        userData.first || null,
+        userData.last || null,
+        userData.email || null,
+        userData.phone || null,
+        userData.thumbnail || null,
+        userData.city || null,
+        userData.state || null,
+        userData.streetNumber || null,
+        userData.street || null,
+        userData.country || null,
+        userData.postcode || null,
       ];
 
-      const [rows] = await this.pool.execute(query, values);
-      return { success: rows.affectedRows };
+      const dashUpdate = await this.pool.execute(
+        updateUserDashboardQuery,
+        updateUserDashboardValues
+      );
+
+      // Update users (if password is provided)
+      if (userData.password) {
+        const updatePassQuery = `
+        UPDATE users
+        SET password = ?
+        WHERE id = ?
+      `;
+        const updateUsersValues = [userData.password, userId];
+
+        const passUpdate = await this.pool.execute(
+          updatePassQuery,
+          updateUsersValues
+        );
+      }
+
+      return { success: true };
     } catch (error) {
       console.error(error);
-      return { fail: error.message };
+      throw error;
     }
   }
 
   // cart services
-  async getCartByUserId({ id }) {
+  async getCartByUserId({ userId }) {
     try {
       const query =
         "SELECT id, price_currency AS priceCurrency, prod_Gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice, productq AS productQ FROM users_cart WHERE user_id = ?";
-      const [rows] = await this.pool.execute(query, [id]);
+      const [rows] = await this.pool.execute(query, [userId]);
       return rows;
     } catch (error) {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
     }
   }
-
   async getUserCartItem({ userId, prodId }) {
     try {
       const query = `
@@ -243,12 +256,11 @@ class MySQLAdapter {
       }
     } catch (error) {
       console.error(error);
-      return { success: false, error: "Error updating user cart item" };
+      throw error;
     }
   }
 
   async saveUserCartItem({ userId, cartItem }) {
-    console.log(userId, cartItem);
     try {
       const query = `
       INSERT INTO users_cart
@@ -274,7 +286,7 @@ class MySQLAdapter {
       }
     } catch (error) {
       console.error(error);
-      return { success: false, error: "Error saving user cart item" };
+      throw error;
     }
   }
 
@@ -293,29 +305,29 @@ class MySQLAdapter {
     }
   }
   // like services
-  async getLikesByUserId({ id }) {
+  async getLikesByUserId({ userId }) {
     try {
-      const query =
-        "SELECT id, price_currency AS priceCurrency, prod_Gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice FROM users_likes WHERE user_id = ?";
-      const [rows] = await this.pool.execute(query, [id]);
+      const query = `
+        SELECT id, price_currency AS priceCurrency, prod_gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice
+        FROM users_likes
+        WHERE user_id = ?
+      `;
+      const [rows] = await this.pool.execute(query, [userId]);
       return rows;
     } catch (error) {
       console.error(error);
-      throw error; // Puedes manejar este error en el controlador
+      throw error;
     }
   }
 
-  async createUserLike({ id, newLike }) {
-    console.log(id);
-    console.log(newLike);
-
+  async saveUserLike({ userId, newLike }) {
     try {
       const query = `
-      INSERT INTO users_likes ( user_id, prod_id, prod_name, prod_gender, prod_image, prod_price, price_currency)
+      INSERT INTO users_likes (user_id, prod_id, prod_name, prod_gender, prod_image, prod_price, price_currency)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
       const values = [
-        id,
+        userId,
         newLike.prodId,
         newLike.prodName,
         newLike.prodGender,
@@ -325,26 +337,33 @@ class MySQLAdapter {
       ];
 
       const [rows] = await this.pool.execute(query, values);
-      return { success: rows.affectedRows > 0 };
+      if (rows?.affectedRows > 0) {
+        return { success: true };
+      } else {
+        return { fail: true };
+      }
     } catch (error) {
       console.error(error);
-      throw error; // Puedes manejar este error en el controlador
+      throw error; // Re-lanzar error para que sea manejado por createLikeService
     }
   }
 
-  async deleteUserLikeByProdId({ id, prodId }) {
+  async deleteUserLikeByProdId({ userId, prodId }, db) {
     try {
       const query = `
       DELETE FROM users_likes 
       WHERE user_id = ? AND prod_id = ?
     `;
-      const values = [id, prodId];
-
+      const values = [userId, prodId];
       const [rows] = await this.pool.execute(query, values);
-      return { success: rows.affectedRows > 0 };
+      if (rows?.affectedRows > 0) {
+        return { success: true };
+      } else {
+        return { success: false };
+      }
     } catch (error) {
       console.error(error);
-      throw error; // Puedes manejar este error en el controlador
+      throw error; // Re-lanzar error para que sea manejado por deleteLikeService
     }
   }
 }

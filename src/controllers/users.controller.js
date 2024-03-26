@@ -1,54 +1,58 @@
-import dbPromise from "../index.js";
+import {
+  reloadSessionService,
+  updateUserDashboardService,
+  userDashboardService,
+} from "../services/users.services.js";
 import { encrypt } from "../utils/bcryptHandle.js";
 
-export const dashboard = async (req, res) => {
-  const db = await dbPromise;
-
+export const getUserDashboardController = async (req, res) => {
   try {
-    const response = await db.getUserDataById({ id: req.user.id });
-    return res.status(200).json(response);
+    const userId = req.user.id;
+    const dashboardResult = await userDashboardService({ userId });
+    return res.status(200).json(dashboardResult);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-export const updateUser = async (req, res) => {
-  const db = await dbPromise;
-
+export const updateUserDashboardController = async (req, res) => {
   try {
     const userData = req.body;
+    const userId = req.user.id;
+
     if (userData.password) {
       userData.password = await encrypt(userData.password);
     }
 
-    const response = await db.updateUserData({ userData, id: req.user.id });
+    const dashboardResult = await updateUserDashboardService({
+      userData,
+      userId,
+    });
 
-    if (response.success) {
+    if (dashboardResult.success) {
       return res.sendStatus(204);
+    } else {
+      return res.status(500).json({ error: "Failed to update user dashboard" });
     }
-    return res.status(500).json({ message: [response.fail] });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: [error.message] });
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-export const logout = async (req, res) => {
+export const logoutController = async (req, res) => {
   res.clearCookie("jwt", { httpOnly: true });
   res.status(200).json({ message: "User logged out successfully" });
 };
 
-export const reloadSession = async (req, res) => {
-  const db = await dbPromise;
+export const reloadSessionController = async (req, res) => {
   try {
-    const { id, email, userName } = req.user;
-    const profilePicture = await db.getUserProfilePictureById({ id });
-    const userData = { userName, email, thumbnail: profilePicture?.thumbnail };
-    const userLikes = await db.getLikesByUserId({ id });
-    const userCart = await db.getCartByUserId({ id });
-    res.status(200).json({ userData, userLikes, userCart });
+    const userLoginData = req.user;
+    const reloadResult = await reloadSessionService({ userLoginData });
+    if (reloadResult.success) res.status(200).json(reloadResult.success);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error });
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };

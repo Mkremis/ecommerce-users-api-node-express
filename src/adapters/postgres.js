@@ -224,7 +224,7 @@ class PostgreSQLAdapter {
       } = await this.pool.query(query);
       return id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw error; // Puedes manejar este error en el controlador
     }
   }

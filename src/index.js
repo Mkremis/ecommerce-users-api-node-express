@@ -18,7 +18,7 @@ async function initializeDB() {
       throw new Error(`DB_TYPE "${DB_TYPE}" no es compatible.`);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 

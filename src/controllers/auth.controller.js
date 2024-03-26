@@ -1,71 +1,68 @@
-import dbPromise from "../index.js";
-import { encrypt, verify } from "../utils/bcryptHandle.js";
-import { accessJWT } from "../utils/jwtHandle.js";
+import { loginService, registerService } from "../services/auth.services.js";
 
-export const login = async (req, res) => {
+/**
+ * Controller for user login.
+ * @param {Request} req - HTTP request object.
+ * @param {Response} res - HTTP response object.
+ * @returns {Response} HTTP response with login result.
+ */
+export const loginController = async (req, res) => {
   try {
-    const { userName, password } = req.body;
-    if (!req?.user?.id) {
-      return res
-        .status(404)
-        .json({ message: [`Not user found with username ${username}`] });
+    const loginData = req.body;
+    const isUser = req?.user;
+
+    const loginResult = await loginService({ isUser, loginData });
+
+    if (loginResult.fail?.isUser) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    const passwordHash = req.user.password;
-    const isCorrect = await verify(password, passwordHash);
-    if (!isCorrect) {
-      return res.status(401).json({ message: ["Incorrect credentials"] });
+    if (loginResult.fail?.credentials) {
+      return res.status(401).json({ error: "Incorrect credentials" });
     }
-    const { id, email } = req.user;
-    const jwt = accessJWT({ id });
 
-    res.cookie("jwt", jwt, {
-      httpOnly: process.env.NODE_ENV !== "development",
-      secure: true,
-      sameSite: "none",
-    });
-    const db = await dbPromise;
-    const profilePicture = await db.getUserProfilePictureById({ id });
+    if (loginResult.success) {
+      res.cookie("jwt", loginResult.success.jwt, {
+        httpOnly: process.env.NODE_ENV !== "development",
+        secure: true,
+        sameSite: "none",
+      });
+      return res.status(200).json(loginResult.success.login);
+    }
 
-    const userData = { userName, email, thumbnail: profilePicture?.thumbnail };
-    const userLikes = await db.getLikesByUserId({ id });
-    const userCart = await db.getCartByUserId({ id });
-    res.status(200).json({ userData, userLikes, userCart });
+    return res.status(500).json({ error: "Login error" });
   } catch (error) {
-    console.log(error);
-
-    res.status(500).json({ error });
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-export const register = async (req, res) => {
+/**
+ * Controller for user registration.
+ * @param {Request} req - HTTP request object.
+ * @param {Response} res - HTTP response object.
+ * @returns {Response} HTTP response with registration result.
+ */
+export const registerController = async (req, res) => {
   try {
-    if (req?.user?.id) {
-      // Ya hay un usuario logueado
+    let isUser = req?.user?.id;
+    let registerData = req.body;
+
+    const registerResult = await registerService({ isUser, registerData });
+
+    if (registerResult.success) {
+      return res.sendStatus(204);
+    }
+
+    if (registerResult.fail?.alreadyUser) {
       return res
         .status(403)
-        .json({ message: "Forbidden: User is already logged in" });
+        .json({ error: "Forbidden: User is already registered" });
     }
 
-    let userData = req.body;
-
-    // Encripta la contraseña antes de guardarla
-    userData.password = await encrypt(userData.password);
-    const db = await dbPromise;
-
-    // Intenta registrar al nuevo usuario en la base de datos
-    const response = await db.registerNewUser({ userData });
-
-    if (response.success) {
-      // Usuario registrado exitosamente
-      return res.sendStatus(204);
-    } else {
-      // Error al registrar al usuario
-      return res.status(409).json({ message: response.fail });
-    }
+    return res.status(500).json({ error: "Registration error" });
   } catch (error) {
-    // Error interno del servidor
-    console.error("Error en el registro:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

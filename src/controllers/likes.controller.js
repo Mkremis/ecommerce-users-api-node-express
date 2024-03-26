@@ -1,38 +1,46 @@
-import dbPromise from "../index.js";
+import {
+  getLikesService,
+  createLikeService,
+  deleteLikeService,
+} from "../services/likes.services.js";
 
-export const getLikes = async (req, res) => {
-  const { id } = req.user;
-  const db = await dbPromise;
+export const getLikesController = async (req, res) => {
+  const userId = req.user.id;
+
   try {
-    const response = await db.getLikesByUserId({ id });
-    res.status(200).json(response);
+    const likes = await getLikesService({ userId });
+    res.status(200).json(likes);
   } catch (error) {
-    return res.status(500).json({ error });
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-export const createLike = async (req, res) => {
-  const { id } = req.user;
-  const newLike = req.body;
-  const db = await dbPromise;
+export const createLikeController = async (req, res) => {
   try {
-    const response = await db.createUserLike({ id, newLike });
-    if (response.success)
-      res.status(200).json({ message: "Likes updated successfully" });
+    const userId = req.user.id;
+    const newLike = req.body;
+
+    const createLikeResponse = await createLikeService({ userId, newLike });
+
+    if (createLikeResponse.success) {
+      return res.status(200).json({ message: createLikeResponse.success });
+    } else {
+      return res.status(500).json({ message: "Error creating user like" });
+    }
   } catch (error) {
-    return res.status(500).json({ error });
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const deleteLike = async (req, res) => {
-  const { id } = req.user;
-  const { prodId } = req.params;
-  console.log(req.params);
-  const db = await dbPromise;
-
+export const deleteLikeController = async (req, res) => {
   try {
-    const deleteResult = await db.deleteUserLikeByProdId({ id, prodId });
-    console.log(deleteResult);
+    const userId = req.user.id;
+    const { prodId } = req.params;
+
+    const deleteResult = await deleteLikeService({ userId, prodId });
+
     if (deleteResult.success) {
       return res.status(200).json({ message: "Like eliminado correctamente." });
     } else {

@@ -1,52 +1,59 @@
-// import { pool } from "../db.js";
+import dbPromise from "../index.js";
+import { encrypt, verify } from "../utils/bcryptHandle.js";
+import { accessJWT } from "../utils/jwtHandle.js";
 
-// const registerNewUser = async ({ userData }) => {
-//   try {
-//     const [rows] = await pool.query("INSERT INTO users SET ?", userData);
-//     if (rows.affectedRows) return { success: [rows] };
-//   } catch (error) {
-//     console.log(error);
-//     return { fail: error.sqlMessage };
-//   }
-// };
+export const loginService = async ({ isUser, loginData }) => {
+  try {
+    if (!isUser) {
+      return {
+        fail: {
+          isUser: "No user found with provided username",
+        },
+      };
+    }
 
-// const getUserData = async ({ username }) => {
-//   try {
-//     const [rows] = await pool.query(
-//       `SELECT * FROM users WHERE username = ?`,
-//       username
-//     );
-//     const data = { user: rows[0] };
-//     return { success: data };
-//   } catch (error) {
-//     return { fail: error.sqlMessage };
-//   }
-// };
+    const { id, email } = isUser;
+    const { userName } = loginData;
+    const passwordHash = isUser.password;
+    const isCorrect = await verify(loginData.password, passwordHash);
 
-// const updateUserData = async ({ userData }) => {
-//   try {
-//     const [rows] = await pool.query(
-//       `UPDATE users SET ? WHERE username = ?`,
-//       [userData, userData.username]
-//     );
-//     return { success: rows };
-//   } catch (error) {
-//     console.log(error.sqlMessage);
-//     return { fail: error.sqlMessage };
-//   }
-// };
+    if (!isCorrect) {
+      return { fail: { credentials: "Incorrect credentials" } };
+    }
 
-// const getLoginData = async (username) => {
-//   try {
-//     const [rows] = await pool.query(
-//       `SELECT username, title, first, last, thumbnail, user_cart, user_likes FROM users WHERE username = ?`,
-//       username
-//     );
-//     const userData = rows[0];
-//     return userData;
-//   } catch (error) {
-//     return { fail: error.sqlMessage };
-//   }
-// };
+    const jwt = accessJWT({ id });
+    const db = await dbPromise;
+    const thumbnail = await db.getUserThumbnailById({ userId: id });
 
-// export { registerNewUser, getUserData, updateUserData, getLoginData };
+    const userData = {
+      userName,
+      email,
+      ...thumbnail,
+    };
+    const userLikes = await db.getLikesByUserId({ userId: id });
+    const userCart = await db.getCartByUserId({ userId: id });
+
+    return { success: { login: { userData, userLikes, userCart }, jwt } };
+  } catch (error) {
+    console.error(error);
+    return { fail: `Error during login: ${error.message}` };
+  }
+};
+
+export const registerService = async ({ isUser, registerData }) => {
+  try {
+    if (isUser) {
+      return { fail: { alreadyUser: true } };
+    }
+
+    registerData.password = await encrypt(registerData.password);
+    const db = await dbPromise;
+
+    const response = await db.registerNewUser({ registerData });
+
+    return response;
+  } catch (error) {
+    console.error(error);
+    return { fail: `Error during registration: ${error.message}` };
+  }
+};

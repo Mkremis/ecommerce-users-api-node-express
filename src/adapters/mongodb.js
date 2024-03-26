@@ -103,7 +103,6 @@ class MongoDBAdapter {
         : await User.findOne({ username });
       if (user && user.user_cart) {
         const cart = JSON.parse(user.user_cart);
-        console.log(cart);
 
         return { success: { user_cart: cart } };
       } else {
@@ -134,7 +133,6 @@ class MongoDBAdapter {
   }
 
   async getUserLikes({ username, id = null }) {
-    console.log(username, id);
     try {
       if (!id) id = await this.getUserId({ username });
       const user = id
