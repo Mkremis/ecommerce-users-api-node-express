@@ -10,7 +10,7 @@ export const loginController = async (req, res) => {
   try {
     const loginData = req.body;
     const isUser = req?.user;
-
+    console.log(req.user);
     const loginResult = await loginService({ isUser, loginData });
 
     if (loginResult.fail?.isUser) {
@@ -37,12 +37,6 @@ export const loginController = async (req, res) => {
   }
 };
 
-/**
- * Controller for user registration.
- * @param {Request} req - HTTP request object.
- * @param {Response} res - HTTP response object.
- * @returns {Response} HTTP response with registration result.
- */
 export const registerController = async (req, res) => {
   try {
     let isUser = req?.user?.id;

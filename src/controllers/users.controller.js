@@ -48,8 +48,8 @@ export const logoutController = async (req, res) => {
 
 export const reloadSessionController = async (req, res) => {
   try {
-    const userLoginData = req.user;
-    const reloadResult = await reloadSessionService({ userLoginData });
+    const userId = req.user.id;
+    const reloadResult = await reloadSessionService({ userId });
     if (reloadResult.success) res.status(200).json(reloadResult.success);
   } catch (error) {
     console.error(error);

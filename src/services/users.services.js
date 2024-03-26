@@ -31,12 +31,13 @@ export const updateUserDashboardService = async ({ userData, userId }) => {
   }
 };
 
-export const reloadSessionService = async ({ userLoginData }) => {
+export const reloadSessionService = async ({ userId }) => {
   try {
     const db = await dbPromise;
-    const { id: userId, email, userName } = userLoginData;
-    const thumbnail = await db.getUserThumbnailById({ userId });
-    const userData = { userName, email, ...thumbnail };
+    const loginData = await db.getUserById({ userId });
+    const userProfilePicture = await db.getUserThumbnailById({ userId });
+    const userData = { ...loginData.success, ...userProfilePicture.success };
+    console.log("userData", userData);
     const userLikes = await db.getLikesByUserId({ userId });
     const userCart = await db.getCartByUserId({ userId });
     return { success: { userData, userLikes, userCart } };

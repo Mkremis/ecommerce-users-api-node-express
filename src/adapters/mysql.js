@@ -88,7 +88,7 @@ class MySQLAdapter {
       WHERE user_id = ?
     `;
       const [rows] = await this.pool.execute(query, [userId]);
-      return rows.length ? rows[0] : "";
+      return rows.length ? { success: rows[0] } : { success: "" };
     } catch (error) {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
@@ -102,6 +102,25 @@ class MySQLAdapter {
         FROM users WHERE user_name = ?
       `;
       const [rows] = await this.pool.execute(query, [userName]);
+
+      if (rows.length > 0) {
+        return { success: rows[0] };
+      } else {
+        return { fail: "User not found" };
+      }
+    } catch (error) {
+      console.error(error);
+      throw error; // Puedes manejar este error en el controlador
+    }
+  }
+
+  async getUserById({ userId }) {
+    try {
+      const query = `
+        SELECT user_name AS userName, email
+        FROM users WHERE id = ?
+      `;
+      const [rows] = await this.pool.execute(query, [userId]);
 
       if (rows.length > 0) {
         return { success: rows[0] };
