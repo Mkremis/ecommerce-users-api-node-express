@@ -88,7 +88,7 @@ class MySQLAdapter {
       WHERE user_id = ?
     `;
       const [rows] = await this.pool.execute(query, [userId]);
-      return rows.length ? { success: rows[0] } : { success: "" };
+      return rows.length ? rows[0].thumbnail : "";
     } catch (error) {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
@@ -171,30 +171,31 @@ class MySQLAdapter {
     `;
       const updateUserDashboardValues = [
         userId,
-        userData.title || null,
-        userData.first || null,
-        userData.last || null,
-        userData.email || null,
-        userData.phone || null,
-        userData.thumbnail || null,
-        userData.city || null,
-        userData.state || null,
-        userData.street_number || null,
-        userData.street || null,
-        userData.country || null,
-        userData.postcode || null,
-        userData.title || null,
-        userData.first || null,
-        userData.last || null,
-        userData.email || null,
-        userData.phone || null,
-        userData.thumbnail || null,
-        userData.city || null,
-        userData.state || null,
-        userData.streetNumber || null,
-        userData.street || null,
-        userData.country || null,
-        userData.postcode || null,
+        userData.title || "",
+        userData.first || "",
+        userData.last || "",
+        userData.email || "",
+        userData.phone || "",
+        userData.thumbnail || "",
+        userData.city || "",
+        userData.state || "",
+        userData.street_number || "",
+        userData.street || "",
+        userData.country || "",
+        userData.postcode || "",
+        // These values below are for the ON DUPLICATE KEY UPDATE part
+        userData.title || "",
+        userData.first || "",
+        userData.last || "",
+        userData.email || "",
+        userData.phone || "",
+        userData.thumbnail || "",
+        userData.city || "",
+        userData.state || "",
+        userData.streetNumber || "",
+        userData.street || "",
+        userData.country || "",
+        userData.postcode || "",
       ];
 
       const dashUpdate = await this.pool.execute(

@@ -1,3 +1,4 @@
+import Message from "../schemas/Message.js";
 import {
   getLikesService,
   createLikeService,
@@ -8,11 +9,11 @@ export const getLikesController = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const likes = await getLikesService({ userId });
-    res.status(200).json(likes);
+    const response = await getLikesService({ userId });
+    return res.status(200).json(response);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    res.setStatus(500);
   }
 };
 
@@ -21,16 +22,20 @@ export const createLikeController = async (req, res) => {
     const userId = req.user.id;
     const newLike = req.body;
 
-    const createLikeResponse = await createLikeService({ userId, newLike });
+    const response = await createLikeService({ userId, newLike });
 
-    if (createLikeResponse.success) {
-      return res.status(200).json({ message: createLikeResponse.success });
+    if (response.success) {
+      return res
+        .status(200)
+        .json(new Message("success", "User like created successfully"));
     } else {
-      return res.status(500).json({ message: "Error creating user like" });
+      return res
+        .status(500)
+        .json(new Message("fail", "Error creating user like"));
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    res.setStatus(500);
   }
 };
 
@@ -39,10 +44,12 @@ export const deleteLikeController = async (req, res) => {
     const userId = req.user.id;
     const { prodId } = req.params;
 
-    const deleteResult = await deleteLikeService({ userId, prodId });
+    const response = await deleteLikeService({ userId, prodId });
 
-    if (deleteResult.success) {
-      return res.status(200).json({ message: "Like eliminado correctamente." });
+    if (response.success) {
+      return res
+        .status(200)
+        .json(new Message("success", "Like eliminado correctamente."));
     } else {
       return res
         .status(404)
@@ -50,6 +57,6 @@ export const deleteLikeController = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error al eliminar el like." });
+    res.setStatus(500);
   }
 };

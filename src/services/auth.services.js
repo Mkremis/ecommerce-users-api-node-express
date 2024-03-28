@@ -28,15 +28,17 @@ export const loginService = async ({ isUser, loginData }) => {
     const userData = {
       userName,
       email,
-      ...thumbnail,
+      thumbnail,
     };
     const userLikes = await db.getLikesByUserId({ userId: id });
     const userCart = await db.getCartByUserId({ userId: id });
 
-    return { success: { login: { userData, userLikes, userCart }, jwt } };
+    return {
+      success: { login: { userData, userLikes, userCart }, jwt },
+    };
   } catch (error) {
     console.error(error);
-    return { fail: `Error during login: ${error.message}` };
+    throw new Error(`Error during login: ${error.message}`);
   }
 };
 
@@ -54,6 +56,6 @@ export const registerService = async ({ isUser, registerData }) => {
     return response;
   } catch (error) {
     console.error(error);
-    return { fail: `Error during registration: ${error.message}` };
+    throw new Error(`Error during registration: ${error.message}`);
   }
 };

@@ -3,9 +3,7 @@ import dbPromise from "../index.js";
 export const userDashboardService = async ({ userId }) => {
   try {
     const db = await dbPromise;
-    const response = await db.getUserDataById({ userId });
-    console.log(response);
-    return response?.success;
+    return await db.getUserDataById({ userId });
   } catch (error) {
     console.error(error);
     return { fail: `Error fetching user dashboard data: ${error.message}` };
@@ -37,7 +35,6 @@ export const reloadSessionService = async ({ userId }) => {
     const loginData = await db.getUserById({ userId });
     const userProfilePicture = await db.getUserThumbnailById({ userId });
     const userData = { ...loginData.success, ...userProfilePicture.success };
-    console.log("userData", userData);
     const userLikes = await db.getLikesByUserId({ userId });
     const userCart = await db.getCartByUserId({ userId });
     return { success: { userData, userLikes, userCart } };

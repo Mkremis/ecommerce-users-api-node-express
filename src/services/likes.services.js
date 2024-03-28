@@ -4,8 +4,8 @@ export const getLikesService = async ({ userId }) => {
   const db = await dbPromise;
 
   try {
-    const likes = await db.getLikesByUserId({ userId });
-    return likes;
+    const result = await db.getLikesByUserId({ userId });
+    return result;
   } catch (error) {
     console.error(error);
     throw new Error("Error retrieving user likes");
@@ -15,15 +15,11 @@ export const getLikesService = async ({ userId }) => {
 export const createLikeService = async ({ userId, newLike }) => {
   const db = await dbPromise;
   try {
-    const saveResult = await db.saveUserLike({ userId, newLike });
-    if (saveResult.success) {
-      return { success: "User like created successfully" };
-    } else {
-      return { fail: "Error creating user like" };
-    }
+    const result = await db.saveUserLike({ userId, newLike });
+    return result;
   } catch (error) {
     console.error(error);
-    return { fail: "Internal Server Error" };
+    throw new Error("Error creating user like");
   }
 };
 
@@ -31,15 +27,10 @@ export const deleteLikeService = async ({ userId, prodId }) => {
   const db = await dbPromise;
 
   try {
-    const deleteResult = await db.deleteUserLikeByProdId({ userId, prodId });
-
-    if (deleteResult.success) {
-      return { success: true };
-    } else {
-      return { fail: true };
-    }
+    const result = await db.deleteUserLikeByProdId({ userId, prodId });
+    return result;
   } catch (error) {
     console.error(error);
-    return { fail: "Internal Server Error" };
+    throw new Error("Error deleting user like");
   }
 };

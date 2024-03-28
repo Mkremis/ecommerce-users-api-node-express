@@ -1,16 +1,9 @@
 import dbPromise from "../index.js";
 
-/**
- * Service to update user's cart.
- * @param {Object} params - Parameters for updating cart.
- * @param {string} params.userId - User ID.
- * @param {Object} params.newCartItem - New cart item data.
- * @returns {Object} Object with updated cart.
- */
 export const updateCartService = async ({ userId, newCartItem }) => {
   try {
     const db = await dbPromise;
-    let response;
+    let result;
 
     const existingCartItem = await db.getUserCartItem({
       userId,
@@ -19,32 +12,25 @@ export const updateCartService = async ({ userId, newCartItem }) => {
 
     if (existingCartItem) {
       const updatedProductQ = newCartItem.productQ;
-      response = await db.updateUserCartItem({
+      result = await db.updateUserCartItem({
         userId,
         prodId: newCartItem.prodId,
         productQ: updatedProductQ,
       });
     } else {
-      response = await db.saveUserCartItem({ userId, cartItem: newCartItem });
+      result = await db.saveUserCartItem({ userId, cartItem: newCartItem });
     }
 
-    if (response.success) {
+    if (result.success) {
       const updatedUserCart = await db.getCartByUserId({ userId });
-      return { success: updatedUserCart };
+      return updatedUserCart;
     }
   } catch (error) {
     console.error(error);
-    return { fail: `Error updating user cart: ${error.message}` };
+    throw new Error(`Error updating user cart: ${error.message}`);
   }
 };
 
-/**
- * Service to delete a cart item.
- * @param {Object} params - Parameters for deleting cart item.
- * @param {string} params.userId - User ID.
- * @param {string} params.cartId - Cart item ID to delete.
- * @returns {Object} Object with updated cart after deletion.
- */
 export const deleteCartItemService = async ({ userId, cartId }) => {
   try {
     const db = await dbPromise;
@@ -52,10 +38,10 @@ export const deleteCartItemService = async ({ userId, cartId }) => {
 
     if (response.success) {
       const updatedUserCart = await db.getCartByUserId({ userId });
-      return { success: updatedUserCart };
+      return updatedUserCart;
     }
   } catch (error) {
     console.error(error);
-    return { fail: `Error deleting cart item: ${error.message}` };
+    throw new Error({ fail: `Error deleting cart item: ${error.message}` });
   }
 };

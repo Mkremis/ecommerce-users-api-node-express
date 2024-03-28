@@ -60,7 +60,8 @@ export const updateSchema = z.object({
   title: z
     .string()
     .max(5, { message: "Title must not exceed 5 characters" })
-    .optional(),
+    .optional()
+    .nullable(),
   first: z
     .string()
     .max(30, { message: "First name must not exceed 30 characters" })
