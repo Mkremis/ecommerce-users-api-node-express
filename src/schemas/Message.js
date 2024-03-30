@@ -8,7 +8,7 @@ class Message {
     return this.status;
   }
 
-  setStatus(status) {
+  sendStatus(status) {
     if (status === "fail" || status === "success") {
       this.status = status;
     } else {

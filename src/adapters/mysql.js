@@ -80,21 +80,6 @@ class MySQLAdapter {
     }
   }
 
-  async getUserThumbnailById({ userId }) {
-    try {
-      const query = `
-      SELECT thumbnail
-      FROM users_dashboard
-      WHERE user_id = ?
-    `;
-      const [rows] = await this.pool.execute(query, [userId]);
-      return rows.length ? rows[0].thumbnail : "";
-    } catch (error) {
-      console.error(error);
-      throw error; // Puedes manejar este error en el controlador
-    }
-  }
-
   async getUserByUsername({ userName }) {
     try {
       const query = `
@@ -141,8 +126,7 @@ class MySQLAdapter {
         WHERE user_id = ?
       `;
       const [rows] = await this.pool.execute(query, [userId]);
-      if (rows.length > 0) return { success: rows[0] };
-      return { fail: true };
+      return rows[0];
     } catch (error) {
       console.error(error);
       throw error;
@@ -258,21 +242,32 @@ class MySQLAdapter {
     }
   }
 
-  async updateUserCartItem({ userId, prodId, productQ }) {
+  async updateUserCart({ userId, newCartItem }) {
     try {
-      const query = `
+      const prodId = newCartItem.prodId;
+      const productQ = newCartItem.productQ;
+      let result;
+      const existingCartItem = await this.getUserCartItem({
+        userId,
+        prodId: newCartItem.prodId,
+      });
+      if (existingCartItem) {
+        const query = `
       UPDATE users_cart
       SET productq = ?
       WHERE user_id = ? AND prod_id = ?
     `;
-      const values = [productQ, userId, prodId];
-
-      const [rows] = await this.pool.execute(query, values);
-
-      if (rows.affectedRows > 0) {
-        return { success: true };
+        const values = [productQ, userId, prodId];
+        const [rows] = await this.pool.execute(query, values);
+        result = { success: rows.affectedRows > 0 };
       } else {
-        return { success: false };
+        result = await this.saveUserCartItem({
+          userId,
+          cartItem: newCartItem,
+        });
+      }
+      if (result.success) {
+        return await this.getCartByUserId({ userId });
       }
     } catch (error) {
       console.error(error);
@@ -310,15 +305,16 @@ class MySQLAdapter {
     }
   }
 
-  async deleteCartItem({ cartId }) {
+  async deleteCartItem({ userId, cartId }) {
     try {
       const query = `
       DELETE FROM users_cart 
       WHERE id = ?
     `;
       const values = [cartId];
-      const [rows] = await this.pool.execute(query, values);
-      return { success: rows.affectedRows > 0 };
+      await this.pool.execute(query, values);
+      const updatedUserCart = this.getCartByUserId({ userId });
+      return updatedUserCart;
     } catch (error) {
       console.error(error);
       throw error; // Puedes manejar este error en el controlador
@@ -357,10 +353,9 @@ class MySQLAdapter {
       ];
 
       const [rows] = await this.pool.execute(query, values);
+
       if (rows?.affectedRows > 0) {
         return { success: true };
-      } else {
-        return { fail: true };
       }
     } catch (error) {
       console.error(error);
@@ -368,7 +363,7 @@ class MySQLAdapter {
     }
   }
 
-  async deleteUserLikeByProdId({ userId, prodId }, db) {
+  async deleteUserLikeByProdId({ userId, prodId }) {
     try {
       const query = `
       DELETE FROM users_likes 

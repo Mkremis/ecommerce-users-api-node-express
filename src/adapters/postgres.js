@@ -51,7 +51,6 @@ class PostgreSQLAdapter {
   }
 
   async getUserByUsername({ username }) {
-    console.log(username);
     try {
       const query = {
         text: "SELECT * FROM users WHERE username = $1",

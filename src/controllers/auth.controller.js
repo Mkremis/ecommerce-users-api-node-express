@@ -5,29 +5,29 @@ export const loginController = async (req, res) => {
   try {
     const loginData = req.body;
     const isUser = req?.user;
-    const loginResult = await loginService({ isUser, loginData });
+    const response = await loginService({ isUser, loginData });
 
-    if (loginResult.fail?.isUser) {
+    if (response.fail?.isUser) {
       return res.status(404).json(new Message("fail", "User not found"));
     }
 
-    if (loginResult.fail?.credentials) {
+    if (response.fail?.credentials) {
       return res.status(401).json(new Message("fail", "Incorrect credentials"));
     }
 
-    if (loginResult.success) {
-      res.cookie("jwt", loginResult.success.jwt, {
+    if (response.success) {
+      res.cookie("jwt", response.success.jwt, {
         httpOnly: process.env.NODE_ENV !== "development",
         secure: true,
         sameSite: "none",
       });
-      return res.status(200).json(loginResult.success.login);
+      return res.status(200).json(response.success.login);
     }
 
     return res.status(500).json(new Message("fail", "Login error"));
   } catch (error) {
     console.error(error);
-    res.setStatus(500);
+    res.sendStatus(500);
   }
 };
 
@@ -53,6 +53,6 @@ export const registerController = async (req, res) => {
     return res.status(500).json(new Message("fail", "Registration error"));
   } catch (error) {
     console.error(error);
-    res.setStatus(500);
+    res.sendStatus(500);
   }
 };

@@ -13,7 +13,7 @@ export const getLikesController = async (req, res) => {
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);
-    res.setStatus(500);
+    res.sendStatus(500);
   }
 };
 
@@ -35,7 +35,7 @@ export const createLikeController = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.setStatus(500);
+    res.sendStatus(500);
   }
 };
 
@@ -46,7 +46,7 @@ export const deleteLikeController = async (req, res) => {
 
     const response = await deleteLikeService({ userId, prodId });
 
-    if (response.success) {
+    if (response?.success) {
       return res
         .status(200)
         .json(new Message("success", "Like eliminado correctamente."));
@@ -57,6 +57,6 @@ export const deleteLikeController = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.setStatus(500);
+    res.sendStatus(500);
   }
 };

@@ -1,6 +1,6 @@
 import dbPromise from "../index.js";
 
-export const userDashboardService = async ({ userId }) => {
+export const getUserDashboardService = async ({ userId }) => {
   try {
     const db = await dbPromise;
     return await db.getUserDataById({ userId });
@@ -14,12 +14,7 @@ export const updateUserDashboardService = async ({ userData, userId }) => {
   try {
     const db = await dbPromise;
     const response = await db.updateUserData({ userData, userId });
-
-    if (response.success) {
-      return { success: true };
-    } else {
-      return { success: false };
-    }
+    return response;
   } catch (error) {
     console.error(error);
     return {

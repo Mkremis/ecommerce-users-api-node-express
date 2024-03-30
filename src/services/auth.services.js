@@ -11,20 +11,17 @@ export const loginService = async ({ isUser, loginData }) => {
         },
       };
     }
-
     const { id, email } = isUser;
     const { userName } = loginData;
     const passwordHash = isUser.password;
     const isCorrect = await verify(loginData.password, passwordHash);
-
     if (!isCorrect) {
       return { fail: { credentials: "Incorrect credentials" } };
     }
-
     const jwt = accessJWT({ id });
     const db = await dbPromise;
-    const thumbnail = await db.getUserThumbnailById({ userId: id });
-
+    const userDashboard = await db.getUserDataById({ userId: id });
+    const thumbnail = userDashboard?.success?.thumbnail || "";
     const userData = {
       userName,
       email,
