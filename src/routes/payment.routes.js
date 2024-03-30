@@ -1,12 +1,15 @@
-// import { Router } from "express";
-// import { checkSession } from "../middlewares/checkSession.js";
-// import { createOrder, failure, pending, receiveWebhook, success } from "../controllers/payment.controller.js";
+import { Router } from "express";
+import { checkSession } from "../middlewares/checkSession.js";
+import {
+  createOrderController,
+  receiveWebhook,
+} from "../controllers/payment.controller.js";
 
-//   const router = Router();
-//   router.post('/create-order', checkSession, createOrder)
+const router = Router();
+router.post("/create-order", checkSession, createOrderController);
+router.post("/webhook/:username", receiveWebhook);
 //   router.get('/pending', pending)
 //   router.get('/failure', failure)
 //   router.get('/success', success)
-//   router.post('/webhook/:username', receiveWebhook)
 
-//   export default router;
+export default router;

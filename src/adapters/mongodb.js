@@ -101,6 +101,15 @@ class MongoDBAdapter {
     }
   }
 
+  async getUserById({ userId }) {
+    try {
+      const foundUser = await User.findById(userId);
+      return foundUser ? { success: foundUser } : { fail: "User not found" };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
   async getUserDataById({ userId }) {
     try {
       const userData = await UserDashboard.findOne({ userId });

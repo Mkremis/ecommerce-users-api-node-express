@@ -1,48 +1,83 @@
-// import mercadopago from 'mercadopago';
-// import { MERCADOPAGO_API_KEY } from '../config.js';
+// Step 1: Import the parts of the module you want to use
+import { MercadoPagoConfig, Payment, Preference } from "mercadopago";
+import { MERCADOPAGO_API_KEY } from "../config.js";
+
+import db from "../index.js";
 // import { cartUpdate } from '../services/cart.services.js';
 // import { registerSale } from '../services/payment.services.js';
 
-// export const createOrder = async (req, res) => {
-//   const { username } = req.user;
-//   const { cart } = req.body;
-//   let cartItems = [];
-//   for (const key in cart) {
-//     let obj = {};
-//     obj.id = key;
-//     obj.category_id = cart[key]['gender'];
-//     obj.picture_url = `https://${cart[key]['prodImage']}`;
-//     obj.title = cart[key]['prodName'];
-//     obj.quantity = parseInt(cart[key]['productQ']);
-//     obj.currency_id = 'USD';
-//     obj.unit_price = parseFloat(cart[key]['prodPrice']);
-//     cartItems.push(obj);
-//   }
-//   mercadopago.configure({
-//     access_token: MERCADOPAGO_API_KEY,
-//   });
-//   try {
-//     console.log('cartItems', cartItems);
-//     const result = await mercadopago.preferences.create({
-//       items: cartItems,
-//       back_urls: {
-//         success: `https://mkremis.github.io/ecommerce-react/#/success-payment`,
-//         pending:
-//           'https://ecommerce-users-api-production.up.railway.app/api/pending',
-//         failure:
-//           'https://ecommerce-users-api-production.up.railway.app/api/failure',
-//       },
-//       notification_url: `https://ecommerce-users-api-production.up.railway.app/api/webhook/${username}`,
-//     });
-//     if (result) return res.status(200).json(result.body);
-//   } catch (error) {
-//     res.status(500).json({ message: error });
-//   }
-// };
+export const createOrderController = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const order = req.body;
+    const userData = await db.getUserById({ userId });
+    if (userData.success && order.length) {
+      const { userName, email } = userData.success;
+      // Step 2: Initialize the client object
+      const client = new MercadoPagoConfig({
+        accessToken: MERCADOPAGO_API_KEY,
+        options: { timeout: 5000 },
+      });
+      const preference = new Preference(client);
+      const paymentLink = await createPayment(order);
+      return res.status(200).json({ payLink: paymentLink.sandbox_init_point });
+      async function createPayment(order) {
+        try {
+          const paymentRequest = await preference.create({
+            body: {
+              items: order.map(
+                ({
+                  prodId,
+                  prodName,
+                  prodPrice,
+                  prodImage,
+                  priceCurrency,
+                  prodGender,
+                  productQ,
+                }) => {
+                  return {
+                    id: prodId,
+                    title: prodName,
+                    unit_price: prodPrice,
+                    quantity: productQ,
+                    currency_id: priceCurrency,
+                    picture_url: prodImage,
+                    category_id: prodGender,
+                    description: prodName,
+                    metadata: {
+                      prodId,
+                      prodName,
+                      prodPrice,
+                      prodGender,
+                    },
+                  };
+                }
+              ),
+              back_urls: {
+                success: `http://localhost:5173/ecommerce-react/#/success-payment`,
+                failure: "http://localhost:5173/ecommerce-react/#/fail-payment",
+              },
+              notification_url: `http://localhost:8090/api/users/webhook/${userName}`,
+            },
+          });
+          return paymentRequest;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    } else {
+      return res.status(400).json({ message: "Error" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
 
-// export const receiveWebhook = async (req, res) => {
-//   const payment = req.query;
-//   const { username } = req.params;
+export const receiveWebhook = async (req, res) => {
+  const payment = req.query;
+  const { username } = req.params;
+};
 //   if (payment.type === 'payment') {
 //     res.status(200).send('HTTP STATUS 200 (OK)');
 //     const data = await mercadopago.payment.findById(payment['data.id']);
