@@ -13,7 +13,8 @@
     "MySQL",
     "REST",
     "API",
-    "Railway"
+    "mongoose",
+    "MongoDB"
   ],
   "author": "Martin Kremis",
   "license": "ISC",
@@ -29,7 +30,6 @@
     "mongoose": "^7.6.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.2.3",
-    "pg": "^8.11.3",
     "uuid": "^9.0.0",
     "zod": "^3.22.2"
   },

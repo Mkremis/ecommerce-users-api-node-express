@@ -1,4 +1,4 @@
-import dbPromise from "../index.js";
+import db from "../index.js";
 import { encrypt, verify } from "../utils/bcryptHandle.js";
 import { accessJWT } from "../utils/jwtHandle.js";
 
@@ -19,7 +19,7 @@ export const loginService = async ({ isUser, loginData }) => {
       return { fail: { credentials: "Incorrect credentials" } };
     }
     const jwt = accessJWT({ id });
-    const db = await dbPromise;
+
     const userDashboard = await db.getUserDataById({ userId: id });
     const thumbnail = userDashboard?.success?.thumbnail || "";
     const userData = {
@@ -46,7 +46,6 @@ export const registerService = async ({ isUser, registerData }) => {
     }
 
     registerData.password = await encrypt(registerData.password);
-    const db = await dbPromise;
 
     const response = await db.registerNewUser({ registerData });
 

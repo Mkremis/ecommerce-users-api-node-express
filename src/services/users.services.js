@@ -1,8 +1,7 @@
-import dbPromise from "../index.js";
+import db from "../index.js";
 
 export const getUserDashboardService = async ({ userId }) => {
   try {
-    const db = await dbPromise;
     return await db.getUserDataById({ userId });
   } catch (error) {
     console.error(error);
@@ -12,7 +11,6 @@ export const getUserDashboardService = async ({ userId }) => {
 
 export const updateUserDashboardService = async ({ userData, userId }) => {
   try {
-    const db = await dbPromise;
     const response = await db.updateUserData({ userData, userId });
     return response;
   } catch (error) {
@@ -26,7 +24,6 @@ export const updateUserDashboardService = async ({ userData, userId }) => {
 
 export const reloadSessionService = async ({ userId }) => {
   try {
-    const db = await dbPromise;
     const loginData = await db.getUserById({ userId });
     const userProfilePicture = await db.getUserThumbnailById({ userId });
     const userData = { ...loginData.success, ...userProfilePicture.success };

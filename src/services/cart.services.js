@@ -1,8 +1,7 @@
-import dbPromise from "../index.js";
+import db from "../index.js";
 
 export const updateCartService = async ({ userId, newCartItem }) => {
   try {
-    const db = await dbPromise;
     return await db.updateUserCart({
       userId,
       newCartItem,
@@ -15,7 +14,6 @@ export const updateCartService = async ({ userId, newCartItem }) => {
 
 export const deleteCartItemService = async ({ userId, cartId }) => {
   try {
-    const db = await dbPromise;
     return await db.deleteCartItem({ userId, cartId });
   } catch (error) {
     console.error(error);

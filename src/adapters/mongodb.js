@@ -112,7 +112,6 @@ class MongoDBAdapter {
   }
 
   async updateUserData({ userData, userId }) {
-    console.log(userData);
     const filter = { userId };
     let success = false;
     try {

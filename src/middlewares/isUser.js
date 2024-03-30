@@ -1,10 +1,10 @@
 // isUser.js
-import dbPromise from "../index.js";
+import db from "../index.js";
 
 const isUser = async (req, res, next) => {
   try {
     const { userName } = req.body;
-    const db = await dbPromise;
+
     const response = await db.getUserByUsername({ userName });
     if (response.success) {
       req.user = {

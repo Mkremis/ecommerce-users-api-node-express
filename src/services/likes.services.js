@@ -1,8 +1,6 @@
-import dbPromise from "../index.js";
+import db from "../index.js";
 
 export const getLikesService = async ({ userId }) => {
-  const db = await dbPromise;
-
   try {
     const result = await db.getLikesByUserId({ userId });
     return result;
@@ -13,7 +11,6 @@ export const getLikesService = async ({ userId }) => {
 };
 
 export const createLikeService = async ({ userId, newLike }) => {
-  const db = await dbPromise;
   try {
     const result = await db.saveUserLike({ userId, newLike });
     return result;
@@ -24,8 +21,6 @@ export const createLikeService = async ({ userId, newLike }) => {
 };
 
 export const deleteLikeService = async ({ userId, prodId }) => {
-  const db = await dbPromise;
-
   try {
     const result = await db.deleteUserLikeByProdId({ userId, prodId });
     return result;
