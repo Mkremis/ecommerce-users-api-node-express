@@ -13,57 +13,15 @@ export const createOrderController = async (req, res) => {
     const userData = await db.getUserById({ userId });
     if (userData.success && order.length) {
       const { userName, email } = userData.success;
+
       // Step 2: Initialize the client object
       const client = new MercadoPagoConfig({
         accessToken: MERCADOPAGO_API_KEY,
-        options: { timeout: 5000 },
       });
       const preference = new Preference(client);
-      const paymentLink = await createPayment(order);
-      return res.status(200).json({ payLink: paymentLink.sandbox_init_point });
-      async function createPayment(order) {
-        try {
-          const paymentRequest = await preference.create({
-            body: {
-              items: order.map(
-                ({
-                  prodId,
-                  prodName,
-                  prodPrice,
-                  prodImage,
-                  priceCurrency,
-                  prodGender,
-                  productQ,
-                }) => {
-                  return {
-                    id: prodId,
-                    title: prodName,
-                    unit_price: prodPrice,
-                    quantity: productQ,
-                    currency_id: priceCurrency,
-                    picture_url: prodImage,
-                    category_id: prodGender,
-                    description: prodName,
-                    metadata: {
-                      prodId,
-                      prodName,
-                      prodPrice,
-                      prodGender,
-                    },
-                  };
-                }
-              ),
-              back_urls: {
-                success: `http://localhost:5173/ecommerce-react/#/success-payment`,
-                failure: "http://localhost:5173/ecommerce-react/#/fail-payment",
-              },
-              notification_url: `http://localhost:8090/api/users/webhook/${userName}`,
-            },
-          });
-          return paymentRequest;
-        } catch (error) {
-          console.log(error);
-        }
+      const payment = await createPayment({ order, preference, userName });
+      if (payment?.sandbox_init_point) {
+        return res.status(200).json({ payLink: payment?.sandbox_init_point });
       }
     } else {
       return res.status(400).json({ message: "Error" });
@@ -77,6 +35,8 @@ export const createOrderController = async (req, res) => {
 export const receiveWebhook = async (req, res) => {
   const payment = req.query;
   const { username } = req.params;
+  // console.log(payment);
+  console.log(username);
 };
 //   if (payment.type === 'payment') {
 //     res.status(200).send('HTTP STATUS 200 (OK)');
@@ -93,12 +53,68 @@ export const receiveWebhook = async (req, res) => {
 //   }
 // };
 
-// export const success = async (req, res) => {
-//   console.log('success!');
-// };
-// export const failure = (req, res) => {
-//   console.log('Failure!');
-// };
-// export const pending = (req, res) => {
-//   console.log('Pending..');
-// };
+async function createPayment({ order, preference, userName }) {
+  try {
+    const paymentRequest = await preference.create({
+      body: {
+        items: order.map(
+          ({
+            prodId,
+            prodName,
+            prodPrice,
+            prodImage,
+            priceCurrency,
+            prodGender,
+            productQ,
+          }) => {
+            return {
+              id: prodId,
+              title: prodName,
+              unit_price: prodPrice,
+              quantity: productQ,
+              currency_id: priceCurrency,
+              picture_url: prodImage,
+              category_id: prodGender,
+              description: prodName,
+              metadata: {
+                prodId,
+                prodName,
+                prodPrice,
+                prodGender,
+              },
+            };
+          }
+        ),
+        back_urls: {
+          success: "http://localhost:8090/api/users/success",
+          failure: "http://localhost:8090/api/users/failure",
+          pending: "http://localhost:8090/api/users/pending",
+        },
+        notification_url: `http://localhost:8090/api/users/webhook/${userName}`,
+      },
+    });
+    return paymentRequest;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const success = async (req, res) => {
+  console.log("success!");
+};
+export const failure = (req, res) => {
+  console.log("Failure!");
+};
+export const pending = (req, res) => {
+  console.log("Pending..");
+};
+
+//Cuentas de prueba
+
+//COMPRADOR
+//User: TEST44562
+//Pass: Of9seevw8u
+
+//VENDEDOR
+//User: TETEE11591
+//Pass: NEUqO9Riik
