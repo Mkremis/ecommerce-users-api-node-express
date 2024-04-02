@@ -49,12 +49,12 @@ export const createOrderController = async (req, res) => {
       preference
         .create({
           body: {
+            notification_url: `${URL}/api/users/webhook`,
             back_urls: {
               success: `${URL}/api/users/success`,
               failure: `${URL}/api/users/failure`,
               pending: `${URL}/api/users/pending`,
             },
-            notification_url: `${URL}/api/users/webhook/${userName}`,
             payer: {
               email: email,
               surname: userName,
@@ -81,9 +81,7 @@ export const createOrderController = async (req, res) => {
 export const receiveWebhook = async (req, res) => {
   try {
     const payment = req.body;
-    const { username } = req.params;
-    console.log("Webhook received:", payment);
-    console.log("Username:", username);
+    console.log("Webhook received");
 
     if (payment.type === "payment") {
       // Aquí deberías registrar el pago en tu sistema y actualizar el estado del pedido

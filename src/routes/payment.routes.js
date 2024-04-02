@@ -10,7 +10,7 @@ import {
 
 const router = Router();
 router.post("/create-order", checkSession, createOrderController);
-router.post("/webhook/:username", receiveWebhook);
+router.post("/webhook", receiveWebhook);
 router.get("/pending", pending);
 router.get("/failure", failure);
 router.get("/success", success);
