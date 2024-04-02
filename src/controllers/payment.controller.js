@@ -48,11 +48,11 @@ export const createOrderController = async (req, res) => {
         .create({
           body: {
             back_urls: {
-              success: "http://localhost:8090/api/users/success",
-              failure: "http://localhost:8090/api/users/failure",
-              pending: "http://localhost:8090/api/users/pending",
+              success: "/api/users/success",
+              failure: "/api/users/failure",
+              pending: "/api/users/pending",
             },
-            notification_url: `http://localhost:8090/api/users/webhook/${userName}`,
+            notification_url: `/api/users/webhook/${userName}`,
             payer: {
               email: email,
               surname: userName,
