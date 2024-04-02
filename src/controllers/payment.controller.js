@@ -79,10 +79,11 @@ export const createOrderController = async (req, res) => {
 };
 
 export const receiveWebhook = async (req, res) => {
-  res.sendStatus(200);
   try {
     const payment = req.body;
     const { username } = req.params;
+    console.log("Webhook received:", payment);
+    console.log("Username:", username);
 
     if (payment.type === "payment") {
       // Aquí deberías registrar el pago en tu sistema y actualizar el estado del pedido
