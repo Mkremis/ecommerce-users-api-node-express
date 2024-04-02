@@ -1,10 +1,5 @@
 import pkg from "pg";
-import {
-  POSTGRES_HOST,
-  POSTGRES_USER,
-  POSTGRES_PASSWORD,
-  POSTGRES_DATABASE,
-} from "../config.js";
+import { POSTGRES_URL } from "../config.js";
 import { v4 as uuidv4 } from "uuid";
 
 const { Pool } = pkg;
@@ -12,10 +7,7 @@ const { Pool } = pkg;
 class PostgreSQLAdapter {
   constructor() {
     this.pool = new Pool({
-      host: POSTGRES_HOST,
-      user: POSTGRES_USER,
-      password: POSTGRES_PASSWORD,
-      database: POSTGRES_DATABASE,
+      connectionString: POSTGRES_URL,
       max: 10,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
