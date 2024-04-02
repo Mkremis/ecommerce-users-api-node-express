@@ -49,7 +49,7 @@ export const createOrderController = async (req, res) => {
       const payment = new Payment(client);
 
       const body = {
-        transaction_amount: "100",
+        transaction_amount: 100,
         token: "token",
         description: "description",
         installments: 1,
