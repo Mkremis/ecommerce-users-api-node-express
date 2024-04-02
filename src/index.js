@@ -4,14 +4,19 @@ import app from "./app.js";
 import { DB_TYPE } from "./config.js";
 import MySQLAdapter from "./adapters/mysql.js";
 import MongoDBAdapter from "./adapters/mongodb.js";
+import PostgreSQLAdapter from "./adapters/PostgreSQL.js";
 
 function initializeDB() {
-  if (DB_TYPE === "mysql") {
-    return new MySQLAdapter();
-  } else if (DB_TYPE === "mongodb") {
-    return new MongoDBAdapter();
-  } else {
-    console.error(`DB_TYPE "${DB_TYPE}" no es compatible.`);
+  switch (DB_TYPE) {
+    case "mysql":
+      return new MySQLAdapter();
+    case "mongodb":
+      return new MongoDBAdapter();
+    case "postgresql":
+      return new PostgreSQLAdapter();
+    default:
+      console.error(`DB_TYPE "${DB_TYPE}" no es compatible.`);
+      break;
   }
 }
 

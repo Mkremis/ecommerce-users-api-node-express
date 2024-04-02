@@ -1,5 +1,5 @@
 // Step 1: Import the parts of the module you want to use
-import { MercadoPagoConfig, Payment, Preference } from "mercadopago";
+import { MercadoPagoConfig, Preference } from "mercadopago";
 import { MERCADOPAGO_API_KEY } from "../config.js";
 
 import db from "../index.js";
@@ -77,6 +77,7 @@ export const createOrderController = async (req, res) => {
 };
 
 export const receiveWebhook = async (req, res) => {
+  res.sendStatus(200);
   try {
     const payment = req.body;
     const { username } = req.params;

@@ -1,26 +1,28 @@
-import mysql from "mysql2/promise";
+import pkg from "pg";
 import {
-  MYSQL_HOST,
-  MYSQL_USER,
-  MYSQL_PASSWORD,
-  MYSQL_DATABASE,
+  POSTGRES_HOST,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_DATABASE,
 } from "../config.js";
 import { v4 as uuidv4 } from "uuid";
 
-class MySQLAdapter {
+const { Pool } = pkg;
+
+class PostgreSQLAdapter {
   constructor() {
-    this.pool = mysql.createPool({
-      host: MYSQL_HOST,
-      user: MYSQL_USER,
-      password: MYSQL_PASSWORD,
-      database: MYSQL_DATABASE,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
+    this.pool = new Pool({
+      host: POSTGRES_HOST,
+      user: POSTGRES_USER,
+      password: POSTGRES_PASSWORD,
+      database: POSTGRES_DATABASE,
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
     });
 
-    this.pool.on("connection", (connection) => {
-      console.log("Conectado a la base de datos MySQL");
+    this.pool.on("connect", () => {
+      console.log("Conectado a la base de datos PostgreSQL");
     });
 
     this.pool.on("error", (err) => {
@@ -28,14 +30,13 @@ class MySQLAdapter {
     });
   }
 
-  // User services
   async registerNewUser({ registerData }) {
     try {
-      const userId = uuidv4(); // Removed unnecessary "format: 'binary'"
+      const userId = uuidv4();
 
       const queryInsertUser = `
         INSERT INTO users(id, user_name, password, email)
-        VALUES (?, ?, ?, ?)
+        VALUES ($1, $2, $3, $4)
       `;
       const valuesInsertUser = [
         userId,
@@ -44,31 +45,29 @@ class MySQLAdapter {
         registerData.email,
       ];
 
-      const [resultInsertUser] = await this.pool.execute(
+      const resultInsertUser = await this.pool.query(
         queryInsertUser,
         valuesInsertUser
       );
 
-      if (resultInsertUser.affectedRows) {
+      if (resultInsertUser.rowCount > 0) {
         const roles = registerData.roles || [];
 
         for (const roleName of roles) {
           const queryGetRoleId = `
-            SELECT id FROM role WHERE role_name = ?
+            SELECT id FROM role WHERE role_name = $1
           `;
-          const [roleResult] = await this.pool.execute(queryGetRoleId, [
-            roleName,
-          ]);
+          const roleResult = await this.pool.query(queryGetRoleId, [roleName]);
 
-          if (roleResult.length > 0) {
-            const roleId = roleResult[0].id;
+          if (roleResult.rowCount > 0) {
+            const roleId = roleResult.rows[0].id;
 
             const queryInsertUserRole = `
               INSERT INTO user_role(user_id, role_id)
-              VALUES (?, ?)
+              VALUES ($1, $2)
             `;
             const valuesInsertUserRole = [userId, roleId];
-            await this.pool.execute(queryInsertUserRole, valuesInsertUserRole);
+            await this.pool.query(queryInsertUserRole, valuesInsertUserRole);
           }
         }
 
@@ -84,9 +83,9 @@ class MySQLAdapter {
     try {
       const query = `
         SELECT id, user_name, password, email
-        FROM users WHERE user_name = ?
+        FROM users WHERE user_name = $1
       `;
-      const [rows] = await this.pool.execute(query, [userName]);
+      const { rows } = await this.pool.query(query, [userName]);
 
       if (rows.length > 0) {
         return { success: rows[0] };
@@ -102,10 +101,10 @@ class MySQLAdapter {
   async getUserById({ userId }) {
     try {
       const query = `
-        SELECT user_name AS userName, email
-        FROM users WHERE id = ?
+        SELECT user_name AS "userName", email
+        FROM users WHERE id = $1
       `;
-      const [rows] = await this.pool.execute(query, [userId]);
+      const { rows } = await this.pool.query(query, [userId]);
 
       if (rows.length > 0) {
         return { success: rows[0] };
@@ -121,11 +120,11 @@ class MySQLAdapter {
   async getUserDataById({ userId }) {
     try {
       const query = `
-        SELECT city, country, email, first, last, phone, postcode, state, street, street_number AS streetNumber, thumbnail, title
+        SELECT city, country, email, first, last, phone, postcode, state, street, street_number AS "streetNumber", thumbnail, title
         FROM users_dashboard
-        WHERE user_id = ?
+        WHERE user_id = $1
       `;
-      const [rows] = await this.pool.execute(query, [userId]);
+      const { rows } = await this.pool.query(query, [userId]);
 
       if (rows.length > 0) {
         return rows[0];
@@ -143,36 +142,24 @@ class MySQLAdapter {
       // Update users_dashboard
       const updateUserDashboardQuery = `
         INSERT INTO users_dashboard (user_id, title, first, last, email, phone, thumbnail, city, state, street_number, street, country, postcode)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-          title = COALESCE(?, title),
-          first = COALESCE(?, first),
-          last = COALESCE(?, last),
-          email = COALESCE(?, email),
-          phone = COALESCE(?, phone),
-          thumbnail = COALESCE(?, thumbnail),
-          city = COALESCE(?, city),
-          state = COALESCE(?, state),
-          street_number = COALESCE(?, street_number),
-          street = COALESCE(?, street),
-          country = COALESCE(?, country),
-          postcode = COALESCE(?, postcode)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        ON CONFLICT (user_id) DO UPDATE
+        SET
+          title = COALESCE(EXCLUDED.title, users_dashboard.title),
+          first = COALESCE(EXCLUDED.first, users_dashboard.first),
+          last = COALESCE(EXCLUDED.last, users_dashboard.last),
+          email = COALESCE(EXCLUDED.email, users_dashboard.email),
+          phone = COALESCE(EXCLUDED.phone, users_dashboard.phone),
+          thumbnail = COALESCE(EXCLUDED.thumbnail, users_dashboard.thumbnail),
+          city = COALESCE(EXCLUDED.city, users_dashboard.city),
+          state = COALESCE(EXCLUDED.state, users_dashboard.state),
+          street_number = COALESCE(EXCLUDED.street_number, users_dashboard.street_number),
+          street = COALESCE(EXCLUDED.street, users_dashboard.street),
+          country = COALESCE(EXCLUDED.country, users_dashboard.country),
+          postcode = COALESCE(EXCLUDED.postcode, users_dashboard.postcode)
       `;
       const updateUserDashboardValues = [
         userId,
-        userData.title || "",
-        userData.first || "",
-        userData.last || "",
-        userData.email || "",
-        userData.phone || "",
-        userData.thumbnail || "",
-        userData.city || "",
-        userData.state || "",
-        userData.street_number || "",
-        userData.street || "",
-        userData.country || "",
-        userData.postcode || "",
-        // These values below are for the ON DUPLICATE KEY UPDATE part
         userData.title || "",
         userData.first || "",
         userData.last || "",
@@ -187,7 +174,7 @@ class MySQLAdapter {
         userData.postcode || "",
       ];
 
-      const dashUpdate = await this.pool.execute(
+      await this.pool.query(
         updateUserDashboardQuery,
         updateUserDashboardValues
       );
@@ -195,12 +182,12 @@ class MySQLAdapter {
       if (userData.password) {
         const updatePassQuery = `
           UPDATE users
-          SET password = ?
-          WHERE id = ?
+          SET password = $1
+          WHERE id = $2
         `;
         const updateUsersValues = [userData.password, userId];
 
-        await this.pool.execute(updatePassQuery, updateUsersValues);
+        await this.pool.query(updatePassQuery, updateUsersValues);
       }
 
       return { success: true };
@@ -210,15 +197,14 @@ class MySQLAdapter {
     }
   }
 
-  // Cart services
   async getCartByUserId({ userId }) {
     try {
       const query = `
-        SELECT id, price_currency AS priceCurrency, prod_Gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice, productq AS productQ
+        SELECT id, price_currency AS "priceCurrency", prod_Gender AS "prodGender", prod_id AS "prodId", prod_image AS "prodImage", prod_name AS "prodName", prod_price AS "prodPrice", productq AS "productQ"
         FROM users_cart
-        WHERE user_id = ?
+        WHERE user_id = $1
       `;
-      const [rows] = await this.pool.execute(query, [userId]);
+      const { rows } = await this.pool.query(query, [userId]);
       return rows;
     } catch (error) {
       console.error("Error getting cart by user ID:", error);
@@ -231,9 +217,9 @@ class MySQLAdapter {
       const query = `
         SELECT productq
         FROM users_cart
-        WHERE user_id = ? AND prod_id = ?
+        WHERE user_id = $1 AND prod_id = $2
       `;
-      const [rows] = await this.pool.execute(query, [userId, prodId]);
+      const { rows } = await this.pool.query(query, [userId, prodId]);
 
       if (rows.length > 0) {
         return rows[0];
@@ -258,12 +244,12 @@ class MySQLAdapter {
       if (existingCartItem) {
         const query = `
           UPDATE users_cart
-          SET productq = ?
-          WHERE user_id = ? AND prod_id = ?
+          SET productq = $1
+          WHERE user_id = $2 AND prod_id = $3
         `;
         const values = [productQ, userId, prodId];
-        const [rows] = await this.pool.execute(query, values);
-        result = { success: rows.affectedRows > 0 };
+        await this.pool.query(query, values);
+        result = { success: true };
       } else {
         result = await this.saveUserCartItem({
           userId,
@@ -284,7 +270,7 @@ class MySQLAdapter {
       const query = `
         INSERT INTO users_cart
         (user_id, prod_id, prod_name, prod_gender, prod_image, prod_price, price_currency, productq)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `;
       const values = [
         userId,
@@ -297,8 +283,8 @@ class MySQLAdapter {
         cartItem.productQ,
       ];
 
-      const [rows] = await this.pool.execute(query, values);
-      return { success: rows.affectedRows > 0 };
+      await this.pool.query(query, values);
+      return { success: true };
     } catch (error) {
       console.error("Error saving user cart item:", error);
       throw error;
@@ -309,9 +295,9 @@ class MySQLAdapter {
     try {
       const query = `
         DELETE FROM users_cart 
-        WHERE id = ?
+        WHERE id = $1
       `;
-      await this.pool.execute(query, [cartId]);
+      await this.pool.query(query, [cartId]);
       return await this.getCartByUserId({ userId });
     } catch (error) {
       console.error("Error deleting user cart item:", error);
@@ -319,15 +305,14 @@ class MySQLAdapter {
     }
   }
 
-  // Like services
   async getLikesByUserId({ userId }) {
     try {
       const query = `
-        SELECT id, price_currency AS priceCurrency, prod_gender AS prodGender, prod_id AS prodId, prod_image AS prodImage, prod_name AS prodName, prod_price AS prodPrice
+        SELECT id, price_currency AS "priceCurrency", prod_gender AS "prodGender", prod_id AS "prodId", prod_image AS "prodImage", prod_name AS "prodName", prod_price AS "prodPrice"
         FROM users_likes
-        WHERE user_id = ?
+        WHERE user_id = $1
       `;
-      const [rows] = await this.pool.execute(query, [userId]);
+      const { rows } = await this.pool.query(query, [userId]);
       return rows;
     } catch (error) {
       console.error("Error getting likes by user ID:", error);
@@ -339,7 +324,7 @@ class MySQLAdapter {
     try {
       const query = `
         INSERT INTO users_likes (user_id, prod_id, prod_name, prod_gender, prod_image, prod_price, price_currency)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
       `;
       const values = [
         userId,
@@ -351,8 +336,8 @@ class MySQLAdapter {
         newLike.priceCurrency,
       ];
 
-      const [rows] = await this.pool.execute(query, values);
-      return { success: rows?.affectedRows > 0 };
+      await this.pool.query(query, values);
+      return { success: true };
     } catch (error) {
       console.error("Error saving user like:", error);
       throw error;
@@ -363,10 +348,10 @@ class MySQLAdapter {
     try {
       const query = `
         DELETE FROM users_likes 
-        WHERE user_id = ? AND prod_id = ?
+        WHERE user_id = $1 AND prod_id = $2
       `;
-      const [rows] = await this.pool.execute(query, [userId, prodId]);
-      return { success: rows?.affectedRows > 0 };
+      await this.pool.query(query, [userId, prodId]);
+      return { success: true };
     } catch (error) {
       console.error("Error deleting user like:", error);
       throw error;
@@ -374,4 +359,4 @@ class MySQLAdapter {
   }
 }
 
-export default MySQLAdapter;
+export default PostgreSQLAdapter;
