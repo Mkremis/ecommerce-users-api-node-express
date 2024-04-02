@@ -183,6 +183,7 @@ class MongoDBAdapter {
       } else {
         const newUser = new Cart({ userId, products: [newCartItem] });
         await newUser.save();
+        return newUser.products;
       }
       return userFound.products; // Devolver el objeto actualizado
     } catch (error) {
