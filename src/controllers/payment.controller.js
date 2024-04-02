@@ -45,17 +45,18 @@ export const createOrderController = async (req, res) => {
           };
         }
       );
+
       const payment = new Payment(client);
 
       const body = {
-        items,
+        transaction_amount: "100",
         token: "token",
         description: "description",
         installments: 1,
         payment_method_id: "visa",
         notification_url: `${URL}/api/users/webhook`,
         payer: {
-          email,
+          email: "test@test.com",
           identification: {
             type: "CPF",
             number: "19119119100",
@@ -68,8 +69,8 @@ export const createOrderController = async (req, res) => {
           body: body,
           requestOptions: { idempotencyKey: "<SOME_UNIQUE_VALUE>" },
         })
-        .then(console.log)
-        .catch(console.log);
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
       // preference
       //   .create({
       //     body: {
