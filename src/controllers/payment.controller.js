@@ -1,5 +1,5 @@
 // Step 1: Import the parts of the module you want to use
-import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
+import { MercadoPagoConfig, Preference } from "mercadopago";
 import { MERCADOPAGO_API_KEY } from "../config.js";
 
 import db from "../index.js";
@@ -21,7 +21,7 @@ export const createOrderController = async (req, res) => {
         accessToken: MERCADOPAGO_API_KEY,
       });
 
-      //  const preference = new Preference(client);
+      const preference = new Preference(client);
       // Step 3: Create an item object
       const items = order.map(
         ({
@@ -45,55 +45,29 @@ export const createOrderController = async (req, res) => {
           };
         }
       );
-
-      const payment = new Payment(client);
-
-      const body = {
-        transaction_amount: 100,
-        token: "token",
-        description: "description",
-        installments: 1,
-        payment_method_id: "visa",
-        notification_url: `${URL}/api/users/webhook`,
-        payer: {
-          email: "test@test.com",
-          identification: {
-            type: "CPF",
-            number: "19119119100",
-          },
-        },
-      };
-
-      payment
+      preference
         .create({
-          body: body,
-          requestOptions: { idempotencyKey: "<SOME_UNIQUE_VALUE>" },
+          body: {
+            notification_url: `${URL}/api/users/webhook`,
+            back_urls: {
+              success: `${URL}/api/users/success`,
+              failure: `${URL}/api/users/failure`,
+              pending: `${URL}/api/users/pending`,
+            },
+            payer: {
+              email: email,
+              surname: userName,
+            },
+            items,
+          },
         })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
-      // preference
-      //   .create({
-      //     body: {
-      //       notification_url: `${URL}/api/users/webhook`,
-      //       back_urls: {
-      //         success: `${URL}/api/users/success`,
-      //         failure: `${URL}/api/users/failure`,
-      //         pending: `${URL}/api/users/pending`,
-      //       },
-      //       payer: {
-      //         email: email,
-      //         surname: userName,
-      //       },
-      //       items,
-      //     },
-      //   })
-      //   .then((response) => {
-      //     res.status(200).json({ payLink: response.init_point });
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error creating preference:", error);
-      //     res.status(500).json({ error: "Error creating preference" });
-      //   });
+        .then((response) => {
+          res.status(200).json({ payLink: response.init_point });
+        })
+        .catch((error) => {
+          console.error("Error creating preference:", error);
+          res.status(500).json({ error: "Error creating preference" });
+        });
     } else {
       res.status(400).json({ error: "Invalid request or empty order" });
     }
