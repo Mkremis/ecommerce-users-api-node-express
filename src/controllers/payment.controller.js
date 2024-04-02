@@ -8,6 +8,8 @@ import db from "../index.js";
 
 export const createOrderController = async (req, res) => {
   try {
+    const URL = req.protocol + "://" + req.get("host");
+
     const userId = req.user.id;
     const order = req.body;
     const userData = await db.getUserById({ userId });
@@ -48,11 +50,11 @@ export const createOrderController = async (req, res) => {
         .create({
           body: {
             back_urls: {
-              success: "/api/users/success",
-              failure: "/api/users/failure",
-              pending: "/api/users/pending",
+              success: `${URL}/api/users/success`,
+              failure: `${URL}/api/users/failure`,
+              pending: `${URL}/api/users/pending`,
             },
-            notification_url: `/api/users/webhook/${userName}`,
+            notification_url: `${URL}/api/users/webhook/${userName}`,
             payer: {
               email: email,
               surname: userName,
