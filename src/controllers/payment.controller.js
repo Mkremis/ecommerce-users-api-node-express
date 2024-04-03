@@ -48,12 +48,13 @@ export const createOrderController = async (req, res) => {
       preference
         .create({
           body: {
-            notification_url: `${URL}/api/users/webhook`,
             back_urls: {
               success: `${URL}/api/users/success`,
               failure: `${URL}/api/users/failure`,
               pending: `${URL}/api/users/pending`,
             },
+            auto_return: "approved",
+            notification_url: `${URL}/api/users/webhook`,
             payer: {
               email: email,
               surname: userName,
