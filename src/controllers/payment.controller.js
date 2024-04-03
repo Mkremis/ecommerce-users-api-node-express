@@ -54,7 +54,7 @@ export const createOrderController = async (req, res) => {
               pending: `${URL}/api/users/pending`,
             },
             auto_return: "approved",
-            notification_url: `${URL}/api/users/webhook`,
+            notification_url: `https://ecommerce-users-api-node-express-dev-hjbp.2.us-1.fl0.io/api/users/webhook`,
             payer: {
               email: email,
               surname: userName,
