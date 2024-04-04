@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { checkSession } from "../middlewares/checkSession.js";
-import { getTransactionController } from "../controllers/transactions.controller.js";
+import {
+  getPurchasesByTrIdController,
+  getTransactionController,
+} from "../controllers/transactions.controller.js";
 
 const router = Router();
 router.get(
@@ -8,5 +11,9 @@ router.get(
   checkSession,
   getTransactionController
 );
-
+router.get(
+  "/transaction/:transactionId",
+  checkSession,
+  getPurchasesByTrIdController
+);
 export default router;

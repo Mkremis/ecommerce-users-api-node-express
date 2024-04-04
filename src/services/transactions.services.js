@@ -9,3 +9,13 @@ export const getTransactionService = async ({ transactionId }) => {
     throw error;
   }
 };
+
+export const getPurchasesByTrIdService = async ({ transactionId }) => {
+  try {
+    const purchases = await db.getPurchasesByTransactionId({ transactionId });
+    return purchases;
+  } catch (error) {
+    console.error("Error getting purchases:", error);
+    throw error;
+  }
+};

@@ -310,7 +310,17 @@ class MongoDBAdapter {
       throw error;
     }
   }
-
+  async getPuchasesByTransactionId({ transactionId }) {
+    try {
+      const purchases = await Purchase.find({
+        "items.order_id": transactionId,
+      });
+      return purchases;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
   //transactions services
   async createTransaction({ transactionData }) {
     try {
