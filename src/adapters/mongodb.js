@@ -17,7 +17,7 @@ const usersDashSchema = new Schema(
     title: String,
     first: String,
     last: String,
-    phone: { type: String, unique: true },
+    phone: String,
     thumbnail: String,
     city: String,
     state: String,

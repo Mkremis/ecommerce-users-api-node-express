@@ -47,7 +47,7 @@ export const registerService = async ({ isUser, registerData }) => {
 
     registerData.password = await encrypt(registerData.password);
 
-    const response = await db.registerNewUser({ registerData });
+    const response = await db.registerNewUser({ registerData }); 
 
     return response;
   } catch (error) {
