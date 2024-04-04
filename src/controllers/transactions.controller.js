@@ -1,4 +1,3 @@
-import { tr } from "date-fns/locale";
 import { getTransactionService } from "../services/transactions.services.js";
 
 export const getTransactionController = async (req, res) => {
@@ -7,12 +6,10 @@ export const getTransactionController = async (req, res) => {
     const transaction = await getTransactionService({ transactionId });
     const transactionItems = await getPurchasesByTrIdService({ transactionId });
     if (transaction.success && transactionItems.success) {
-      res
-        .status(200)
-        .json({
-          transaction: transaction.success,
-          items: transactionItems.success,
-        });
+      res.status(200).json({
+        transaction: transaction.success,
+        items: transactionItems.success,
+      });
       return;
     }
     {
