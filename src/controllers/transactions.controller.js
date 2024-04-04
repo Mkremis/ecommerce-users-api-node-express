@@ -4,8 +4,12 @@ import { getTransactionService } from "../services/transactions.services.js";
 export const getTransactionController = async (req, res) => {
   try {
     const { transactionId } = req.params;
+    const userId = req.user.id;
     const transaction = await getTransactionService({ transactionId });
-    const transactionItems = await getPurchasesByTrIdService({ transactionId });
+    const transactionItems = await getPurchasesByTrIdService({
+      userId,
+      transactionId,
+    });
     if (transaction.success && transactionItems.success) {
       res.status(200).json({
         transaction: transaction.success,

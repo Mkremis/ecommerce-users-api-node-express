@@ -45,9 +45,9 @@ export const getUserPurchasesService = async ({ userId }) => {
     throw error;
   }
 };
-export const getPurchasesByTrIdService = async ({ transactionId }) => {
+export const getPurchasesByTrIdService = async ({ userId, transactionId }) => {
   try {
-    const purchases = await db.getPuchasesByTrId({ transactionId });
+    const purchases = await db.getPuchasesByTrId({ userId, transactionId });
     return { success: purchases };
   } catch (error) {
     console.error("Error getting purchases:", error);
