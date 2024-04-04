@@ -293,8 +293,12 @@ class MongoDBAdapter {
   //purchases services
   async createPurchase({ userId, purchasedItems }) {
     try {
-      const newPurchase = new Purchase({ _id: userId, items: purchasedItems });
-      await newPurchase.save();
+      // const newPurchase = new Purchase({ _id: userId, items: purchasedItems });
+      const updatePurchase = Purchase.findByIdAndUpdate(userId, {
+        items: purchasedItems,
+      });
+      await updatePurchase.save();
+      console.log(updatePurchase);
       return { success: true };
     } catch (error) {
       console.error(error);
