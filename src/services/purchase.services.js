@@ -12,6 +12,7 @@ export const registerUserPurchaseService = async ({ userId, paymentData }) => {
       total_paid_amount: paymentData.transaction_details.total_paid_amount,
       shipping_amount: paymentData.shipping_amount,
       card_number: paymentData.card.last_four_digits,
+      status_detail: paymentData.status_detail,
       order_type: paymentData.order.type,
       _id: paymentData.order.id,
       currency_id: paymentData.currency_id,

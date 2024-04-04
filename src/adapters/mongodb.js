@@ -293,21 +293,23 @@ class MongoDBAdapter {
   //purchases services
   async createPurchase({ userId, purchasedItems }) {
     try {
-      const userFound = await Purchase.findById(userId);
-      if (userFound) {
-        Purchase.findByIdAndUpdate(userId, {
-          items: purchasedItems,
-        });
+      // Busca la compra del usuario por su ID
+      const userPurchase = await Purchase.findById(userId);
 
-        return { success: true };
+      if (userPurchase) {
+        // Si el usuario ya tiene una compra, agrega los nuevos items al array
+        userPurchase.items.push(...purchasedItems);
+        await userPurchase.save();
       } else {
+        // Si el usuario no tiene compras registradas, crea una nueva compra
         const newPurchase = new Purchase({
           _id: userId,
           items: purchasedItems,
         });
         await newPurchase.save();
-        return { success: true };
       }
+
+      return { success: true };
     } catch (error) {
       console.error(error);
       throw error;
