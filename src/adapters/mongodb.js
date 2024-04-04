@@ -310,12 +310,12 @@ class MongoDBAdapter {
       throw error;
     }
   }
-  async getPuchasesByTransactionId({ transactionId }) {
+  async getPuchasesByTrId({ transactionId }) {
     try {
       const purchases = await Purchase.find({
         "items.order_id": transactionId,
       });
-      return purchases;
+      return purchases.length ? purchases[0]["items"] : [];
     } catch (error) {
       console.error(error);
       throw error;

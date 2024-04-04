@@ -1,3 +1,4 @@
+import { getPurchasesByTrIdService } from "../services/purchase.services.js";
 import { getTransactionService } from "../services/transactions.services.js";
 
 export const getTransactionController = async (req, res) => {
