@@ -92,7 +92,6 @@ export const receiveWebhook = async (req, res) => {
           const paymentStatus = paymentData.status_detail;
           if (paymentStatus === "accredited") {
             const userId = paymentData?.external_reference;
-            console.log(paymentData);
             await registerUserPurchaseService({ userId, paymentData });
             await deleteCartService({ userId });
             res.sendStatus(201);

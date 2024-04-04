@@ -90,6 +90,7 @@ const transactionSchema = new mongoose.Schema({
   _id: { type: Number, required: true },
   userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
   transaction_date: { type: Date, required: true },
+  status_detail: { type: String, required: true },
   payment_method: { type: String, required: true },
   total_paid_amount: { type: Number, required: true },
   shipping_amount: { type: Number, required: true },
@@ -327,11 +328,12 @@ class MongoDBAdapter {
   async getPuchasesByTrId({ userId, transactionId }) {
     try {
       const userFound = await Purchase.findById(userId);
+
       if (!userFound) return [];
-      const UserPurchases = userFound.items.filter(
-        (item) => item.order_id === transactionId
+      const userPurchases = userFound.items.filter(
+        (item) => Number(item.order_id) === Number(transactionId)
       );
-      return UserPurchases;
+      return userPurchases;
     } catch (error) {
       console.error(error);
       throw error;
