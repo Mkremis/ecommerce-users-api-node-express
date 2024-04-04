@@ -39,7 +39,7 @@ export const createOrderController = async (req, res) => {
         .create({
           body: {
             back_urls: {
-              success: `${ENDPOINT}/api/users/success`,
+              success: `https://mkremis.github.io/ecommerce-react/#/transaction`,
               failure: `${ENDPOINT}/api/users/failure`,
               pending: `${ENDPOINT}/api/users/pending`,
             },
