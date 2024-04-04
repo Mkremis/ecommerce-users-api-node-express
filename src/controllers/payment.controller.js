@@ -1,14 +1,16 @@
 // Step 1: Import the parts of the module you want to use
 import { MercadoPagoConfig, Preference } from "mercadopago";
-import { MERCADOPAGO_API_KEY } from "../config.js";
+import { ENDPOINT, MERCADOPAGO_API_KEY } from "../config.js";
 
 import db from "../index.js";
-// import { cartUpdate } from '../services/cart.services.js';
+import { deleteCartService } from "../services/cart.services.js";
+import { registerUserPurchaseService } from "../services/purchase.services.js";
+
 // import { registerSale } from '../services/payment.services.js';
 
 export const createOrderController = async (req, res) => {
   try {
-    const URL = req.protocol + "://" + req.get("host");
+    // const URL = req.protocol + "://" + req.get("host");
 
     const userId = req.user.id;
     const order = req.body;
@@ -20,46 +22,36 @@ export const createOrderController = async (req, res) => {
       const client = new MercadoPagoConfig({
         accessToken: MERCADOPAGO_API_KEY,
       });
-
+      console.log("userId", userId);
       const preference = new Preference(client);
       // Step 3: Create an item object
-      const items = order.map(
-        ({
-          prodId,
-          prodName,
-          prodPrice,
-          prodImage,
-          priceCurrency,
-          prodGender,
-          productQ,
-        }) => {
-          return {
-            id: prodId,
-            title: prodName,
-            unit_price: prodPrice,
-            quantity: productQ,
-            currency_id: priceCurrency,
-            picture_url: prodImage,
-            category_id: prodGender,
-            description: prodName,
-          };
-        }
-      );
+      const items = order.map((item) => ({
+        id: item.prodId,
+        title: item.prodName,
+        unit_price: item.prodPrice,
+        quantity: item.productQ,
+        currency_id: item.priceCurrency,
+        picture_url: `https://${item.prodImage}`,
+        category_id: item.prodGender,
+        description: item.prodName,
+      }));
+
       preference
         .create({
           body: {
             back_urls: {
-              success: `${URL}/api/users/success`,
-              failure: `${URL}/api/users/failure`,
-              pending: `${URL}/api/users/pending`,
+              success: `${ENDPOINT}/api/users/success`,
+              failure: `${ENDPOINT}/api/users/failure`,
+              pending: `${ENDPOINT}/api/users/pending`,
             },
             auto_return: "approved",
-            notification_url: `https://ecommerce-users-api-node-express-dev-hjbp.2.us-1.fl0.io/api/users/webhook`,
+            notification_url: `${ENDPOINT}/api/users/webhook`,
             payer: {
               email: email,
-              surname: userName,
+              name: userName,
             },
             items,
+            external_reference: userId,
           },
         })
         .then((response) => {
@@ -81,15 +73,35 @@ export const createOrderController = async (req, res) => {
 export const receiveWebhook = async (req, res) => {
   try {
     const payment = req.body;
-    console.log("Webhook received");
-
     if (payment.type === "payment") {
       // Aquí deberías registrar el pago en tu sistema y actualizar el estado del pedido
       console.log("Payment received:", payment);
-      res.status(200).send("Payment received successfully");
-    } else {
-      console.log("Invalid payment type");
-      res.status(400).send("Invalid payment type");
+
+      const paymentId = payment.data.id;
+
+      try {
+        const response = await fetch(
+          `https://api.mercadopago.com/v1/payments/${paymentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${MERCADOPAGO_API_KEY}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const paymentData = await response.json();
+          const paymentStatus = paymentData.status_detail;
+          if (paymentStatus === "accredited") {
+            const userId = paymentData?.external_reference;
+            await registerUserPurchaseService({ userId, paymentData });
+            await deleteCartService({ userId });
+            res.sendStatus(201);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching payment data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     }
   } catch (error) {
     console.error("Webhook error:", error);
@@ -118,18 +130,3 @@ export const pending = (req, res) => {
 //VENDEDOR
 //User: TETEE11591
 //Pass: NEUqO9Riik
-
-//   if (payment.type === 'payment') {
-//     res.status(200).send('HTTP STATUS 200 (OK)');
-//     const data = await mercadopago.payment.findById(payment['data.id']);
-//     console.log('PAYMENT');
-//     await registerSale(
-//       data.body.additional_info.items,
-//       username,
-//       data.body.date_approved,
-//       'mercadopago'
-//     );
-//     console.log('PAYMENT OK!!');
-//     await cartUpdate({ username, cart: {} });
-//   }
-// };

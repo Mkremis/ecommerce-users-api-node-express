@@ -10,11 +10,13 @@ import cartRoutes from "./routes/cart.routes.js";
 import likesRoutes from "./routes/likes.routes.js";
 
 import payRoutes from "./routes/payment.routes.js";
-// import orderRoutes from "./routes/orders.routes.js";
+import purchasesRoutes from "./routes/purchases.routes.js";
+import transactionsRoutes from "./routes/transactions.routes.js";
 
 const app = express();
 app
   .use(cors(corsOptions))
+
   .use(cookieParser())
   // .use(express.urlencoded({ extended: false }))
   .use(morgan("dev"))
@@ -28,8 +30,9 @@ app
   .use("/api/users", cartRoutes)
   .use("/api/users", likesRoutes)
 
-  .use("/api/users", payRoutes);
-// .use('/api/users', orderRoutes)
+  .use("/api/users", payRoutes)
+  .use("/api/users", transactionsRoutes)
+  .use("/api/users", purchasesRoutes);
 
 // .use(errorHandler);
 export default app;

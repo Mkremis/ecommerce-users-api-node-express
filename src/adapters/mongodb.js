@@ -13,7 +13,7 @@ const User = mongoose.model("User", userSchema);
 
 const usersDashSchema = new Schema(
   {
-    userId: { type: Schema.Types.ObjectId, required: true },
+    _id: { type: Schema.Types.ObjectId, required: true, ref: "User" }, // Modificado: Cambiado userId a _id
     title: String,
     first: String,
     last: String,
@@ -33,7 +33,7 @@ const usersDashSchema = new Schema(
 const UserDashboard = mongoose.model("UserDashboard", usersDashSchema);
 
 const cartSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, required: true },
+  _id: { type: Schema.Types.ObjectId, required: true, ref: "User" }, // Modificado: Cambiado userId a _id
   products: [
     {
       prodId: { type: Number, required: true },
@@ -50,7 +50,7 @@ const cartSchema = new Schema({
 const Cart = mongoose.model("Cart", cartSchema);
 
 const likesSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, required: true },
+  _id: { type: Schema.Types.ObjectId, required: true, ref: "User" }, // Modificado: Cambiado userId a _id
   likes: [
     {
       prodId: { type: Number, required: true },
@@ -65,6 +65,40 @@ const likesSchema = new Schema({
 
 const Likes = mongoose.model("Likes", likesSchema);
 
+const purchaseSchema = new mongoose.Schema({
+  _id: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+  items: [
+    {
+      prodId: {
+        type: Number,
+        ref: "Product", // Referencia al modelo de productos
+        required: true,
+      },
+      order_id: { type: Number, required: true, ref: "Transaction" },
+      prodName: { type: String, required: true },
+      prodPrice: { type: Number, required: true },
+      prodImage: { type: String, required: true },
+      prodGender: { type: String, required: true },
+      productQ: { type: Number, required: true },
+    },
+  ],
+});
+
+const Purchase = mongoose.model("Purchase", purchaseSchema);
+
+const transactionSchema = new mongoose.Schema({
+  _id: { type: Number, required: true },
+  userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+  transaction_date: { type: Date, required: true },
+  payment_method: { type: String, required: true },
+  total_paid_amount: { type: Number, required: true },
+  shipping_amount: { type: Number, required: true },
+  card_number: { type: String, required: true },
+  order_type: { type: String, required: true },
+  currency_id: { type: String, required: true },
+});
+const Transaction = mongoose.model("Transaction", transactionSchema);
+
 class MongoDBAdapter {
   constructor() {
     mongoose.connect(MONGODB_URL, {
@@ -78,7 +112,6 @@ class MongoDBAdapter {
       console.log("Connected to MongoDB");
     });
   }
-
   //user services
   async registerNewUser({ registerData }) {
     try {
@@ -90,7 +123,6 @@ class MongoDBAdapter {
       throw error;
     }
   }
-
   async getUserByUsername({ userName }) {
     try {
       const foundUser = await User.findOne({ userName });
@@ -100,7 +132,6 @@ class MongoDBAdapter {
       throw error;
     }
   }
-
   async getUserById({ userId }) {
     try {
       const foundUser = await User.findById(userId);
@@ -111,9 +142,11 @@ class MongoDBAdapter {
     }
   }
   async getUserDataById({ userId }) {
+    console.log(userId);
     try {
-      const userData = await UserDashboard.findOne({ userId });
-      return { success: userData };
+      const userData = await UserDashboard.findById(userId);
+      console.log(userData);
+      return userData ? { success: userData } : { success: {} };
     } catch (error) {
       console.error(error);
       throw error;
@@ -121,10 +154,10 @@ class MongoDBAdapter {
   }
 
   async updateUserData({ userData, userId }) {
-    const filter = { userId };
+    const filter = { _id: userId };
     let success = false;
     try {
-      const updatedDashboard = await UserDashboard.findOneAndUpdate(
+      const updatedDashboard = await UserDashboard.findByIdAndUpdate(
         filter,
         userData,
         { new: true }
@@ -143,7 +176,7 @@ class MongoDBAdapter {
       if (updatedDashboard) {
         success = true;
       } else {
-        const newDashboard = new UserDashboard({ ...userData, userId });
+        const newDashboard = new UserDashboard({ ...userData, _id: userId });
         await newDashboard.save();
         success = true;
       }
@@ -158,17 +191,16 @@ class MongoDBAdapter {
   //cart services
   async getCartByUserId({ userId }) {
     try {
-      const userCart = await Cart.findOne({ userId });
+      const userCart = await Cart.findById(userId);
       return userCart?.products || [];
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
-
   async updateUserCart({ userId, newCartItem }) {
     try {
-      const userFound = await Cart.findOne({ userId });
+      const userFound = await Cart.findById(userId);
 
       if (userFound) {
         const { prodId, productQ } = newCartItem;
@@ -181,7 +213,7 @@ class MongoDBAdapter {
 
         await userFound.save();
       } else {
-        const newUser = new Cart({ userId, products: [newCartItem] });
+        const newUser = new Cart({ _id: userId, products: [newCartItem] });
         await newUser.save();
         return newUser.products;
       }
@@ -191,10 +223,9 @@ class MongoDBAdapter {
       throw error; // Re-lanzar error para que sea manejado por createLikeService
     }
   }
-
   async deleteCartItem({ userId, cartId }) {
     try {
-      const userCart = await Cart.findOne({ userId });
+      const userCart = await Cart.findById(userId);
       if (userCart) {
         // Filtrar los productos para eliminar el que coincida con cartId
         userCart.products = userCart.products.filter(
@@ -211,27 +242,36 @@ class MongoDBAdapter {
       throw error;
     }
   }
+  async deleteCart({ userId }) {
+    try {
+      await Cart.findOneAndDelete(userId);
+      return { success: "Cart deleted successfully" };
+    } catch (error) {
+      console.error("Error deleting cart:", error);
+      throw error;
+    }
+  }
+
   //like services
   async getLikesByUserId({ userId }) {
     try {
-      const userLikes = await Likes.findOne({ userId });
+      const userLikes = await Likes.findById(userId);
       return userLikes?.likes || [];
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
-
   async saveUserLike({ userId, newLike }) {
     try {
-      const userFound = await Likes.findOne({ userId });
+      const userFound = await Likes.findById(userId);
       if (userFound) {
         userFound.likes.push(newLike);
         await userFound.save();
         return { success: true };
       } else {
-        const newUser = new Likes({ userId, likes: [newLike] });
-        await newUser.save();
+        const newUserLikes = new Likes({ _id: userId, likes: [newLike] });
+        await newUserLikes.save();
         return { success: true };
       }
     } catch (error) {
@@ -239,18 +279,60 @@ class MongoDBAdapter {
       throw error; // Re-lanzar error para que sea manejado por createLikeService
     }
   }
-
   async deleteUserLikeByProdId({ userId, prodId }) {
-    const filter = { userId };
     const update = { $pull: { likes: { prodId: prodId } } };
     try {
-      const deletedLike = await Likes.findOneAndUpdate(filter, update, {
+      const deletedLike = await Likes.findByIdAndUpdate(userId, update, {
         new: true,
       });
       if (deletedLike) return { success: deletedLike };
     } catch (error) {
       console.error(error);
       throw error; // Re-lanzar error para que sea manejado por el código que llama a esta función
+    }
+  }
+
+  //purchases services
+  async createPurchase({ userId, purchasedItems }) {
+    try {
+      const newPurchase = new Purchase({ _id: userId, items: purchasedItems });
+      await newPurchase.save();
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  async getPurchasesByUserId({ userId }) {
+    try {
+      const userPurchases = await Purchase.findById(userId);
+      return userPurchases?.items || [];
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  //transactions services
+  async createTransaction({ transactionData }) {
+    try {
+      const newTransaction = new Transaction(transactionData);
+      await newTransaction.save();
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  async getTransactionById({ transactionId }) {
+    try {
+      const transaction = await Transaction.findById(transactionId);
+      return transaction
+        ? { success: transaction }
+        : { fail: "Transaction not found" };
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   }
 }

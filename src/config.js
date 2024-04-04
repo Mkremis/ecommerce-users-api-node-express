@@ -3,7 +3,9 @@ config();
 
 export const DB_TYPE = process.env.DB_TYPE;
 
-export const PORT = process.env.PORT || 8090;
+export const PORT = process.env.PORT || 8080;
+
+export const ENDPOINT = process.env.ENDPOINT;
 
 export const MONGODB_URL = process.env.MONGODB_URL;
 
