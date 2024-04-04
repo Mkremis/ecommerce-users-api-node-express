@@ -22,7 +22,6 @@ export const createOrderController = async (req, res) => {
       const client = new MercadoPagoConfig({
         accessToken: MERCADOPAGO_API_KEY,
       });
-      console.log("userId", userId);
       const preference = new Preference(client);
       // Step 3: Create an item object
       const items = order.map((item) => ({

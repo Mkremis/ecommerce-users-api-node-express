@@ -142,10 +142,8 @@ class MongoDBAdapter {
     }
   }
   async getUserDataById({ userId }) {
-    console.log(userId);
     try {
       const userData = await UserDashboard.findById(userId);
-      console.log(userData);
       return userData ? { success: userData } : { success: {} };
     } catch (error) {
       console.error(error);
