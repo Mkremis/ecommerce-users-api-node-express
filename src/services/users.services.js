@@ -25,10 +25,12 @@ export const updateUserDashboardService = async ({ userData, userId }) => {
 export const reloadSessionService = async ({ userId }) => {
   try {
     const loginData = await db.getUserById({ userId });
-    const userProfilePicture = await db.getUserThumbnailById({ userId });
-    const userData = { ...loginData.success, ...userProfilePicture.success };
+    const userDashboard = await db.getUserDataById({ userId });
     const userLikes = await db.getLikesByUserId({ userId });
     const userCart = await db.getCartByUserId({ userId });
+    const thumbnail = userDashboard?.success?.thumbnail || "";
+    const { userName, email } = loginData?.success;
+    const userData = { userName, email, thumbnail };
     return { success: { userData, userLikes, userCart } };
   } catch (error) {
     console.error(error);
