@@ -27,7 +27,7 @@ export const loginController = async (req, res) => {
     return res.status(500).json(new Message("fail", "Login error"));
   } catch (error) {
     console.error(error);
-    res.sendStatus(500);
+    res.status(500).json(new Message("fail", "Login error"));
   }
 };
 

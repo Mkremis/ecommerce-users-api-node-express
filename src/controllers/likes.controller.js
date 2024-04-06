@@ -10,6 +10,7 @@ export const getLikesController = async (req, res) => {
 
   try {
     const response = await getLikesService({ userId });
+    console.log(response);
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);
@@ -47,13 +48,9 @@ export const deleteLikeController = async (req, res) => {
     const response = await deleteLikeService({ userId, prodId });
 
     if (response?.success) {
-      return res
-        .status(200)
-        .json(new Message("success", "Like eliminado correctamente."));
+      res.sendStatus(200);
     } else {
-      return res
-        .status(404)
-        .json({ message: "No se encontró el like para eliminar." });
+      res.sendStatus(400);
     }
   } catch (error) {
     console.error(error);

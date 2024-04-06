@@ -23,7 +23,7 @@ export const deleteCartItemService = async ({ userId, cartId }) => {
 
 export const deleteCartService = async ({ userId }) => {
   try {
-    return await db.deleteCart({ userId });
+    return await db.deleteUserCart({ userId });
   } catch (error) {
     console.error(error);
     throw new Error({ fail: `Error deleting cart item: ${error.message}` });

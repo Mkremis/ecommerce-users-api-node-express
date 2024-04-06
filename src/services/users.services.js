@@ -2,7 +2,8 @@ import db from "../index.js";
 
 export const getUserDashboardService = async ({ userId }) => {
   try {
-    return await db.getUserDataById({ userId });
+    const response = await db.getUserDataById({ userId });
+    return response;
   } catch (error) {
     console.error(error);
     return { fail: `Error fetching user dashboard data: ${error.message}` };

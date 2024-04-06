@@ -1,41 +1,91 @@
+-- postgreSQL database "ecommerce"  
+-- Crear la tabla users
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY,
+  userName VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  roles VARCHAR(255)[] NOT NULL
+);
+
+-- Crear la tabla users_dashboard
+CREATE TABLE IF NOT EXISTS users_dashboard (
+  id SERIAL PRIMARY KEY,
+  user_id UUID NOT null REFERENCES users(id) UNIQUE,
+  title VARCHAR(255),
+  first VARCHAR(255),
+  last VARCHAR(255),
+  email varchar(255) unique,
+  phone VARCHAR(255) unique,
+  thumbnail VARCHAR(255),
+  city VARCHAR(255),
+  state VARCHAR(255),
+  street_number VARCHAR(255),
+  street VARCHAR(255),
+  country VARCHAR(255),
+  postcode VARCHAR(255)
+);
+
+-- Crear la tabla users_cart
+CREATE TABLE IF NOT EXISTS users_cart (
+  id SERIAL PRIMARY KEY,
+  prod_id VARCHAR(255) NOT NULL,
+  prod_name VARCHAR(255),
+  prod_price NUMERIC, -- Cambiado a NUMERIC para representar números con precisión
+  prod_image VARCHAR(255),
+  price_currency VARCHAR(255),
+  prod_gender VARCHAR(255),
+  productq INT NOT NULL,
+  user_id UUID NOT null REFERENCES users(id) unique 
+);
+
+-- Crear la tabla users_likes
+CREATE TABLE IF NOT EXISTS users_likes (
+  id SERIAL PRIMARY KEY,
+  prod_id VARCHAR(255) NOT NULL,
+  prod_name VARCHAR(255),
+  prod_price NUMERIC, -- Cambiado a NUMERIC para representar números con precisión
+  prod_image VARCHAR(255),
+  price_currency VARCHAR(255),
+  prod_gender VARCHAR(255),
+  user_id UUID NOT null REFERENCES users(id) unique 
+);
+
+-- Crear la tabla purchases
+CREATE TABLE IF NOT EXISTS purchases (
+  user_id UUID PRIMARY KEY REFERENCES users(id),
+  items JSONB
+);
+
+-- Crear la tabla transactions
+CREATE TABLE IF NOT EXISTS transactions (
+  id SERIAL PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id),
+  transaction_date DATE NOT NULL,
+  status_detail VARCHAR(255) NOT NULL,
+  payment_method VARCHAR(255) NOT NULL,
+  total_paid_amount NUMERIC NOT NULL,
+  shipping_amount NUMERIC NOT NULL,
+  card_number VARCHAR(255) NOT NULL,
+  order_type VARCHAR(255) NOT NULL,
+  currency_id VARCHAR(255) NOT NULL
+);
+
+-- Crear la tabla role
+CREATE TABLE IF NOT EXISTS role (
+  id SERIAL PRIMARY KEY,
+  role_name VARCHAR(255) NOT NULL
+);
+
+-- Insertar roles iniciales en la tabla role
+INSERT INTO role (role_name) VALUES ('ROLE_USER'), ('ROLE_ADMIN');
+
+-- Crear la tabla user_role
+CREATE TABLE IF NOT EXISTS user_role (
+  user_id UUID NOT NULL REFERENCES users(id),
+  role_id INT NOT NULL REFERENCES role(id),
+  PRIMARY KEY (user_id, role_id)
+);
+
+-- Habilitar la extensión uuid-ossp para generar UUIDs automáticamente
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-DROP table if exists users CASCADE;
-CREATE TABLE users (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    username VARCHAR(15) NOT NULL UNIQUE,
-    password VARCHAR(60) NOT NULL,
-    title VARCHAR(5),
-    first VARCHAR(30),
-    last VARCHAR(30),
-    email VARCHAR(50) NOT NULL UNIQUE,
-    phone VARCHAR(10) UNIQUE,
-    thumbnail TEXT,
-    city VARCHAR(20),
-    state VARCHAR(20),
-    street_number VARCHAR(20),
-    street VARCHAR(20),
-    country VARCHAR(20),
-    postcode VARCHAR(10)
-);
-
-DROP table if exists users_cart;
-CREATE TABLE users_cart (
-    user_id UUID REFERENCES users(id),
-    user_cart JSON,
-    PRIMARY KEY (user_id)
-);
-
-DROP table if exists users_likes;
-CREATE TABLE users_likes (
-    user_id UUID REFERENCES users(id),
-    user_likes JSON,
-    PRIMARY KEY (user_id)
-);
-
-INSERT INTO users (login_username, login_password, fullname_title, fullname_first, fullname_last, contact_email, contact_phone, picture_thumbnail, location_city, location_state, location_number, location_street, location_country, location_postcode)
-VALUES ('elvis_presley', '12345678', 'Sr.', 'Elvis', 'Presley', 'elvis@example.com', '1234567890', 'https://ruta-de-la-imagen.com/elvis.jpg', 'Memphis', 'Tennessee', '123 Graceland Lane', 'Sun Records', 'Estados Unidos', '38116');
-
-SELECT * FROM users;
-
-DELETE FROM users WHERE login_username = 'elvis_presley';

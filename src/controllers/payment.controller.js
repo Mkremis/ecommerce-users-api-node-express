@@ -41,7 +41,7 @@ export const createOrderController = async (req, res) => {
             back_urls: {
               success: `https://mkremis.github.io/ecommerce-react/#/success-payment`,
               failure: `https://mkremis.github.io/ecommerce-react/#/fail-payment`,
-              pending: `${ENDPOINT}/api/users/pending`,
+              pending: `https://mkremis.github.io/ecommerce-react/#/pending-payment`,
             },
             auto_return: "approved",
             notification_url: `${ENDPOINT}/api/users/webhook`,

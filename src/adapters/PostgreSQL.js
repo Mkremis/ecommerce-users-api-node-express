@@ -4,67 +4,82 @@ import { v4 as uuidv4 } from "uuid";
 
 const { Pool } = pkg;
 
+const pool = new Pool({
+  connectionString: POSTGRES_URL,
+});
+
 class PostgreSQLAdapter {
   constructor() {
-    this.pool = new Pool({
-      connectionString: POSTGRES_URL,
-      max: 10,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
-    });
-
-    this.pool.on("connect", () => {
-      console.log("Conectado a la base de datos PostgreSQL");
-    });
-
-    this.pool.on("error", (err) => {
-      console.error("Error en la conexión a la base de datos:", err);
+    this.pool = pool;
+    this.pool.connect((err, client, done) => {
+      if (err) {
+        console.error("Error connecting to PostgreSQL:", err);
+      } else {
+        console.log("Connected to PostgreSQL");
+        done();
+      }
     });
   }
 
-  async registerNewUser({ registerData }) {
+  async query(text, params) {
+    const client = await this.pool.connect();
     try {
-      const userId = uuidv4();
+      const result = await client.query(text, params);
+      return result.rows;
+    } catch (err) {
+      console.error("Error executing query:", err);
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
 
-      const queryInsertUser = `
-        INSERT INTO users(id, user_name, password, email)
-        VALUES ($1, $2, $3, $4)
-      `;
-      const valuesInsertUser = [
-        userId,
-        registerData.userName,
-        registerData.password,
-        registerData.email,
-      ];
+  formatResult(result) {
+    return result.map((row) => ({
+      id: row?.id,
+      priceCurrency: row?.price_currency,
+      prodGender: row?.prod_gender,
+      prodId: row?.prod_id,
+      prodImage: row?.prod_image,
+      prodName: row?.prod_name,
+      prodPrice: row?.prod_price,
+      productQ: row?.productq,
+    }));
+  }
+  // User services
+  async registerNewUser({ registerData }) {
+    const { userName, password, email, roles } = registerData;
+    const userId = uuidv4(); // Generar un UUID para el nuevo usuario
+    const text = `
+    INSERT INTO users (id, userName, password, email, roles)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING *;
+  `;
+    const values = [userId, userName, password, email, roles];
+    try {
+      const result = await this.query(text, values);
 
-      const resultInsertUser = await this.pool.query(
-        queryInsertUser,
-        valuesInsertUser
-      );
+      // Obtener el ID del usuario insertado
+      const newUserId = result[0].id;
 
-      if (resultInsertUser.rowCount > 0) {
-        const roles = registerData.roles || [];
+      // Obtener el ID del rol en base al role_name
+      const roleText = `
+      SELECT id FROM role WHERE role_name = $1;
+    `;
 
-        for (const roleName of roles) {
-          const queryGetRoleId = `
-            SELECT id FROM role WHERE role_name = $1
-          `;
-          const roleResult = await this.pool.query(queryGetRoleId, [roleName]);
+      const roleValues = roles;
+      const roleResult = await this.query(roleText, roleValues);
+      const roleId = roleResult[0].id;
 
-          if (roleResult.rowCount > 0) {
-            const roleId = roleResult.rows[0].id;
+      // Insertar el rol del usuario en la tabla user_role
+      const userRoleText = `
+      INSERT INTO user_role (user_id, role_id)
+      VALUES ($1, $2);
+    `;
+      const userRoleValues = [newUserId, roleId];
+      await this.query(userRoleText, userRoleValues);
 
-            const queryInsertUserRole = `
-              INSERT INTO user_role(user_id, role_id)
-              VALUES ($1, $2)
-            `;
-            const valuesInsertUserRole = [userId, roleId];
-            await this.pool.query(queryInsertUserRole, valuesInsertUserRole);
-          }
-        }
-
-        return { success: "User created successfully", userId };
-      }
+      return { success: "User created successfully" };
     } catch (error) {
       console.error("Error registering new user:", error);
       throw error;
@@ -72,18 +87,16 @@ class PostgreSQLAdapter {
   }
 
   async getUserByUsername({ userName }) {
+    const text = `
+      SELECT * FROM users
+      WHERE userName = $1;
+    `;
+    const values = [userName];
     try {
-      const query = `
-        SELECT id, user_name, password, email
-        FROM users WHERE user_name = $1
-      `;
-      const { rows } = await this.pool.query(query, [userName]);
-
-      if (rows.length > 0) {
-        return { success: rows[0] };
-      } else {
-        return { fail: "User not found" };
-      }
+      const result = await this.query(text, values);
+      return result.length
+        ? { success: result[0] }
+        : { fail: "User not found" };
     } catch (error) {
       console.error("Error getting user by username:", error);
       throw error;
@@ -91,18 +104,16 @@ class PostgreSQLAdapter {
   }
 
   async getUserById({ userId }) {
+    const text = `
+      SELECT * FROM users
+      WHERE id = $1;
+    `;
+    const values = [userId];
     try {
-      const query = `
-        SELECT user_name AS "userName", email
-        FROM users WHERE id = $1
-      `;
-      const { rows } = await this.pool.query(query, [userId]);
-
-      if (rows.length > 0) {
-        return { success: rows[0] };
-      } else {
-        return { fail: "User not found" };
-      }
+      const result = await this.query(text, values);
+      return result.length
+        ? { success: result[0] }
+        : { fail: "User not found" };
     } catch (error) {
       console.error("Error getting user by ID:", error);
       throw error;
@@ -110,19 +121,15 @@ class PostgreSQLAdapter {
   }
 
   async getUserDataById({ userId }) {
+    const text = `
+      SELECT city, country, email, first, last, phone, postcode, state, street, street_number AS streetNumber, thumbnail, title
+      FROM users_dashboard
+      WHERE user_id = $1;
+    `;
+    const values = [userId];
     try {
-      const query = `
-        SELECT city, country, email, first, last, phone, postcode, state, street, street_number AS "streetNumber", thumbnail, title
-        FROM users_dashboard
-        WHERE user_id = $1
-      `;
-      const { rows } = await this.pool.query(query, [userId]);
-
-      if (rows.length > 0) {
-        return rows[0];
-      } else {
-        return null; // Return null when no user data is found
-      }
+      const result = await this.query(text, values);
+      return result.length ? { success: result[0] } : { success: {} };
     } catch (error) {
       console.error("Error getting user data by ID:", error);
       throw error;
@@ -130,205 +137,203 @@ class PostgreSQLAdapter {
   }
 
   async updateUserData({ userData, userId }) {
-    try {
-      // Update users_dashboard
-      const updateUserDashboardQuery = `
-        INSERT INTO users_dashboard (user_id, title, first, last, email, phone, thumbnail, city, state, street_number, street, country, postcode)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-        ON CONFLICT (user_id) DO UPDATE
-        SET
-          title = COALESCE(EXCLUDED.title, users_dashboard.title),
-          first = COALESCE(EXCLUDED.first, users_dashboard.first),
-          last = COALESCE(EXCLUDED.last, users_dashboard.last),
-          email = COALESCE(EXCLUDED.email, users_dashboard.email),
-          phone = COALESCE(EXCLUDED.phone, users_dashboard.phone),
-          thumbnail = COALESCE(EXCLUDED.thumbnail, users_dashboard.thumbnail),
-          city = COALESCE(EXCLUDED.city, users_dashboard.city),
-          state = COALESCE(EXCLUDED.state, users_dashboard.state),
-          street_number = COALESCE(EXCLUDED.street_number, users_dashboard.street_number),
-          street = COALESCE(EXCLUDED.street, users_dashboard.street),
-          country = COALESCE(EXCLUDED.country, users_dashboard.country),
-          postcode = COALESCE(EXCLUDED.postcode, users_dashboard.postcode)
-      `;
-      const updateUserDashboardValues = [
-        userId,
-        userData.title || "",
-        userData.first || "",
-        userData.last || "",
-        userData.email || "",
-        userData.phone || "",
-        userData.thumbnail || "",
-        userData.city || "",
-        userData.state || "",
-        userData.streetNumber || "",
-        userData.street || "",
-        userData.country || "",
-        userData.postcode || "",
-      ];
+    const {
+      title = "",
+      first = "",
+      last = "",
+      phone = "",
+      thumbnail = "",
+      city = "",
+      state = "",
+      street_number = "",
+      street = "",
+      country = "",
+      postcode = "",
+    } = userData;
 
-      await this.pool.query(
-        updateUserDashboardQuery,
-        updateUserDashboardValues
+    // Verificar si el usuario ya tiene un dashboard
+    const existingDashboardQuery = `
+    SELECT * FROM users_dashboard WHERE user_id = $1;
+  `;
+    const existingDashboardValues = [userId];
+    const existingDashboard = await this.query(
+      existingDashboardQuery,
+      existingDashboardValues
+    );
+
+    if (existingDashboard.length > 0) {
+      // Si el usuario ya tiene un dashboard, actualizarlo
+      const updateDashboardQuery = `
+      UPDATE users_dashboard
+      SET title = $1, first = $2, last = $3, phone = $4, thumbnail = $5,
+          city = $6, state = $7, street_number = $8, street = $9,
+          country = $10, postcode = $11
+      WHERE user_id = $12
+      RETURNING *;
+    `;
+      const updateDashboardValues = [
+        title,
+        first,
+        last,
+        phone,
+        thumbnail,
+        city,
+        state,
+        street_number,
+        street,
+        country,
+        postcode,
+        userId,
+      ];
+      const updatedDashboard = await this.query(
+        updateDashboardQuery,
+        updateDashboardValues
       );
 
-      if (userData.password) {
-        const updatePassQuery = `
-          UPDATE users
-          SET password = $1
-          WHERE id = $2
-        `;
-        const updateUsersValues = [userData.password, userId];
-
-        await this.pool.query(updatePassQuery, updateUsersValues);
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error("Error updating user data:", error);
-      throw error;
-    }
-  }
-
-  async getCartByUserId({ userId }) {
-    try {
-      const query = `
-        SELECT id, price_currency AS "priceCurrency", prod_Gender AS "prodGender", prod_id AS "prodId", prod_image AS "prodImage", prod_name AS "prodName", prod_price AS "prodPrice", productq AS "productQ"
-        FROM users_cart
-        WHERE user_id = $1
-      `;
-      const { rows } = await this.pool.query(query, [userId]);
-      return rows;
-    } catch (error) {
-      console.error("Error getting cart by user ID:", error);
-      throw error;
-    }
-  }
-
-  async getUserCartItem({ userId, prodId }) {
-    try {
-      const query = `
-        SELECT productq
-        FROM users_cart
-        WHERE user_id = $1 AND prod_id = $2
-      `;
-      const { rows } = await this.pool.query(query, [userId, prodId]);
-
-      if (rows.length > 0) {
-        return rows[0];
+      if (updatedDashboard.length > 0) {
+        return { success: updatedDashboard[0] };
       } else {
-        return null; // Return null when no user cart item is found
+        throw new Error("Failed to update user dashboard");
       }
+    } else {
+      // Si el usuario no tiene un dashboard, crear uno nuevo
+      const createDashboardQuery = `
+      INSERT INTO users_dashboard (user_id, title, first, last, phone, thumbnail, city, state, street_number, street, country, postcode)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      RETURNING *;
+    `;
+      const createDashboardValues = [
+        userId,
+        title,
+        first,
+        last,
+        phone,
+        thumbnail,
+        city,
+        state,
+        street_number,
+        street,
+        country,
+        postcode,
+      ];
+      const newDashboard = await this.query(
+        createDashboardQuery,
+        createDashboardValues
+      );
+
+      if (newDashboard.length > 0) {
+        return { success: newDashboard[0] };
+      } else {
+        throw new Error("Failed to create user dashboard");
+      }
+    }
+  }
+
+  // Cart services
+  async getCartByUserId({ userId }) {
+    const text = `
+      SELECT * FROM users_cart
+      WHERE user_id = $1;
+    `;
+    const values = [userId];
+    try {
+      const result = await this.query(text, values);
+      return this.formatResult(result);
     } catch (error) {
-      console.error("Error getting user cart item:", error);
+      console.error("Error getting user cart:", error);
       throw error;
     }
   }
 
   async updateUserCart({ userId, newCartItem }) {
+    const text = `
+      INSERT INTO users_cart (user_id, prod_id, prod_name, prod_price, prod_image, price_currency, prod_gender, productq)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ON CONFLICT (user_id, prod_id) DO UPDATE
+      SET productq = $8
+      RETURNING *;
+    `;
+    const values = [
+      userId,
+      newCartItem.prodId,
+      newCartItem.prodName,
+      newCartItem.prodPrice,
+      newCartItem.prodImage,
+      newCartItem.priceCurrency,
+      newCartItem.prodGender,
+      newCartItem.productQ,
+    ];
     try {
-      const prodId = newCartItem.prodId;
-      const productQ = newCartItem.productQ;
-      let result;
-      const existingCartItem = await this.getUserCartItem({
-        userId,
-        prodId: newCartItem.prodId,
-      });
-      if (existingCartItem) {
-        const query = `
-          UPDATE users_cart
-          SET productq = $1
-          WHERE user_id = $2 AND prod_id = $3
-        `;
-        const values = [productQ, userId, prodId];
-        await this.pool.query(query, values);
-        result = { success: true };
-      } else {
-        result = await this.saveUserCartItem({
-          userId,
-          cartItem: newCartItem,
-        });
-      }
-      if (result.success) {
-        return await this.getCartByUserId({ userId });
-      }
+      const result = await this.query(text, values);
+      return this.getCartByUserId({ userId });
     } catch (error) {
       console.error("Error updating user cart:", error);
       throw error;
     }
   }
 
-  async saveUserCartItem({ userId, cartItem }) {
-    try {
-      const query = `
-        INSERT INTO users_cart
-        (user_id, prod_id, prod_name, prod_gender, prod_image, prod_price, price_currency, productq)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      `;
-      const values = [
-        userId,
-        cartItem.prodId,
-        cartItem.prodName,
-        cartItem.prodGender,
-        cartItem.prodImage,
-        cartItem.prodPrice,
-        cartItem.priceCurrency,
-        cartItem.productQ,
-      ];
-
-      await this.pool.query(query, values);
-      return { success: true };
-    } catch (error) {
-      console.error("Error saving user cart item:", error);
-      throw error;
-    }
-  }
-
   async deleteCartItem({ userId, cartId }) {
+    const text = `
+      DELETE FROM users_cart
+      WHERE user_id = $1 AND id = $2;
+    `;
+    const values = [userId, cartId];
     try {
-      const query = `
-        DELETE FROM users_cart 
-        WHERE id = $1
-      `;
-      await this.pool.query(query, [cartId]);
-      return await this.getCartByUserId({ userId });
+      await this.query(text, values);
+      return this.getCartByUserId({ userId });
     } catch (error) {
-      console.error("Error deleting user cart item:", error);
+      console.error("Error deleting item from cart:", error);
       throw error;
     }
   }
 
-  async getLikesByUserId({ userId }) {
+  async deleteUserCart({ userId }) {
+    const text = `
+      DELETE FROM users_cart
+      WHERE user_id = $1;
+    `;
+    const values = [userId];
     try {
-      const query = `
-        SELECT id, price_currency AS "priceCurrency", prod_gender AS "prodGender", prod_id AS "prodId", prod_image AS "prodImage", prod_name AS "prodName", prod_price AS "prodPrice"
-        FROM users_likes
-        WHERE user_id = $1
-      `;
-      const { rows } = await this.pool.query(query, [userId]);
-      return rows;
+      await this.query(text, values);
+      return { success: "Cart deleted successfully" };
     } catch (error) {
-      console.error("Error getting likes by user ID:", error);
+      console.error("Error deleting cart:", error);
+      throw error;
+    }
+  }
+
+  // Likes services
+  async getLikesByUserId({ userId }) {
+    const text = `
+      SELECT * FROM users_likes
+      WHERE user_id = $1;
+    `;
+    const values = [userId];
+    try {
+      const result = await this.query(text, values);
+      return this.formatResult(result);
+    } catch (error) {
+      console.error("Error getting user likes:", error);
       throw error;
     }
   }
 
   async saveUserLike({ userId, newLike }) {
+    const text = `
+      INSERT INTO users_likes (user_id, prod_id, prod_name, prod_price, prod_image, price_currency, prod_gender)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `;
+    const values = [
+      userId,
+      newLike.prodId,
+      newLike.prodName,
+      newLike.prodPrice,
+      newLike.prodImage,
+      newLike.priceCurrency,
+      newLike.prodGender,
+    ];
     try {
-      const query = `
-        INSERT INTO users_likes (user_id, prod_id, prod_name, prod_gender, prod_image, prod_price, price_currency)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-      `;
-      const values = [
-        userId,
-        newLike.prodId,
-        newLike.prodName,
-        newLike.prodGender,
-        newLike.prodImage,
-        newLike.prodPrice,
-        newLike.priceCurrency,
-      ];
-
-      await this.pool.query(query, values);
+      await this.query(text, values);
       return { success: true };
     } catch (error) {
       console.error("Error saving user like:", error);
@@ -337,15 +342,118 @@ class PostgreSQLAdapter {
   }
 
   async deleteUserLikeByProdId({ userId, prodId }) {
+    const text = `
+      DELETE FROM users_likes
+      WHERE user_id = $1 AND prod_id = $2;
+    `;
+    const values = [userId, prodId];
     try {
-      const query = `
-        DELETE FROM users_likes 
-        WHERE user_id = $1 AND prod_id = $2
-      `;
-      await this.pool.query(query, [userId, prodId]);
-      return { success: true };
+      const result = await this.query(text, values);
+      return result ? { success: true } : { success: false };
     } catch (error) {
       console.error("Error deleting user like:", error);
+      throw error;
+    }
+  }
+
+  // Purchases services
+  async createPurchase({ userId, purchasedItems }) {
+    const savePurchase = async (item) => {
+      const text = `
+      INSERT INTO purchases (user_id, order_id, prod_id, prod_name, prod_price, prod_image, prod_gender, productq)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `;
+      const values = [
+        userId,
+        item.order_id,
+        item.prodId,
+        item.prodName,
+        item.prodPrice,
+        item.prodImage,
+        item.prodGender,
+        item.productQ,
+      ];
+      try {
+        await this.query(text, values);
+        return { success: true };
+      } catch (error) {
+        console.error("Error saving user purchase:", error);
+        throw error;
+      }
+    };
+    purchasedItems.forEach((item) => savePurchase(item));
+  }
+
+  async getPurchasesByUserId({ userId }) {
+    const text = `
+      SELECT * FROM purchases
+      WHERE user_id = $1;
+    `;
+    const values = [userId];
+    try {
+      const result = await this.query(text, values);
+      return result.length ? result[0].items : [];
+    } catch (error) {
+      console.error("Error getting user purchases:", error);
+      throw error;
+    }
+  }
+
+  async getPurchasesByTrId({ userId, transactionId }) {
+    const text = `
+      SELECT * FROM purchases
+      WHERE user_id = $1 AND items @> '[{"order_id": $2}]';
+    `;
+    const values = [userId, transactionId];
+    try {
+      const result = await this.query(text, values);
+      return result.length ? result[0].items : [];
+    } catch (error) {
+      console.error("Error getting purchases by transaction ID:", error);
+      throw error;
+    }
+  }
+
+  // Transactions services
+  async createTransaction({ transactionData }) {
+    const text = `
+      INSERT INTO transactions (id, user_id, transaction_date, status_detail, payment_method, total_paid_amount, shipping_amount, card_number, order_type, currency_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+    `;
+    const values = [
+      transactionData._id,
+      transactionData.userId,
+      transactionData.transaction_date,
+      transactionData.status_detail,
+      transactionData.payment_method,
+      transactionData.total_paid_amount,
+      transactionData.shipping_amount,
+      transactionData.card_number,
+      transactionData.order_type,
+      transactionData.currency_id,
+    ];
+    try {
+      await this.query(text, values);
+      return { success: true };
+    } catch (error) {
+      console.error("Error creating transaction:", error);
+      throw error;
+    }
+  }
+
+  async getTransactionById({ transactionId }) {
+    const text = `
+      SELECT * FROM transactions
+      WHERE id = $1;
+    `;
+    const values = [transactionId];
+    try {
+      const result = await this.query(text, values);
+      return result.length
+        ? { success: result[0] }
+        : { fail: "Transaction not found" };
+    } catch (error) {
+      console.error("Error getting transaction by ID:", error);
       throw error;
     }
   }

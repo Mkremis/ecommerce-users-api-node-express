@@ -27,7 +27,16 @@ class MySQLAdapter {
       console.error("Error en la conexión a la base de datos:", err);
     });
   }
-
+  async query(text, params) {
+    const client = this.pool;
+    try {
+      const result = await client.execute(text, params);
+      return result.rows;
+    } catch (err) {
+      console.error("Error executing query:", err);
+      throw err;
+    }
+  }
   // User services
   async registerNewUser({ registerData }) {
     try {
@@ -127,11 +136,7 @@ class MySQLAdapter {
       `;
       const [rows] = await this.pool.execute(query, [userId]);
 
-      if (rows.length > 0) {
-        return rows[0];
-      } else {
-        return null; // Return null when no user data is found
-      }
+      return rows.length ? { success: rows[0] } : { success: {} };
     } catch (error) {
       console.error("Error getting user data by ID:", error);
       throw error;
@@ -245,34 +250,26 @@ class MySQLAdapter {
       throw error;
     }
   }
-
   async updateUserCart({ userId, newCartItem }) {
+    const text = `
+      INSERT INTO users_cart (user_id, prod_id, prod_name, prod_price, prod_image, price_currency, prod_gender, productq)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+      productq = VALUES(productq);
+    `;
+    const values = [
+      userId,
+      newCartItem.prodId,
+      newCartItem.prodName,
+      newCartItem.prodPrice,
+      newCartItem.prodImage,
+      newCartItem.priceCurrency,
+      newCartItem.prodGender,
+      newCartItem.productQ,
+    ];
     try {
-      const prodId = newCartItem.prodId;
-      const productQ = newCartItem.productQ;
-      let result;
-      const existingCartItem = await this.getUserCartItem({
-        userId,
-        prodId: newCartItem.prodId,
-      });
-      if (existingCartItem) {
-        const query = `
-          UPDATE users_cart
-          SET productq = ?
-          WHERE user_id = ? AND prod_id = ?
-        `;
-        const values = [productQ, userId, prodId];
-        const [rows] = await this.pool.execute(query, values);
-        result = { success: rows.affectedRows > 0 };
-      } else {
-        result = await this.saveUserCartItem({
-          userId,
-          cartItem: newCartItem,
-        });
-      }
-      if (result.success) {
-        return await this.getCartByUserId({ userId });
-      }
+      const result = await this.query(text, values);
+      return this.getCartByUserId({ userId });
     } catch (error) {
       console.error("Error updating user cart:", error);
       throw error;

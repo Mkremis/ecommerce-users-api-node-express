@@ -241,7 +241,7 @@ class MongoDBAdapter {
       throw error;
     }
   }
-  async deleteCart({ userId }) {
+  async deleteUserCart({ userId }) {
     try {
       await Cart.findOneAndDelete(userId);
       return { success: "Cart deleted successfully" };
