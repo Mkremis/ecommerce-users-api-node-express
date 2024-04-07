@@ -16,7 +16,6 @@ import transactionsRoutes from "./routes/transactions.routes.js";
 const app = express();
 app
   .use(cors(corsOptions))
-
   .use(cookieParser())
   // .use(express.urlencoded({ extended: false }))
   .use(morgan("dev"))
