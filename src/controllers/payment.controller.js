@@ -27,7 +27,7 @@ export const createOrderController = async (req, res) => {
       const items = order.map((item) => ({
         id: item.prodId,
         title: item.prodName,
-        unit_price: item.prodPrice,
+        unit_price: Number(item.prodPrice),
         quantity: item.productQ,
         currency_id: item.priceCurrency,
         picture_url: `https://${item.prodImage}`,

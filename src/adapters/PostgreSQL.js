@@ -44,6 +44,7 @@ class PostgreSQLAdapter {
       prodName: row?.prod_name,
       prodPrice: row?.prod_price,
       productQ: row?.productq,
+      order_id: row?.order_id,
     }));
   }
   // User services
@@ -392,7 +393,7 @@ class PostgreSQLAdapter {
     const values = [userId];
     try {
       const result = await this.query(text, values);
-      return result.length ? result[0].items : [];
+      return result.length ? this.formatResult(result) : [];
     } catch (error) {
       console.error("Error getting user purchases:", error);
       throw error;
@@ -402,12 +403,12 @@ class PostgreSQLAdapter {
   async getPurchasesByTrId({ userId, transactionId }) {
     const text = `
       SELECT * FROM purchases
-      WHERE user_id = $1 AND items @> '[{"order_id": $2}]';
+      WHERE user_id = $1 AND order_id = $2
     `;
     const values = [userId, transactionId];
     try {
       const result = await this.query(text, values);
-      return result.length ? result[0].items : [];
+      return result.length ? this.formatResult(result) : [];
     } catch (error) {
       console.error("Error getting purchases by transaction ID:", error);
       throw error;
