@@ -30,7 +30,9 @@ export const reloadSessionService = async ({ userId }) => {
     const userLikes = await db.getLikesByUserId({ userId });
     const userCart = await db.getCartByUserId({ userId });
     const thumbnail = userDashboard?.success?.thumbnail || "";
-    const { userName, email } = loginData?.success;
+    const { email } = loginData?.success;
+    const userName =
+      loginData?.success?.userName || loginData?.success?.user_name;
     const userData = { userName, email, thumbnail };
     return { success: { userData, userLikes, userCart } };
   } catch (error) {

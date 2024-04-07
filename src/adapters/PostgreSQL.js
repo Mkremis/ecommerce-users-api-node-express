@@ -52,7 +52,7 @@ class PostgreSQLAdapter {
     const { userName, password, email, roles } = registerData;
     const userId = uuidv4(); // Generar un UUID para el nuevo usuario
     const text = `
-    INSERT INTO users (id, userName, password, email, roles)
+    INSERT INTO users (id, user_name, password, email, roles)
     VALUES ($1, $2, $3, $4, $5)
     RETURNING *;
   `;
@@ -90,7 +90,7 @@ class PostgreSQLAdapter {
   async getUserByUsername({ userName }) {
     const text = `
       SELECT * FROM users
-      WHERE userName = $1;
+      WHERE user_name = $1;
     `;
     const values = [userName];
     try {
