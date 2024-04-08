@@ -1,9 +1,6 @@
-// Step 1: Import the parts of the module you want to use
-import { MercadoPagoConfig, Preference } from "mercadopago";
-import { ENDPOINT, MERCADOPAGO_API_KEY } from "../config.js";
-
 import db from "../index.js";
 import { deleteCartService } from "../services/cart.services.js";
+import { mercadopagoService } from "../services/payment.service.js";
 import { registerUserPurchaseService } from "../services/purchase.services.js";
 
 // import { registerSale } from '../services/payment.services.js';
@@ -17,13 +14,6 @@ export const createOrderController = async (req, res) => {
     const userData = await db.getUserById({ userId });
     if (userData.success && Array.isArray(order) && order.length > 0) {
       const { userName, email } = userData.success;
-
-      // Step 2: Initialize the client object
-      const client = new MercadoPagoConfig({
-        accessToken: MERCADOPAGO_API_KEY,
-      });
-      const preference = new Preference(client);
-      // Step 3: Create an item object
       const items = order.map((item) => ({
         id: item.prodId,
         title: item.prodName,
@@ -34,32 +24,13 @@ export const createOrderController = async (req, res) => {
         category_id: item.prodGender,
         description: item.prodName,
       }));
-
-      preference
-        .create({
-          body: {
-            back_urls: {
-              success: `https://mkremis.github.io/ecommerce-react/#/success-payment`,
-              failure: `https://mkremis.github.io/ecommerce-react/#/fail-payment`,
-              pending: `https://mkremis.github.io/ecommerce-react/#/pending-payment`,
-            },
-            auto_return: "approved",
-            notification_url: `${ENDPOINT}/api/users/webhook`,
-            payer: {
-              email: email,
-              name: userName,
-            },
-            items,
-            external_reference: userId,
-          },
-        })
-        .then((response) => {
-          res.status(200).json({ payLink: response.init_point });
-        })
-        .catch((error) => {
-          console.error("Error creating preference:", error);
-          res.status(500).json({ error: "Error creating preference" });
-        });
+      const payData = await mercadopagoService({
+        userId,
+        userName,
+        email,
+        items,
+      });
+      return res.status(200).json({ payData });
     } else {
       res.status(400).json({ error: "Invalid request or empty order" });
     }
@@ -108,15 +79,16 @@ export const receiveWebhook = async (req, res) => {
   }
 };
 
-export const success = async (req, res) => {
+export const successPaymentController = async (req, res) => {
   res.status(200).json({ message: "Success payment!!" });
+  //https://mkremis.github.io/ecommerce-react/#/success-payment
 };
 
-export const failure = (req, res) => {
+export const failPaymentController = (req, res) => {
   res.status(400).json({ message: "Payment failure" });
 };
 
-export const pending = (req, res) => {
+export const pendingPaymentController = (req, res) => {
   res.status(200).json({ message: "Payment pending" });
 };
 

@@ -323,6 +323,7 @@ class PostgreSQLAdapter {
     const text = `
       INSERT INTO users_likes (user_id, prod_id, prod_name, prod_price, prod_image, price_currency, prod_gender)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      ON CONFLICT (user_id, prod_id) DO NOTHING
     `;
     const values = [
       userId,

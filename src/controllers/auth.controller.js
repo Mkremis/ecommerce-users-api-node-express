@@ -1,5 +1,6 @@
 import Message from "../schemas/Message.js";
 import { loginService, registerService } from "../services/auth.services.js";
+import emailer from "../utils/emailer.js";
 
 export const loginController = async (req, res) => {
   try {

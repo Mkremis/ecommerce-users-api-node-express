@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS users_cart (
   prod_gender VARCHAR(255),
   productq INT NOT NULL,
   user_id UUID NOT NULL REFERENCES users(id),
-  CONSTRAINT unique_user_prod_id UNIQUE (user_id, prod_id)
+  CONSTRAINT cart_unique_user_prod_id UNIQUE (user_id, prod_id)
 );
 
 
@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS users_likes (
   prod_image VARCHAR(255),
   price_currency VARCHAR(255),
   prod_gender VARCHAR(255),
-  user_id UUID NOT null REFERENCES users(id) 
+  user_id UUID NOT null REFERENCES users(id),
+  CONSTRAINT likes_unique_user_prod_id UNIQUE (user_id, prod_id)
 );
 
 -- Crear la tabla purchases

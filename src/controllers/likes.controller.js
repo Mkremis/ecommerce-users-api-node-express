@@ -7,14 +7,13 @@ import {
 
 export const getLikesController = async (req, res) => {
   const userId = req.user.id;
-
   try {
     const response = await getLikesService({ userId });
     console.log(response);
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);
-    res.sendStatus(500);
+    res.status(500).json(new Message("fail", "Error getting user likes."));
   }
 };
 
@@ -36,7 +35,7 @@ export const createLikeController = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.sendStatus(500);
+    res.status(500).json(new Message("fail", "Error saving user like."));
   }
 };
 
@@ -54,6 +53,6 @@ export const deleteLikeController = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.sendStatus(500);
+    res.status(500).json(new Message("fail", "Error deleting user like."));
   }
 };
