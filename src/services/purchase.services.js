@@ -18,7 +18,6 @@ export const registerUserPurchaseService = async ({ userId, paymentData }) => {
       currency_id: paymentData.currency_id,
     };
     const purchasedItems = items.map((item) => {
-      console.log(item);
       return {
         prodId: item.id,
         order_id: paymentData.order.id,

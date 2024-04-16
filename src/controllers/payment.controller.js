@@ -7,6 +7,8 @@ import { registerUserPurchaseService } from "../services/purchase.services.js";
 export const createOrderController = async (req, res) => {
   const userId = req.user.id;
   const order = req.body;
+  const URL = req.protocol + "://" + req.get("host");
+  console.log(URL);
   try {
     const userData = await db.getUserById({ userId });
     if (userData.success && Array.isArray(order) && order.length > 0) {
@@ -77,8 +79,7 @@ export const receiveWebhook = async (req, res) => {
 };
 
 export const successPaymentController = async (req, res) => {
-  res.status(200).json({ message: "Success payment!!" });
-  //https://mkremis.github.io/ecommerce-react/#/success-payment
+  req.get(`http://localhost:5173/ecommerce-react/#/success-payment`);
 };
 
 export const failPaymentController = (req, res) => {

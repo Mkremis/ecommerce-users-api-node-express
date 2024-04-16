@@ -17,9 +17,9 @@ export const mercadopagoService = async ({
     const result = await preference.create({
       body: {
         back_urls: {
-          success: `https://mkremis.github.io/ecommerce-react/#/success-payment`,
-          failure: `https://mkremis.github.io/ecommerce-react/#/fail-payment`,
-          pending: `https://mkremis.github.io/ecommerce-react/#/pending-payment`,
+          success: `http://localhost:5173/ecommerce-react/#/success-payment`,
+          failure: `http://localhost:5173/ecommerce-react/#/fail-payment`,
+          pending: `http://localhost:5173/ecommerce-react/#/pending-payment`,
         },
         auto_return: "approved",
         notification_url: `${ENDPOINT}/api/users/webhook`,

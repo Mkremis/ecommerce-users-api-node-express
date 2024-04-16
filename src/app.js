@@ -1,6 +1,4 @@
 import express from "express";
-import cors from "cors";
-import { corsOptions } from "./config/corsOptions.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 
@@ -12,14 +10,16 @@ import likesRoutes from "./routes/likes.routes.js";
 import payRoutes from "./routes/payment.routes.js";
 import purchasesRoutes from "./routes/purchases.routes.js";
 import transactionsRoutes from "./routes/transactions.routes.js";
+import corsMiddleware from "./config/cors.js";
 
 const app = express();
 app
-  .use(cors(corsOptions))
+
   .use(cookieParser())
   // .use(express.urlencoded({ extended: false }))
   .use(morgan("dev"))
   .use(express.json())
+  .use(corsMiddleware) // Usa el middleware de CORS aquí
 
   //public rutes
   .use("/auth", authRoutes)
