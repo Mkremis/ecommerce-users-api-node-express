@@ -1,4 +1,4 @@
-import { PORT } from "./config.js";
+import { ENDPOINT, PORT } from "./config.js";
 import app from "./app.js";
 
 import { DB_TYPE } from "./config.js";
@@ -22,7 +22,7 @@ function initializeServer() {
   const dbInit = initializeDB();
   // Inicia el servidor después de que la base de datos esté lista
   app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on ${ENDPOINT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
   });
 

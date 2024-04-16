@@ -9,7 +9,6 @@ export const getLikesController = async (req, res) => {
   const userId = req.user.id;
   try {
     const response = await getLikesService({ userId });
-    console.log(response);
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);
@@ -49,7 +48,7 @@ export const deleteLikeController = async (req, res) => {
     if (response?.success) {
       res.sendStatus(200);
     } else {
-      res.sendStatus(400);
+      res.res.status(400).json(new Message("fail", "User like not found."));
     }
   } catch (error) {
     console.error(error);

@@ -5,7 +5,7 @@ export const DB_TYPE = process.env.DB_TYPE;
 
 export const PORT = process.env.PORT || 8080;
 
-export const ENDPOINT = process.env.ENDPOINT || "http://localhost:8080";
+export const ENDPOINT = process.env.ENDPOINT || `http://localhost:${PORT}`;
 
 export const MONGODB_URL = process.env.MONGODB_URL;
 

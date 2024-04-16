@@ -1,16 +1,13 @@
+import { MERCADOPAGO_API_KEY } from "../config.js";
 import db from "../index.js";
 import { deleteCartService } from "../services/cart.services.js";
 import { mercadopagoService } from "../services/payment.service.js";
 import { registerUserPurchaseService } from "../services/purchase.services.js";
 
-// import { registerSale } from '../services/payment.services.js';
-
 export const createOrderController = async (req, res) => {
+  const userId = req.user.id;
+  const order = req.body;
   try {
-    // const URL = req.protocol + "://" + req.get("host");
-
-    const userId = req.user.id;
-    const order = req.body;
     const userData = await db.getUserById({ userId });
     if (userData.success && Array.isArray(order) && order.length > 0) {
       const { userName, email } = userData.success;

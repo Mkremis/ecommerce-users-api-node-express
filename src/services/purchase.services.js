@@ -18,18 +18,20 @@ export const registerUserPurchaseService = async ({ userId, paymentData }) => {
       currency_id: paymentData.currency_id,
     };
     const purchasedItems = items.map((item) => {
+      console.log(item);
       return {
         prodId: item.id,
         order_id: paymentData.order.id,
         prodName: item.title,
         prodPrice: item.unit_price,
+        currency_id: "USD",
         prodImage: item.picture_url,
         prodGender: item.category_id,
         productQ: item.quantity,
       };
     });
-    await db.createPurchase({ userId, purchasedItems });
     await db.createTransaction({ transactionData });
+    await db.createPurchase({ userId, purchasedItems });
   } catch (error) {
     console.error("Error registering purchase:", error);
     throw error;
